@@ -651,7 +651,7 @@ const crackMaterial = new THREE.MeshBasicMaterial({
   polygonOffsetUnits: -1
 });
 // Uma face plana acompanha exatamente a face que está sendo minerada.
-const crackMaterial.side = THREE.DoubleSide;
+crackMaterial.side = THREE.DoubleSide;
 const crackOverlay = new THREE.Mesh(
   new THREE.PlaneGeometry(1, 1),
   crackMaterial
