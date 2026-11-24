@@ -2302,7 +2302,8 @@ function startWorld(mode, restoreData = null, lockAlreadyRequested = false) {
   gameMode = mode;
   if (restoreData) {
     const savedInventory = restoreData.inventory || [];
-    const hasSavedInventory = savedInventory.length === 9 &&
+    const sameSavedMode = restoreData.mode === mode;
+    const hasSavedInventory = sameSavedMode && savedInventory.length === 9 &&
       (mode !== 'creative' || savedInventory.some(Boolean));
     inventorySlots = hasSavedInventory
       ? savedInventory.map(item => item ? {
@@ -2311,8 +2312,8 @@ function startWorld(mode, restoreData = null, lockAlreadyRequested = false) {
       : (mode === 'creative'
           ? blockNames.map((type, index) => ({ type, label:blockLabels[index], count:Infinity }))
           : Array(9).fill(null));
-    selectedBlock = Math.max(0, Math.min(8, restoreData.selectedBlock || 0));
-    health = Math.max(0, Math.min(10, restoreData.health ?? 10));
+    selectedBlock = sameSavedMode ? Math.max(0, Math.min(8, restoreData.selectedBlock || 0)) : 0;
+    health = sameSavedMode ? Math.max(0, Math.min(10, restoreData.health ?? 10)) : 10;
     if (restoreData.player) camera.position.set(restoreData.player.x, restoreData.player.y, restoreData.player.z);
     else camera.position.set(0, getSurfaceHeight(0, 8) + 2.12, 8);
   } else {
