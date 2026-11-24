@@ -2196,6 +2196,8 @@ async function createSavedWorld() {
 async function loadSavedWorld(id, mode) {
   const status = document.getElementById('savedWorldsStatus');
   status.textContent = 'Carregando mundo...';
+  // Solicita o bloqueio do mouse enquanto o clique do jogador ainda está ativo.
+  controls.lock();
   try {
     const world = await worldStoreRequest('readonly', 'get', id);
     if (!world) { status.textContent = 'Esse mundo não foi encontrado.'; return; }
@@ -2208,8 +2210,11 @@ async function loadSavedWorld(id, mode) {
     activeWorldName = world.name || 'Mundo sem nome';
     activeWorldSeed = world.seed || 0;
     savedWorldsMenu.style.display = 'none';
-    startWorld(mode, world);
+    startWorld(mode, world, true);
   } catch (error) {
+    controls.unlock();
+    savedWorldsMenu.style.display = 'flex';
+    modeMenu.style.display = 'none';
     status.textContent = 'Não foi possível carregar esse mundo.';
     console.error(error);
   }
@@ -2292,7 +2297,7 @@ document.getElementById('backModeMenuButton').addEventListener('click', () => {
 });
 
 // Inicia um jogo rápido ou restaura o estado de um mundo salvo.
-function startWorld(mode, restoreData = null) {
+function startWorld(mode, restoreData = null, lockAlreadyRequested = false) {
   gameStarted = true;
   gameMode = mode;
   if (restoreData) {
@@ -2331,7 +2336,7 @@ function startWorld(mode, restoreData = null) {
   healthIcons.style.display = mode === 'survival' ? 'flex' : 'none';
   modeMenu.style.display = 'none';
   scheduleWorldSave();
-  controls.lock();
+  if (!lockAlreadyRequested) controls.lock();
 }
 
 document.getElementById('creativeButton').addEventListener('click', () => startWorld('creative'));
