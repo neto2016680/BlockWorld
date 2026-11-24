@@ -650,8 +650,10 @@ const crackMaterial = new THREE.MeshBasicMaterial({
   polygonOffsetFactor: -1,
   polygonOffsetUnits: -1
 });
+// Uma face plana acompanha exatamente a face que está sendo minerada.
+const crackMaterial.side = THREE.DoubleSide;
 const crackOverlay = new THREE.Mesh(
-  new THREE.BoxGeometry(1.006, 1.006, 1.006),
+  new THREE.PlaneGeometry(1, 1),
   crackMaterial
 );
 crackOverlay.visible = false;
@@ -695,13 +697,22 @@ function cancelMining() {
   crackTexture.needsUpdate = true;
 }
 
-function startMining(block) {
-  const p = block.position;
+function placeCrackOverlay(hit) {
+  const normal = hit.face.normal.clone().transformDirection(hit.object.matrixWorld);
+  crackOverlay.position.copy(hit.block.position).addScaledVector(normal, 0.506);
+  crackOverlay.quaternion.setFromUnitVectors(
+    new THREE.Vector3(0, 0, 1),
+    normal
+  );
+}
+
+function startMining(hit) {
+  const p = hit.block.position;
   miningTargetKey = blockKey(p.x, p.y, p.z);
   miningStartTime = performance.now();
   miningActive = true;
   miningStage = 0;
-  crackOverlay.position.copy(p);
+  placeCrackOverlay(hit);
   crackOverlay.visible = true;
 }
 
@@ -723,7 +734,7 @@ function updateMining() {
     updateCrackTexture(miningStage);
   }
 
-  crackOverlay.position.copy(p);
+  placeCrackOverlay(hit);
   if (progress >= 1) {
     removeBlock(hit.block);
     cancelMining();
@@ -1060,7 +1071,7 @@ document.addEventListener('mousedown', (event) => {
   // QUEBRAR: segurar o botão esquerdo.
   if (event.button === 0) {
     if (block.position.y === 0) return;
-    if (!miningActive) startMining(block);
+    if (!miningActive) startMining(hit);
   }
 
   // CONSTRUIR
