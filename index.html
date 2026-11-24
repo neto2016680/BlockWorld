@@ -40,6 +40,13 @@ canvas { display: block; }
 #menu h1 {
   font-size: 54px;
   text-shadow: 4px 4px #333;
+  margin: 0 0 4px;
+}
+
+#updateSubtitle {
+  font-size: 17px;
+  color: #e5e5e5;
+  text-shadow: 2px 2px #333;
   margin: 0 0 28px;
 }
 
@@ -166,6 +173,7 @@ canvas { display: block; }
 
 <div id="menu">
   <h1>BlockWorld</h1>
+  <div id="updateSubtitle">0.8 - Caves Update</div>
   <button id="start">JOGAR</button>
 </div>
 
@@ -178,7 +186,8 @@ canvas { display: block; }
 <div id="hud">
   <div id="instructions">
     WASD - Mover<br>
-    ESPAÇO - Pular<br>
+    ESPAÇO 2x - Ativar/desativar voo<br>
+    ESPAÇO / SHIFT - Subir / descer<br>
     Mouse - Olhar<br>
     Scroll - Trocar bloco<br>
     Clique esquerdo - Quebrar<br>
@@ -934,6 +943,8 @@ const WALK_SPEED = 5;
 
 let velocityY = 0;
 let canJump = false;
+let isFlying = false;
+let lastSpacePress = 0;
 
 function getCollidingBlock(px, eyeY, pz) {
 
@@ -1095,6 +1106,17 @@ document.addEventListener('keydown', (event) => {
 
   keys[event.code] = true;
 
+  // No criativo, toque duplo no ESPAÇO ativa ou desativa o voo.
+  if (event.code === 'Space' && !event.repeat && gameMode === 'creative') {
+    const now = performance.now();
+    if (now - lastSpacePress < 300) {
+      isFlying = !isFlying;
+      velocityY = 0;
+      canJump = false;
+    }
+    lastSpacePress = now;
+  }
+
   if (gameMode !== 'survival' && event.code.startsWith('Digit')) {
 
     const number = Number(
@@ -1112,7 +1134,8 @@ document.addEventListener('keydown', (event) => {
   if (
     event.code === 'Space' &&
     canJump &&
-    controls.isLocked
+    controls.isLocked &&
+    gameMode !== 'creative'
   ) {
 
     velocityY = JUMP_FORCE;
@@ -1233,7 +1256,19 @@ function updatePlayer(delta) {
     moveHorizontal(dx, dz);
   }
 
-  moveVertical(delta);
+  if (gameMode === 'creative' && isFlying) {
+    let vertical = 0;
+    if (keys['Space']) vertical++;
+    if (keys['ShiftLeft'] || keys['ShiftRight']) vertical--;
+    if (vertical !== 0) {
+      const nextY = camera.position.y + vertical * WALK_SPEED * 1.6 * delta;
+      if (!getCollidingBlock(camera.position.x, nextY, camera.position.z)) {
+        camera.position.y = nextY;
+      }
+    }
+  } else {
+    moveVertical(delta);
+  }
 }
 
 // =================================
@@ -1253,6 +1288,9 @@ document.getElementById('start').addEventListener('click', () => {
 // Os dois modos ainda usam o mesmo mundo; a interface já muda por modo.
 function startWorld(mode) {
   gameMode = mode;
+  isFlying = false;
+  lastSpacePress = 0;
+  velocityY = 0;
   updateHotbar();
   hotbar.style.display = 'flex';
   healthIcons.style.display = mode === 'survival' ? 'flex' : 'none';
