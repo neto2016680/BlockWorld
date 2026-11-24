@@ -631,6 +631,106 @@ blockOutline.visible = false;
 scene.add(blockOutline);
 
 // =================================
+// SISTEMA DE MINERAÇÃO PROGRESSIVA
+// =================================
+const crackCanvas = document.createElement('canvas');
+crackCanvas.width = 32;
+crackCanvas.height = 32;
+const crackCtx = crackCanvas.getContext('2d');
+const crackTexture = new THREE.CanvasTexture(crackCanvas);
+crackTexture.magFilter = THREE.NearestFilter;
+crackTexture.minFilter = THREE.NearestFilter;
+crackTexture.generateMipmaps = false;
+
+const crackMaterial = new THREE.MeshBasicMaterial({
+  map: crackTexture,
+  transparent: true,
+  depthWrite: false,
+  polygonOffset: true,
+  polygonOffsetFactor: -1,
+  polygonOffsetUnits: -1
+});
+const crackOverlay = new THREE.Mesh(
+  new THREE.BoxGeometry(1.006, 1.006, 1.006),
+  crackMaterial
+);
+crackOverlay.visible = false;
+scene.add(crackOverlay);
+
+const crackStages = [
+  [[[16,16],[12,12],[9,8],[5,5]], [[12,12],[14,7],[13,3]]],
+  [[[16,16],[12,12],[9,8],[5,5]], [[12,12],[14,7],[13,3]], [[9,8],[5,10],[2,9]]],
+  [[[16,16],[12,12],[9,8],[5,5]], [[12,12],[14,7],[13,3]], [[9,8],[5,10],[2,9]], [[16,16],[20,13],[24,10]]],
+  [[[16,16],[12,12],[9,8],[5,5]], [[12,12],[14,7],[13,3]], [[9,8],[5,10],[2,9]], [[16,16],[20,13],[24,10]], [[20,13],[23,17],[28,18]]],
+  [[[16,16],[12,12],[9,8],[5,5]], [[12,12],[14,7],[13,3]], [[9,8],[5,10],[2,9]], [[16,16],[20,13],[24,10]], [[20,13],[23,17],[28,18]], [[16,16],[13,21],[9,26]], [[13,21],[17,25],[18,29]]]
+];
+
+function updateCrackTexture(stage) {
+  crackCtx.clearRect(0, 0, 32, 32);
+  crackCtx.strokeStyle = '#252525';
+  crackCtx.lineWidth = 1.8;
+  crackCtx.lineCap = 'square';
+  crackCtx.lineJoin = 'miter';
+  for (const path of crackStages[stage - 1]) {
+    crackCtx.beginPath();
+    crackCtx.moveTo(path[0][0], path[0][1]);
+    for (let i = 1; i < path.length; i++) crackCtx.lineTo(path[i][0], path[i][1]);
+    crackCtx.stroke();
+  }
+  crackTexture.needsUpdate = true;
+}
+
+let miningActive = false;
+let miningTargetKey = null;
+let miningStartTime = 0;
+let miningStage = 0;
+const miningTimes = { grass: 450, dirt: 350, stone: 1250, wood: 800, leaves: 250 };
+
+function cancelMining() {
+  miningActive = false;
+  miningTargetKey = null;
+  miningStage = 0;
+  crackOverlay.visible = false;
+  crackCtx.clearRect(0, 0, 32, 32);
+  crackTexture.needsUpdate = true;
+}
+
+function startMining(block) {
+  const p = block.position;
+  miningTargetKey = blockKey(p.x, p.y, p.z);
+  miningStartTime = performance.now();
+  miningActive = true;
+  miningStage = 0;
+  crackOverlay.position.copy(p);
+  crackOverlay.visible = true;
+}
+
+function updateMining() {
+  if (!miningActive) return;
+  const hit = getTargetBlock();
+  if (!hit) { cancelMining(); return; }
+
+  const p = hit.block.position;
+  const key = blockKey(p.x, p.y, p.z);
+  if (key !== miningTargetKey) { cancelMining(); return; }
+
+  const duration = miningTimes[hit.block.type] || 500;
+  const progress = Math.min((performance.now() - miningStartTime) / duration, 1);
+  const newStage = Math.min(5, Math.ceil(progress * 5));
+
+  if (newStage > miningStage) {
+    miningStage = newStage;
+    updateCrackTexture(miningStage);
+  }
+
+  crackOverlay.position.copy(p);
+  if (progress >= 1) {
+    removeBlock(hit.block);
+    cancelMining();
+  }
+}
+
+// =================================
 // HOTBAR
 // =================================
 
@@ -952,54 +1052,34 @@ function playerOverlapsBlock(x, y, z) {
 }
 
 document.addEventListener('mousedown', (event) => {
-
   if (!controls.isLocked) return;
-
   const hit = getTargetBlock();
-
   if (!hit) return;
-
   const block = hit.block;
 
-  // QUEBRAR
+  // QUEBRAR: segurar o botão esquerdo.
   if (event.button === 0) {
-
     if (block.position.y === 0) return;
-
-    removeBlock(block);
+    if (!miningActive) startMining(block);
   }
 
   // CONSTRUIR
   if (event.button === 2) {
-
     const normal = hit.face.normal.clone();
-
-    normal.transformDirection(
-      hit.object.matrixWorld
-    );
-
+    normal.transformDirection(hit.object.matrixWorld);
     const p = block.position.clone().add(normal);
-
     const x = Math.round(p.x);
     const y = Math.round(p.y);
     const z = Math.round(p.z);
 
-    if (blocks.has(blockKey(x, y, z))) {
-      return;
-    }
-
-    if (playerOverlapsBlock(x, y, z)) {
-      return;
-    }
-
-    addBlock(
-      x,
-      y,
-      z,
-      blockNames[selectedBlock]
-    );
+    if (blocks.has(blockKey(x, y, z))) return;
+    if (playerOverlapsBlock(x, y, z)) return;
+    addBlock(x, y, z, blockNames[selectedBlock]);
   }
+});
 
+document.addEventListener('mouseup', (event) => {
+  if (event.button === 0) cancelMining();
 });
 
 document.addEventListener('contextmenu', (event) => {
@@ -1109,6 +1189,7 @@ function animate() {
 
   updatePlayer(delta);
   updateBlockOutline();
+  updateMining();
 
   renderer.render(scene, camera);
 
