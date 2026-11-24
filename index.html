@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BlockWorld - Versão 1.5</title>
+<title>BlockWorld - Versão 1.6</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 
 <script type="importmap">
@@ -384,7 +384,7 @@ canvas { display: block; }
 
 <div id="menu">
   <h1>BlockWorld</h1>
-  <div id="updateSubtitle">VERSÃO 1.5</div>
+  <div id="updateSubtitle">VERSÃO 1.6</div>
   <button id="start">JOGAR</button>
 </div>
 
@@ -757,6 +757,24 @@ const materials = {
   flower_yellow: new THREE.MeshLambertMaterial({ map: pixelTextures.flower_yellow })
 };
 
+
+// Textura enviada para as laterais da madeira.
+const woodSideTexture = new THREE.TextureLoader().load('./wood-side.jpg');
+woodSideTexture.magFilter = THREE.NearestFilter;
+woodSideTexture.minFilter = THREE.NearestFilter;
+woodSideTexture.generateMipmaps = false;
+woodSideTexture.colorSpace = THREE.SRGBColorSpace;
+
+const woodSideMaterial = new THREE.MeshLambertMaterial({ map: woodSideTexture });
+const woodMaterials = [
+  woodSideMaterial,
+  woodSideMaterial,
+  materials.wood,
+  materials.wood,
+  woodSideMaterial,
+  woodSideMaterial
+];
+
 // Topo verde, laterais com terra e faixa verde.
 const grassSideMaterial = new THREE.MeshLambertMaterial({
   map: grassSideTexture
@@ -983,7 +1001,9 @@ function rebuildInstances() {
     const material =
       type === 'grass'
         ? grassMaterials
-        : materials[type];
+        : type === 'wood'
+          ? woodMaterials
+          : materials[type];
 
     const mesh = new THREE.InstancedMesh(
       geometry,
@@ -1232,7 +1252,7 @@ function createBlockIcon(type, label) {
   icon.setAttribute('aria-label', label);
   const cube = document.createElement('div');
   cube.className = 'blockCube';
-  const sideTexture = type === 'grass' ? blockIcons.grassSide : blockIcons[type];
+  const sideTexture = type === 'grass' ? blockIcons.grassSide : type === 'wood' ? './wood-side.jpg' : blockIcons[type];
   const topTexture = type === 'grass' ? blockIcons.grassTop : blockIcons[type];
   const bottomTexture = type === 'grass' ? blockIcons.dirt : blockIcons[type];
   ['front', 'back', 'right', 'left'].forEach((faceName) => {
