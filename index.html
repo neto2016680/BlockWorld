@@ -487,6 +487,17 @@ const camera = new THREE.PerspectiveCamera(
 
 camera.position.set(0, 2.12, 8);
 
+// Câmera cinematográfica usada somente nas telas de menu.
+// Ela mostra o cenário do BlockWorld sem alterar a câmera da partida.
+const menuCamera = new THREE.PerspectiveCamera(
+  55,
+  window.innerWidth / window.innerHeight,
+  0.1,
+  100
+);
+menuCamera.position.set(16, 10, 18);
+menuCamera.lookAt(0, 0.5, 0);
+
 const renderer = new THREE.WebGLRenderer({
   antialias: false,
   powerPreference: 'high-performance'
@@ -1966,7 +1977,8 @@ function animate() {
   updateBlockOutline();
   updateMining();
 
-  renderer.render(scene, camera);
+  // No menu, exibe a paisagem; durante a partida, usa a câmera do jogador.
+  renderer.render(scene, gameStarted ? camera : menuCamera);
 
   fpsFrames++;
 
@@ -1998,6 +2010,8 @@ window.addEventListener('resize', () => {
     window.innerWidth / window.innerHeight;
 
   camera.updateProjectionMatrix();
+  menuCamera.aspect = window.innerWidth / window.innerHeight;
+  menuCamera.updateProjectionMatrix();
 
   renderer.setSize(
     window.innerWidth,
