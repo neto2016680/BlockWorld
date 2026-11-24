@@ -151,10 +151,7 @@ canvas { display: block; }
 <body>
 
 <div id="menu">
-  <h1>BLOCKWORLD</h1>
-  <p>Um mundo de blocos espera por você.</p>
   <button id="start">JOGAR</button>
-  <p>Versão 0.7 - Pixel Update</p>
 </div>
 
 <div id="modeMenu">
@@ -1216,16 +1213,15 @@ document.getElementById('start').addEventListener('click', () => {
   modeMenu.style.display = 'flex';
 });
 
-// Criativo continua entrando no jogo normalmente.
-document.getElementById('creativeButton').addEventListener('click', () => {
+// Por enquanto, escolher qualquer modo inicia o mesmo mundo.
+// As regras específicas do sobrevivência serão implementadas depois.
+function startWorld() {
   modeMenu.style.display = 'none';
   controls.lock();
-});
+}
 
-// Sobrevivência ainda não foi implementado: o botão não faz nada.
-document.getElementById('survivalButton').addEventListener('click', () => {
-  // Reservado para a futura implementação do modo sobrevivência.
-});
+document.getElementById('creativeButton').addEventListener('click', startWorld);
+document.getElementById('survivalButton').addEventListener('click', startWorld);
 
 controls.addEventListener('lock', () => {
   menu.style.display = 'none';
