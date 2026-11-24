@@ -109,6 +109,20 @@ canvas { display: block; }
   gap: 4px;
 }
 
+#healthIcons {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: none;
+  gap: 3px;
+  font-size: 27px;
+  line-height: 1;
+  color: #ff3434;
+  text-shadow: 2px 2px 2px #222;
+  white-space: nowrap;
+}
+
 .slot {
   width: 65px;
   height: 65px;
@@ -173,6 +187,7 @@ canvas { display: block; }
 
   <div id="crosshair">+</div>
   <div id="hotbar"></div>
+  <div id="healthIcons" aria-label="Vida: 10 corações">♥ ♥ ♥ ♥ ♥ ♥ ♥ ♥ ♥ ♥</div>
   <div id="fps">FPS: 0</div>
 </div>
 
@@ -781,10 +796,14 @@ function updateMining() {
 // =================================
 
 const hotbar = document.getElementById('hotbar');
+const healthIcons = document.getElementById('healthIcons');
+let gameMode = 'creative';
 
 function updateHotbar() {
 
   hotbar.innerHTML = '';
+
+  if (gameMode === 'survival') return;
 
   blockLabels.forEach((name, index) => {
 
@@ -806,7 +825,7 @@ updateHotbar();
 
 window.addEventListener('wheel', (event) => {
 
-  if (!controls.isLocked) return;
+  if (!controls.isLocked || gameMode === 'survival') return;
 
   event.preventDefault();
 
@@ -1059,7 +1078,7 @@ document.addEventListener('keydown', (event) => {
 
   keys[event.code] = true;
 
-  if (event.code.startsWith('Digit')) {
+  if (gameMode !== 'survival' && event.code.startsWith('Digit')) {
 
     const number = Number(
       event.code.replace('Digit', '')
@@ -1213,15 +1232,18 @@ document.getElementById('start').addEventListener('click', () => {
   modeMenu.style.display = 'flex';
 });
 
-// Por enquanto, escolher qualquer modo inicia o mesmo mundo.
-// As regras específicas do sobrevivência serão implementadas depois.
-function startWorld() {
+// Os dois modos ainda usam o mesmo mundo; a interface já muda por modo.
+function startWorld(mode) {
+  gameMode = mode;
+  updateHotbar();
+  hotbar.style.display = mode === 'survival' ? 'none' : 'flex';
+  healthIcons.style.display = mode === 'survival' ? 'flex' : 'none';
   modeMenu.style.display = 'none';
   controls.lock();
 }
 
-document.getElementById('creativeButton').addEventListener('click', startWorld);
-document.getElementById('survivalButton').addEventListener('click', startWorld);
+document.getElementById('creativeButton').addEventListener('click', () => startWorld('creative'));
+document.getElementById('survivalButton').addEventListener('click', () => startWorld('survival'));
 
 controls.addEventListener('lock', () => {
   menu.style.display = 'none';
