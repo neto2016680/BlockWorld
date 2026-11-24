@@ -836,7 +836,6 @@ woolColors.forEach((wool, index) => {
   );
   materials[type] = new THREE.MeshLambertMaterial({ map: pixelTextures[type] });
   blockIcons[type] = textureToDataURL(pixelTextures[type]);
-  blockTypes.push(type);
 });
 
 let selectedBlock = 0;
@@ -875,6 +874,9 @@ const blockTypes = [
   'flower_red',
   'flower_yellow'
 ];
+
+// Registra as variantes de lã depois que a lista de blocos foi criada.
+woolColors.forEach((wool) => blockTypes.push('wool_' + wool.id));
 
 function blockKey(x, y, z) {
   return `${x},${y},${z}`;
