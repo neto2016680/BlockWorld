@@ -91,6 +91,58 @@ canvas { display: block; }
   background: #777;
 }
 
+#pauseMenu, #optionsMenu {
+  position: fixed;
+  inset: 0;
+  background: #0009;
+  color: white;
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+
+#pauseMenu h1, #optionsMenu h1 {
+  font-size: 42px;
+  text-shadow: 3px 3px #222;
+  margin-bottom: 24px;
+}
+
+.pauseButton {
+  width: 250px;
+  padding: 13px;
+  margin: 7px;
+  font-size: 18px;
+  cursor: pointer;
+  color: white;
+  background: #555;
+  border: 3px solid #222;
+}
+
+.pauseButton.primary {
+  background: #65ae36;
+}
+
+.optionRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  width: 310px;
+  margin: 12px;
+  font-size: 18px;
+}
+
+.optionToggle {
+  min-width: 85px;
+  padding: 9px;
+  cursor: pointer;
+  color: white;
+  background: #65ae36;
+  border: 2px solid #222;
+}
+
 #hud {
   position: fixed;
   inset: 0;
@@ -181,6 +233,26 @@ canvas { display: block; }
   <h1>ESCOLHA SEU MODO</h1>
   <button class="modeButton" id="creativeButton">CRIATIVO</button>
   <button class="modeButton" id="survivalButton">SOBREVIVÊNCIA</button>
+</div>
+
+<div id="pauseMenu">
+  <h1>JOGO PAUSADO</h1>
+  <button class="pauseButton primary" id="resumeButton">CONTINUAR</button>
+  <button class="pauseButton" id="openOptionsButton">OPÇÕES</button>
+  <button class="pauseButton" id="exitGameButton">SAIR DO JOGO</button>
+</div>
+
+<div id="optionsMenu">
+  <h1>OPÇÕES</h1>
+  <div class="optionRow">
+    <span>Tutorial na tela</span>
+    <button class="optionToggle" id="tutorialToggle">LIGADO</button>
+  </div>
+  <div class="optionRow">
+    <span>Contador de FPS</span>
+    <button class="optionToggle" id="fpsToggle">LIGADO</button>
+  </div>
+  <button class="pauseButton" id="backOptionsButton">VOLTAR</button>
 </div>
 
 <div id="hud">
@@ -1278,6 +1350,21 @@ function updatePlayer(delta) {
 const menu = document.getElementById('menu');
 const modeMenu = document.getElementById('modeMenu');
 const hud = document.getElementById('hud');
+const pauseMenu = document.getElementById('pauseMenu');
+const optionsMenu = document.getElementById('optionsMenu');
+const instructions = document.getElementById('instructions');
+let gameStarted = false;
+let showTutorial = true;
+let showFPS = true;
+
+function updateOptionButtons() {
+  document.getElementById('tutorialToggle').textContent = showTutorial ? 'LIGADO' : 'DESLIGADO';
+  document.getElementById('fpsToggle').textContent = showFPS ? 'LIGADO' : 'DESLIGADO';
+  instructions.style.display = showTutorial ? 'block' : 'none';
+  fpsDisplay.style.display = showFPS ? 'block' : 'none';
+}
+
+updateOptionButtons();
 
 // JOGAR abre a seleção de modos.
 document.getElementById('start').addEventListener('click', () => {
@@ -1287,6 +1374,7 @@ document.getElementById('start').addEventListener('click', () => {
 
 // Os dois modos ainda usam o mesmo mundo; a interface já muda por modo.
 function startWorld(mode) {
+  gameStarted = true;
   gameMode = mode;
   isFlying = false;
   lastSpacePress = 0;
@@ -1308,11 +1396,54 @@ controls.addEventListener('lock', () => {
 });
 
 controls.addEventListener('unlock', () => {
-  // Ao apertar ESC, volta para a seleção de modos.
-  menu.style.display = 'none';
-  modeMenu.style.display = 'flex';
   hud.style.display = 'none';
   blockOutline.visible = false;
+  cancelMining();
+
+  if (gameStarted) {
+    pauseMenu.style.display = 'flex';
+    optionsMenu.style.display = 'none';
+  } else {
+    menu.style.display = 'none';
+    modeMenu.style.display = 'flex';
+  }
+});
+
+document.getElementById('resumeButton').addEventListener('click', () => {
+  pauseMenu.style.display = 'none';
+  controls.lock();
+});
+
+document.getElementById('openOptionsButton').addEventListener('click', () => {
+  pauseMenu.style.display = 'none';
+  optionsMenu.style.display = 'flex';
+});
+
+document.getElementById('tutorialToggle').addEventListener('click', () => {
+  showTutorial = !showTutorial;
+  updateOptionButtons();
+});
+
+document.getElementById('fpsToggle').addEventListener('click', () => {
+  showFPS = !showFPS;
+  updateOptionButtons();
+});
+
+document.getElementById('backOptionsButton').addEventListener('click', () => {
+  optionsMenu.style.display = 'none';
+  pauseMenu.style.display = 'flex';
+});
+
+document.getElementById('exitGameButton').addEventListener('click', () => {
+  gameStarted = false;
+  pauseMenu.style.display = 'none';
+  optionsMenu.style.display = 'none';
+  hud.style.display = 'none';
+  modeMenu.style.display = 'none';
+  menu.style.display = 'flex';
+  isFlying = false;
+  velocityY = 0;
+  cancelMining();
 });
 
 // =================================
