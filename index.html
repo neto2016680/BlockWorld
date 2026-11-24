@@ -60,6 +60,35 @@ canvas { display: block; }
   color: white;
 }
 
+#worldChoiceMenu, #savedWorldsMenu {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(#5c9bce, #263d50);
+  color: white;
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 6;
+}
+
+#worldChoiceMenu h1, #savedWorldsMenu h1 {
+  font-size: 42px;
+  text-shadow: 3px 3px #333;
+  text-align: center;
+}
+
+#savedWorldsMessage {
+  max-width: 420px;
+  margin: 8px 20px 22px;
+  padding: 18px;
+  background: #0005;
+  border: 2px solid #ffffff55;
+  text-align: center;
+  line-height: 1.5;
+  font-size: 17px;
+}
+
 #modeMenu {
   position: fixed;
   inset: 0;
@@ -275,10 +304,27 @@ canvas { display: block; }
   <button id="start">JOGAR</button>
 </div>
 
+<div id="worldChoiceMenu">
+  <h1>COMO DESEJA JOGAR?</h1>
+  <button class="modeButton" id="savedWorldsButton">MEUS MUNDOS</button>
+  <button class="modeButton" id="quickGameButton">JOGO RÁPIDO</button>
+  <button class="pauseButton" id="backWorldChoiceButton">VOLTAR</button>
+</div>
+
+<div id="savedWorldsMenu">
+  <h1>MEUS MUNDOS</h1>
+  <div id="savedWorldsMessage">
+    Nenhum mundo salvo por enquanto.<br>
+    O sistema de criação e salvamento será adicionado em uma próxima atualização!
+  </div>
+  <button class="pauseButton" id="backSavedWorldsButton">VOLTAR</button>
+</div>
+
 <div id="modeMenu">
   <h1>ESCOLHA SEU MODO</h1>
   <button class="modeButton" id="creativeButton">CRIATIVO</button>
   <button class="modeButton" id="survivalButton">SOBREVIVÊNCIA</button>
+  <button class="pauseButton" id="backModeMenuButton">VOLTAR</button>
 </div>
 
 <div id="pauseMenu">
@@ -1457,6 +1503,8 @@ function updatePlayer(delta) {
 // =================================
 
 const menu = document.getElementById('menu');
+const worldChoiceMenu = document.getElementById('worldChoiceMenu');
+const savedWorldsMenu = document.getElementById('savedWorldsMenu');
 const modeMenu = document.getElementById('modeMenu');
 const hud = document.getElementById('hud');
 const pauseMenu = document.getElementById('pauseMenu');
@@ -1477,10 +1525,35 @@ function updateOptionButtons() {
 
 updateOptionButtons();
 
-// JOGAR abre a seleção de modos.
+// JOGAR abre a escolha entre mundos salvos e jogo rápido.
 document.getElementById('start').addEventListener('click', () => {
   menu.style.display = 'none';
+  worldChoiceMenu.style.display = 'flex';
+});
+
+document.getElementById('savedWorldsButton').addEventListener('click', () => {
+  worldChoiceMenu.style.display = 'none';
+  savedWorldsMenu.style.display = 'flex';
+});
+
+document.getElementById('quickGameButton').addEventListener('click', () => {
+  worldChoiceMenu.style.display = 'none';
   modeMenu.style.display = 'flex';
+});
+
+document.getElementById('backWorldChoiceButton').addEventListener('click', () => {
+  worldChoiceMenu.style.display = 'none';
+  menu.style.display = 'flex';
+});
+
+document.getElementById('backSavedWorldsButton').addEventListener('click', () => {
+  savedWorldsMenu.style.display = 'none';
+  worldChoiceMenu.style.display = 'flex';
+});
+
+document.getElementById('backModeMenuButton').addEventListener('click', () => {
+  modeMenu.style.display = 'none';
+  worldChoiceMenu.style.display = 'flex';
 });
 
 // Os dois modos ainda usam o mesmo mundo; a interface já muda por modo.
@@ -1551,6 +1624,8 @@ document.getElementById('exitGameButton').addEventListener('click', () => {
   optionsMenu.style.display = 'none';
   hud.style.display = 'none';
   modeMenu.style.display = 'none';
+  worldChoiceMenu.style.display = 'none';
+  savedWorldsMenu.style.display = 'none';
   menu.style.display = 'flex';
   isFlying = false;
   velocityY = 0;
