@@ -928,9 +928,19 @@ function getCollidingBlock(px, eyeY, pz) {
 
 // MOVIMENTAÇÃO HORIZONTAL
 
+// LIMITES DO MUNDO: o terreno vai de -12 até 11 em X e Z.
+const WORLD_MIN = -12.5;
+const WORLD_MAX = 11.5;
+const WORLD_MARGIN = PLAYER_RADIUS + 0.02;
+
 function moveHorizontal(dx, dz) {
 
-  const nextX = camera.position.x + dx;
+  // A margem mantém o jogador dentro da borda dos blocos.
+  const nextX = THREE.MathUtils.clamp(
+    camera.position.x + dx,
+    WORLD_MIN + WORLD_MARGIN,
+    WORLD_MAX - WORLD_MARGIN
+  );
 
   if (
     !getCollidingBlock(
@@ -942,7 +952,11 @@ function moveHorizontal(dx, dz) {
     camera.position.x = nextX;
   }
 
-  const nextZ = camera.position.z + dz;
+  const nextZ = THREE.MathUtils.clamp(
+    camera.position.z + dz,
+    WORLD_MIN + WORLD_MARGIN,
+    WORLD_MAX - WORLD_MARGIN
+  );
 
   if (
     !getCollidingBlock(
