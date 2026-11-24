@@ -391,6 +391,13 @@ const pixelTextures = {
     ['#246b29', '#438f35', '#579d3d', '#2b742d'],
     55,
     110
+  ),
+
+  bedrock: makePixelTexture(
+    '#383838',
+    ['#242424', '#555555', '#303030', '#686868'],
+    66,
+    125
   )
 };
 
@@ -453,6 +460,10 @@ const materials = {
 
   leaves: new THREE.MeshLambertMaterial({
     map: pixelTextures.leaves
+  }),
+
+  bedrock: new THREE.MeshLambertMaterial({
+    map: pixelTextures.bedrock
   })
 };
 
@@ -511,7 +522,8 @@ const blockTypes = [
   'dirt',
   'stone',
   'wood',
-  'leaves'
+  'leaves',
+  'bedrock'
 ];
 
 function blockKey(x, y, z) {
@@ -622,6 +634,7 @@ for (let x = -12; x < 12; x++) {
     addBlock(x, 0, z, 'grass', false);
     addBlock(x, -1, z, 'dirt', false);
     addBlock(x, -2, z, 'stone', false);
+    addBlock(x, -3, z, 'bedrock', false);
   }
 }
 
@@ -737,7 +750,7 @@ let miningActive = false;
 let miningTargetKey = null;
 let miningStartTime = 0;
 let miningStage = 0;
-const miningTimes = { grass: 1000, dirt: 900, stone: 3000, wood: 1800, leaves: 600 };
+const miningTimes = { grass: 1000, dirt: 900, stone: 3000, wood: 1800, leaves: 600, bedrock: 1200 };
 
 function cancelMining() {
   miningActive = false;
@@ -1142,7 +1155,8 @@ document.addEventListener('mousedown', (event) => {
 
   // QUEBRAR: segurar o botão esquerdo.
   if (event.button === 0) {
-    if (block.position.y === 0) return;
+    // Bedrock só pode ser quebrada no modo criativo.
+    if (block.type === 'bedrock' && gameMode !== 'creative') return;
     if (!miningActive) startMining(hit);
   }
 
