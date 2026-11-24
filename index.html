@@ -2297,7 +2297,9 @@ function startWorld(mode, restoreData = null) {
   gameMode = mode;
   if (restoreData) {
     const savedInventory = restoreData.inventory || [];
-    inventorySlots = savedInventory.length === 9
+    const hasSavedInventory = savedInventory.length === 9 &&
+      (mode !== 'creative' || savedInventory.some(Boolean));
+    inventorySlots = hasSavedInventory
       ? savedInventory.map(item => item ? {
           type:item.type, label:item.label, count:item.count === -1 ? Infinity : item.count
         } : null)
@@ -2392,6 +2394,8 @@ document.getElementById('backOptionsButton').addEventListener('click', () => {
 });
 
 document.getElementById('exitGameButton').addEventListener('click', () => {
+  clearTimeout(saveDebounceTimer);
+  saveActiveWorld();
   gameStarted = false;
   pauseMenu.style.display = 'none';
   optionsMenu.style.display = 'none';
