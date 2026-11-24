@@ -192,12 +192,49 @@ canvas { display: block; }
   justify-content: center;
 }
 
-.slot img {
-  width: 46px;
-  height: 46px;
-  image-rendering: pixelated;
-  object-fit: contain;
+.blockIcon {
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 110px;
   pointer-events: none;
+}
+
+.blockCube {
+  position: relative;
+  width: 27px;
+  height: 27px;
+  transform-style: preserve-3d;
+  transform: rotateX(-25deg) rotateY(35deg);
+}
+
+.blockFace {
+  position: absolute;
+  width: 27px;
+  height: 27px;
+  image-rendering: pixelated;
+  background-size: 27px 27px;
+  border: 1px solid #2228;
+}
+
+.blockFace.front { transform: translateZ(13.5px); }
+.blockFace.right { transform: rotateY(90deg) translateZ(13.5px); }
+.blockFace.top { transform: rotateX(90deg) translateZ(13.5px); }
+
+#selectedBlockName {
+  position: absolute;
+  left: 50%;
+  bottom: 96px;
+  transform: translateX(-50%);
+  color: #fff;
+  font-size: 18px;
+  font-weight: bold;
+  text-shadow: 2px 2px 2px #222, -1px -1px 1px #222;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+  white-space: nowrap;
 }
 
 .slot.selected {
@@ -274,6 +311,7 @@ canvas { display: block; }
 
   <div id="crosshair">+</div>
   <div id="hotbar"></div>
+  <div id="selectedBlockName"></div>
   <div id="healthIcons" aria-label="Vida: 10 corações">♥ ♥ ♥ ♥ ♥ ♥ ♥ ♥ ♥ ♥</div>
   <div id="fps">FPS: 0</div>
 </div>
@@ -591,26 +629,39 @@ const blockLabels = [
   'Madeira'
 ];
 
-// Ícones 2D dos blocos para a hotbar.
-function makeBlockIcon(texture) {
+// Texturas usadas nas miniaturas 3D da hotbar.
+function textureToDataURL(texture) {
   const canvas = document.createElement('canvas');
-  canvas.width = 32;
-  canvas.height = 32;
+  canvas.width = 16;
+  canvas.height = 16;
   const ctx = canvas.getContext('2d');
   ctx.imageSmoothingEnabled = false;
-  ctx.drawImage(texture.image, 0, 0, 16, 16, 0, 0, 32, 32);
+  ctx.drawImage(texture.image, 0, 0, 16, 16);
   return canvas.toDataURL('image/png');
 }
 
 const blockIcons = {
-  grass: makeBlockIcon(pixelTextures.grassTop),
-  dirt: makeBlockIcon(pixelTextures.dirt),
-  stone: makeBlockIcon(pixelTextures.stone),
-  wood: makeBlockIcon(pixelTextures.wood),
-  leaves: makeBlockIcon(pixelTextures.leaves)
+  grassTop: textureToDataURL(pixelTextures.grassTop),
+  grassSide: textureToDataURL(grassSideTexture),
+  dirt: textureToDataURL(pixelTextures.dirt),
+  stone: textureToDataURL(pixelTextures.stone),
+  wood: textureToDataURL(pixelTextures.wood),
+  leaves: textureToDataURL(pixelTextures.leaves)
 };
 
 let selectedBlock = 0;
+let selectedNameTimeout = null;
+
+function showSelectedBlockName() {
+  const nameDisplay = document.getElementById('selectedBlockName');
+  if (!nameDisplay) return;
+  nameDisplay.textContent = blockLabels[selectedBlock];
+  nameDisplay.style.opacity = '1';
+  if (selectedNameTimeout) clearTimeout(selectedNameTimeout);
+  selectedNameTimeout = setTimeout(() => {
+    nameDisplay.style.opacity = '0';
+  }, 1200);
+}
 
 // =================================
 // SISTEMA DE BLOCOS
@@ -930,13 +981,33 @@ function updateHotbar() {
       'slot' +
       (selectedBlock === index ? ' selected' : '');
 
-    // No criativo, cada espaço mostra a imagem pixelada do bloco.
+    // Miniatura em perspectiva 3D, usando as texturas reais do bloco.
     // Na sobrevivência, os espaços continuam vazios até existir inventário.
     if (gameMode === 'creative') {
-      const icon = document.createElement('img');
-      icon.src = blockIcons[blockNames[index]];
-      icon.alt = name;
-      icon.title = name;
+      const type = blockNames[index];
+      const icon = document.createElement('div');
+      icon.className = 'blockIcon';
+      icon.setAttribute('aria-label', name);
+
+      const cube = document.createElement('div');
+      cube.className = 'blockCube';
+
+      const front = document.createElement('div');
+      front.className = 'blockFace front';
+      front.style.backgroundImage = `url("${type === 'grass' ? blockIcons.grassSide : blockIcons[type]}")`;
+
+      const right = document.createElement('div');
+      right.className = 'blockFace right';
+      right.style.backgroundImage = `url("${type === 'grass' ? blockIcons.grassSide : blockIcons[type]}")`;
+
+      const top = document.createElement('div');
+      top.className = 'blockFace top';
+      top.style.backgroundImage = `url("${type === 'grass' ? blockIcons.grassTop : blockIcons[type]}")`;
+
+      cube.appendChild(front);
+      cube.appendChild(right);
+      cube.appendChild(top);
+      icon.appendChild(cube);
       slot.appendChild(icon);
     }
 
@@ -963,6 +1034,7 @@ window.addEventListener('wheel', (event) => {
   selectedBlock = (selectedBlock + 9) % 9;
 
   updateHotbar();
+  showSelectedBlockName();
 
 }, { passive: false });
 
@@ -1227,6 +1299,7 @@ document.addEventListener('keydown', (event) => {
       selectedBlock = number - 1;
 
       updateHotbar();
+      showSelectedBlockName();
     }
   }
 
