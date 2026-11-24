@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BlockWorld - Versão 1.9</title>
+<title>BlockWorld - Versão 1.91</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 
 <script type="importmap">
@@ -384,7 +384,7 @@ canvas { display: block; }
 
 <div id="menu">
   <h1>BlockWorld</h1>
-  <div id="updateSubtitle">VERSÃO 1.9</div>
+  <div id="updateSubtitle">VERSÃO 1.91</div>
   <button id="start">JOGAR</button>
 </div>
 
@@ -929,7 +929,8 @@ const woolColors = [
   { id:'red', label:'Vermelha', color:'#b02b2b' },
   { id:'black', label:'Preta', color:'#242126' }
 ];
-// Textura de lã com pequenos fios claros e escuros, no estilo pixelado do Minecraft.
+// Lã com variações suaves da própria cor: aspecto macio e pixelado,
+// sem riscos pretos e brancos que contrastavam demais.
 function makeWoolTexture(baseColor, seed) {
   const canvas = document.createElement('canvas');
   canvas.width = 16;
@@ -938,20 +939,25 @@ function makeWoolTexture(baseColor, seed) {
   ctx.fillStyle = baseColor;
   ctx.fillRect(0, 0, 16, 16);
 
+  const hex = baseColor.replace('#', '');
+  const base = {
+    r: parseInt(hex.slice(0, 2), 16),
+    g: parseInt(hex.slice(2, 4), 16),
+    b: parseInt(hex.slice(4, 6), 16)
+  };
   let randomSeed = seed;
   function random() {
     randomSeed = (randomSeed * 16807) % 2147483647;
     return (randomSeed - 1) / 2147483646;
   }
 
-  // Pequenos traços brancos e pretos deixam a lã com aspecto de fibras.
-  for (let i = 0; i < 62; i++) {
+  for (let i = 0; i < 30; i++) {
     const x = Math.floor(random() * 16);
     const y = Math.floor(random() * 16);
-    const horizontal = random() > 0.5;
-    const length = random() > 0.72 ? 2 : 1;
-    ctx.fillStyle = random() > 0.5 ? '#ffffff' : '#171717';
-    ctx.fillRect(x, y, horizontal ? length : 1, horizontal ? 1 : length);
+    const change = random() > 0.5 ? 17 : -17;
+    const shade = (v) => Math.max(0, Math.min(255, v + change));
+    ctx.fillStyle = 'rgb(' + shade(base.r) + ',' + shade(base.g) + ',' + shade(base.b) + ')';
+    ctx.fillRect(x, y, random() > 0.8 ? 2 : 1, 1);
   }
 
   const texture = new THREE.CanvasTexture(canvas);
@@ -1325,9 +1331,9 @@ function createBlockIcon(type, label) {
   icon.setAttribute('aria-label', label);
   const cube = document.createElement('div');
   cube.className = 'blockCube';
-  const sideTexture = type === 'grass' ? blockIcons.grassSide : type === 'wood' ? './wood-side.jpg' : blockIcons[type];
-  const topTexture = type === 'grass' ? blockIcons.grassTop : blockIcons[type];
-  const bottomTexture = type === 'grass' ? blockIcons.dirt : blockIcons[type];
+  const sideTexture = type === 'grass' ? blockIcons.grassSide : blockIcons[type];
+  const topTexture = type === 'grass' ? blockIcons.grassTop : type === 'wood' ? blockIcons.woodTop : blockIcons[type];
+  const bottomTexture = type === 'grass' ? blockIcons.dirt : type === 'wood' ? blockIcons.woodTop : blockIcons[type];
   ['front', 'back', 'right', 'left'].forEach((faceName) => {
     const face = document.createElement('div');
     face.className = 'blockFace ' + faceName;
