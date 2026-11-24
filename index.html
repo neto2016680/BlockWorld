@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BlockWorld - Versão 1.6</title>
+<title>BlockWorld - Versão 1.7</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 
 <script type="importmap">
@@ -384,7 +384,7 @@ canvas { display: block; }
 
 <div id="menu">
   <h1>BlockWorld</h1>
-  <div id="updateSubtitle">VERSÃO 1.6</div>
+  <div id="updateSubtitle">VERSÃO 1.7</div>
   <button id="start">JOGAR</button>
 </div>
 
@@ -759,7 +759,25 @@ const materials = {
 
 
 // Textura enviada para as laterais da madeira.
-const woodSideTexture = new THREE.TextureLoader().load('./wood-side.jpg');
+const woodSideTexture = new THREE.TextureLoader().load('./wood-side.jpg', (loadedTexture) => {
+  // Clareia a textura lateral sem apagar os veios e os quadradinhos originais.
+  const canvas = document.createElement('canvas');
+  canvas.width = 16;
+  canvas.height = 16;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(loadedTexture.image, 0, 0, 16, 16);
+
+  const pixels = ctx.getImageData(0, 0, 16, 16);
+  for (let i = 0; i < pixels.data.length; i += 4) {
+    pixels.data[i] = Math.min(255, pixels.data[i] * 1.35 + 18);
+    pixels.data[i + 1] = Math.min(255, pixels.data[i + 1] * 1.35 + 18);
+    pixels.data[i + 2] = Math.min(255, pixels.data[i + 2] * 1.35 + 18);
+  }
+  ctx.putImageData(pixels, 0, 0);
+
+  woodSideTexture.image = canvas;
+  woodSideTexture.needsUpdate = true;
+});
 woodSideTexture.magFilter = THREE.NearestFilter;
 woodSideTexture.minFilter = THREE.NearestFilter;
 woodSideTexture.generateMipmaps = false;
