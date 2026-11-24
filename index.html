@@ -851,7 +851,7 @@ updateHotbar();
 
 window.addEventListener('wheel', (event) => {
 
-  if (!controls.isLocked || gameMode === 'survival') return;
+  if (!controls.isLocked) return;
 
   event.preventDefault();
 
@@ -1117,7 +1117,7 @@ document.addEventListener('keydown', (event) => {
     lastSpacePress = now;
   }
 
-  if (gameMode !== 'survival' && event.code.startsWith('Digit')) {
+  if (event.code.startsWith('Digit')) {
 
     const number = Number(
       event.code.replace('Digit', '')
