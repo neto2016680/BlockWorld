@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" shape-rendering="crispEdges">
-<rect width="64" height="64" rx="8" fill="#263d24"/>
+<rect width="64" height="64" rx="8" fill="#ffffff"/>
 <!-- face esquerda -->
 <path d="M6 22 32 35v26L6 48Z" fill="#8a542d"/>
 <!-- face direita -->
