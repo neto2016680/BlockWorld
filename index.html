@@ -417,7 +417,7 @@ canvas { display: block; }
 
 <div id="menu">
   <h1>BlockWorld</h1>
-  <div id="updateSubtitle">VERSÃO 2.12</div>
+  <div id="updateSubtitle">VERSÃO 2.22</div>
   <button id="start">JOGAR</button>
 </div>
 
@@ -1596,6 +1596,40 @@ function updateBlockOutline() {
 const PLAYER_RADIUS = 0.30;
 const PLAYER_HEIGHT = 1.8;
 const EYE_HEIGHT = 1.62;
+const CROUCH_OFFSET = 0.30;
+let isCrouching = false;
+let health = 10;
+let healthRegenTimer = 0;
+let fallStartY = null;
+
+function getEyeHeight() {
+  return EYE_HEIGHT - (isCrouching ? CROUCH_OFFSET : 0);
+}
+
+function updateHealthDisplay() {
+  healthIcons.textContent = "♥ ".repeat(health).trim() + (health < 10 ? " ♡".repeat(10 - health) : "");
+  healthIcons.setAttribute("aria-label", "Vida: " + health + " de 10 corações");
+}
+
+function damageFromFall(distance) {
+  if (gameMode !== "survival" || distance <= 3) return;
+  const damage = Math.ceil((distance - 3) / 2);
+  health = Math.max(0, health - damage);
+  updateHealthDisplay();
+}
+
+function updateHealth(delta) {
+  if (gameMode !== "survival" || !gameStarted || !controls.isLocked || health >= 10) {
+    healthRegenTimer = 0;
+    return;
+  }
+  healthRegenTimer += delta;
+  while (healthRegenTimer >= 2 && health < 10) {
+    health++;
+    healthRegenTimer -= 2;
+    updateHealthDisplay();
+  }
+}
 
 const GRAVITY = 20;
 const JUMP_FORCE = 7;
@@ -1611,7 +1645,7 @@ function getCollidingBlock(px, eyeY, pz) {
   const minX = px - PLAYER_RADIUS;
   const maxX = px + PLAYER_RADIUS;
 
-  const feet = eyeY - EYE_HEIGHT;
+  const feet = eyeY - getEyeHeight();
   const head = feet + PLAYER_HEIGHT;
 
   const minY = feet;
@@ -1676,7 +1710,7 @@ const WORLD_MAX = 11.5;
 const WORLD_MARGIN = PLAYER_RADIUS + 0.02;
 
 function hasGroundSupport(px, pz) {
-  const feet = camera.position.y - EYE_HEIGHT;
+  const feet = camera.position.y - getEyeHeight();
   const supportY = Math.round(feet - 0.5);
   const minX = px - PLAYER_RADIUS + 0.03;
   const maxX = px + PLAYER_RADIUS - 0.03;
@@ -1729,6 +1763,7 @@ function moveHorizontal(dx, dz) {
 
 function moveVertical(delta) {
 
+  const wasGrounded = canJump;
   velocityY -= GRAVITY * delta;
 
   const nextY =
@@ -1751,20 +1786,25 @@ function moveVertical(delta) {
     if (velocityY < 0) {
 
       camera.position.y =
-        blockTop + EYE_HEIGHT;
+        blockTop + getEyeHeight();
 
       canJump = true;
+      if (!wasGrounded && fallStartY !== null) {
+        damageFromFall(Math.max(0, fallStartY - camera.position.y));
+        fallStartY = null;
+      }
 
     } else {
 
       camera.position.y =
-        blockBottom + EYE_HEIGHT - PLAYER_HEIGHT;
+        blockBottom + getEyeHeight() - PLAYER_HEIGHT;
     }
 
     velocityY = 0;
 
   } else {
 
+    if (wasGrounded) fallStartY = camera.position.y;
     camera.position.y = nextY;
     canJump = false;
   }
@@ -1779,6 +1819,11 @@ const keys = {};
 document.addEventListener('keydown', (event) => {
 
   keys[event.code] = true;
+
+  if ((event.code === 'ShiftLeft' || event.code === 'ShiftRight') && gameMode === 'survival' && controls.isLocked && canJump && !isCrouching) {
+    isCrouching = true;
+    camera.position.y -= CROUCH_OFFSET;
+  }
 
   if (event.code === 'KeyB' && !event.repeat) {
     openInventory();
@@ -1825,6 +1870,10 @@ document.addEventListener('keydown', (event) => {
 
 document.addEventListener('keyup', (event) => {
   keys[event.code] = false;
+  if ((event.code === 'ShiftLeft' || event.code === 'ShiftRight') && isCrouching) {
+    isCrouching = false;
+    camera.position.y += CROUCH_OFFSET;
+  }
 });
 
 // =================================
@@ -1836,7 +1885,7 @@ function playerOverlapsBlock(x, y, z) {
   const px = camera.position.x;
   const pz = camera.position.z;
 
-  const feet = camera.position.y - EYE_HEIGHT;
+  const feet = camera.position.y - getEyeHeight();
   const head = feet + PLAYER_HEIGHT;
 
   return (
@@ -2036,6 +2085,11 @@ function startWorld(mode) {
     : Array(9).fill(null);
   selectedBlock = 0;
   isFlying = false;
+  isCrouching = false;
+  health = 10;
+  healthRegenTimer = 0;
+  fallStartY = null;
+  updateHealthDisplay();
   lastSpacePress = 0;
   velocityY = 0;
   updateHotbar();
@@ -2140,6 +2194,7 @@ function animate() {
   );
 
   updatePlayer(delta);
+  updateHealth(delta);
   updateBlockOutline();
   updateMining();
 
