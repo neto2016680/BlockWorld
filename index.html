@@ -826,13 +826,44 @@ const woolColors = [
   { id:'red', label:'Vermelha', color:'#b02b2b' },
   { id:'black', label:'Preta', color:'#242126' }
 ];
+// Textura de lã com pequenos fios claros e escuros, no estilo pixelado do Minecraft.
+function makeWoolTexture(baseColor, seed) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 16;
+  canvas.height = 16;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = baseColor;
+  ctx.fillRect(0, 0, 16, 16);
+
+  let randomSeed = seed;
+  function random() {
+    randomSeed = (randomSeed * 16807) % 2147483647;
+    return (randomSeed - 1) / 2147483646;
+  }
+
+  // Pequenos traços brancos e pretos deixam a lã com aspecto de fibras.
+  for (let i = 0; i < 62; i++) {
+    const x = Math.floor(random() * 16);
+    const y = Math.floor(random() * 16);
+    const horizontal = random() > 0.5;
+    const length = random() > 0.72 ? 2 : 1;
+    ctx.fillStyle = random() > 0.5 ? '#ffffff' : '#171717';
+    ctx.fillRect(x, y, horizontal ? length : 1, horizontal ? 1 : length);
+  }
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.magFilter = THREE.NearestFilter;
+  texture.minFilter = THREE.NearestFilter;
+  texture.generateMipmaps = false;
+  texture.colorSpace = THREE.SRGBColorSpace;
+  return texture;
+}
+
 woolColors.forEach((wool, index) => {
   const type = 'wool_' + wool.id;
-  pixelTextures[type] = makePixelTexture(
+  pixelTextures[type] = makeWoolTexture(
     wool.color,
-    ['#ffffff', wool.color, wool.color, '#000000'],
-    200 + index * 17,
-    48
+    200 + index * 17
   );
   materials[type] = new THREE.MeshLambertMaterial({ map: pixelTextures[type] });
   blockIcons[type] = textureToDataURL(pixelTextures[type]);
