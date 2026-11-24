@@ -40,6 +40,7 @@ canvas { display: block; }
 #menu h1 {
   font-size: 54px;
   text-shadow: 4px 4px #333;
+  margin: 0 0 28px;
 }
 
 #menu button {
@@ -111,9 +112,8 @@ canvas { display: block; }
 
 #healthIcons {
   position: absolute;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%);
+  bottom: 94px;
+  left: calc(50% - 315px);
   display: none;
   gap: 3px;
   font-size: 27px;
@@ -165,6 +165,7 @@ canvas { display: block; }
 <body>
 
 <div id="menu">
+  <h1>BlockWorld</h1>
   <button id="start">JOGAR</button>
 </div>
 
@@ -803,8 +804,6 @@ function updateHotbar() {
 
   hotbar.innerHTML = '';
 
-  if (gameMode === 'survival') return;
-
   blockLabels.forEach((name, index) => {
 
     const slot = document.createElement('div');
@@ -813,7 +812,12 @@ function updateHotbar() {
       'slot' +
       (selectedBlock === index ? ' selected' : '');
 
-    slot.textContent = `${index + 1}: ${name}`;
+    // No sobrevivência, os espaços aparecem vazios.
+    if (gameMode === 'creative') {
+      slot.textContent = `${index + 1}: ${name}`;
+    } else {
+      slot.textContent = '';
+    }
 
     hotbar.appendChild(slot);
   });
@@ -1236,7 +1240,7 @@ document.getElementById('start').addEventListener('click', () => {
 function startWorld(mode) {
   gameMode = mode;
   updateHotbar();
-  hotbar.style.display = mode === 'survival' ? 'none' : 'flex';
+  hotbar.style.display = 'flex';
   healthIcons.style.display = mode === 'survival' ? 'flex' : 'none';
   modeMenu.style.display = 'none';
   controls.lock();
