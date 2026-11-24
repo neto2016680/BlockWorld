@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BlockWorld - Versão 2.02</title>
+<title>BlockWorld - Versão 2.32</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 
 <script type="importmap">
@@ -113,15 +113,20 @@ canvas { display: block; }
 }
 
 #savedWorldsMessage {
-  max-width: 420px;
-  margin: 8px 20px 22px;
-  padding: 18px;
-  background: #0005;
-  border: 2px solid #ffffff55;
-  text-align: center;
-  line-height: 1.5;
-  font-size: 17px;
+  max-width: 520px; margin: 8px 20px 16px; padding: 12px;
+  background: #0005; border: 2px solid #ffffff55; text-align: center;
+  line-height: 1.4; font-size: 15px;
 }
+#newWorldForm { display:flex; gap:8px; width:min(520px,90vw); margin:0 16px 14px; }
+#newWorldName { flex:1; min-width:0; padding:12px; font-size:17px; border:3px solid #333; }
+#newWorldButton { padding:12px 16px; color:white; background:#65ae36; border:3px solid #263d20; font-size:16px; font-weight:bold; cursor:pointer; }
+#savedWorldList { width:min(560px,92vw); max-height:42vh; overflow-y:auto; margin-bottom:12px; }
+.savedWorldCard { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; padding:12px; margin:7px 0; background:#172b38cc; border:2px solid #ffffff66; }
+.savedWorldName { font-size:18px; font-weight:bold; overflow-wrap:anywhere; }
+.savedWorldActions { display:flex; gap:6px; flex-wrap:wrap; }
+.savedWorldActions button { padding:8px 10px; border:2px solid #222; color:white; background:#65ae36; font-weight:bold; cursor:pointer; }
+.savedWorldActions .deleteWorldButton { background:#9b3939; }
+#savedWorldsStatus { min-height:20px; margin:0 12px 8px; font-size:14px; color:#fff; text-align:center; }
 
 #modeMenu {
   position: fixed;
@@ -417,7 +422,7 @@ canvas { display: block; }
 
 <div id="menu">
   <h1>BlockWorld</h1>
-  <div id="updateSubtitle">VERSÃO 2.22</div>
+  <div id="updateSubtitle">VERSÃO 2.32</div>
   <button id="start">JOGAR</button>
 </div>
 
@@ -439,9 +444,14 @@ canvas { display: block; }
 <div id="savedWorldsMenu">
   <h1>MEUS MUNDOS</h1>
   <div id="savedWorldsMessage">
-    Nenhum mundo salvo por enquanto.<br>
-    O sistema de criação e salvamento será adicionado em uma próxima atualização!
+    Crie seu próprio mundo! Cada novo mundo terá um terreno aleatório e ficará salvo neste navegador.
   </div>
+  <div id="newWorldForm">
+    <input id="newWorldName" type="text" maxlength="24" placeholder="Nome do mundo..." aria-label="Nome do mundo">
+    <button id="newWorldButton">CRIAR</button>
+  </div>
+  <div id="savedWorldList"></div>
+  <div id="savedWorldsStatus"></div>
   <button class="pauseButton" id="backSavedWorldsButton">VOLTAR</button>
 </div>
 
@@ -1076,6 +1086,7 @@ function addBlock(x, y, z, type, rebuild = true) {
 
   if (rebuild) {
     rebuildInstances();
+    scheduleWorldSave();
   }
 }
 
@@ -1088,6 +1099,7 @@ function removeBlock(block) {
   blocks.delete(key);
 
   rebuildInstances();
+  scheduleWorldSave();
 }
 
 // =================================
@@ -1207,6 +1219,52 @@ createTree(7, 6);
 
 // Criar os grupos apenas uma vez no início.
 rebuildInstances();
+
+// Geração procedural leve: cada mundo recebe uma semente própria.
+function randomWorldHeight(x, z, seed) {
+  const a = Math.sin((x + seed * 0.00013) * 0.42);
+  const b = Math.cos((z - seed * 0.00017) * 0.37);
+  const c = Math.sin((x + z + seed * 0.00007) * 0.23);
+  const d = Math.cos((x - z - seed * 0.00011) * 0.19);
+  return THREE.MathUtils.clamp(Math.round(a * 1.25 + b * 1.05 + c * 0.8 + d * 0.45), -2, 3);
+}
+
+function generateRandomTerrain(seed) {
+  blocks.clear();
+  const treeSpots = [];
+  for (let x = -12; x < 12; x++) {
+    for (let z = -12; z < 12; z++) {
+      const height = randomWorldHeight(x, z, seed);
+      addBlock(x, -5, z, 'bedrock', false);
+      for (let y = -4; y < height - 2; y++) addBlock(x, y, z, 'stone', false);
+      for (let y = Math.max(-4, height - 2); y < height; y++) addBlock(x, y, z, 'dirt', false);
+      addBlock(x, height, z, 'grass', false);
+      const noise = Math.abs(Math.sin((x * 127.1 + z * 311.7 + seed * 0.013) * 0.017));
+      if (noise > 0.91 && Math.abs(x) > 2 && Math.abs(z) > 2) treeSpots.push({ x, z, height });
+    }
+  }
+  for (const spot of treeSpots) {
+    const nearby = treeSpots.some(other =>
+      other !== spot && Math.abs(other.x - spot.x) < 3 && Math.abs(other.z - spot.z) < 3
+    );
+    if (!nearby) {
+      for (let y = 1; y <= 3; y++) addBlock(spot.x, spot.height + y, spot.z, 'wood', false);
+      for (let dx = -1; dx <= 1; dx++) {
+        for (let dz = -1; dz <= 1; dz++) addBlock(spot.x + dx, spot.height + 3, spot.z + dz, 'leaves', false);
+      }
+      addBlock(spot.x, spot.height + 4, spot.z, 'leaves', false);
+    }
+  }
+  rebuildInstances();
+}
+
+function getSurfaceHeight(x, z) {
+  for (let y = 6; y >= -3; y--) {
+    const block = blocks.get(blockKey(x, y, z));
+    if (block && block.type === 'grass') return y;
+  }
+  return 0;
+}
 
 // =================================
 // CONTORNO BRANCO
@@ -2009,6 +2067,155 @@ function updatePlayer(delta) {
 }
 
 // =================================
+// SALVAMENTO DOS MUNDOS (IndexedDB)
+// =================================
+
+let worldDatabase = null;
+let activeSavedWorldId = null;
+let saveDebounceTimer = null;
+let lastAutosave = 0;
+let activeWorldName = '';
+let activeWorldSeed = 0;
+
+function openWorldDatabase() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open('BlockWorldSaveData', 1);
+    request.onupgradeneeded = () => {
+      const db = request.result;
+      if (!db.objectStoreNames.contains('worlds')) db.createObjectStore('worlds', { keyPath: 'id' });
+    };
+    request.onsuccess = () => { worldDatabase = request.result; resolve(worldDatabase); };
+    request.onerror = () => reject(request.error);
+  });
+}
+
+function worldStoreRequest(mode, action, value) {
+  return new Promise((resolve, reject) => {
+    if (!worldDatabase) { reject(new Error('Banco de mundos indisponível.')); return; }
+    const transaction = worldDatabase.transaction('worlds', mode);
+    const store = transaction.objectStore('worlds');
+    const request = action === 'all' ? store.getAll()
+      : action === 'get' ? store.get(value)
+      : action === 'delete' ? store.delete(value)
+      : store.put(value);
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+function serializeWorld() {
+  return {
+    id: activeSavedWorldId, name: activeWorldName, seed: activeWorldSeed,
+    blocks: Array.from(blocks.values(), block => [block.position.x, block.position.y, block.position.z, block.type]),
+    mode: gameMode,
+    player: { x: camera.position.x, y: camera.position.y, z: camera.position.z },
+    inventory: inventorySlots.map(item => item ? {
+      type: item.type, label: item.label, count: Number.isFinite(item.count) ? item.count : -1
+    } : null),
+    selectedBlock, health, updatedAt: Date.now()
+  };
+}
+
+async function saveActiveWorld() {
+  if (!activeSavedWorldId || !worldDatabase) return;
+  try { await worldStoreRequest('readwrite', 'put', serializeWorld()); }
+  catch (error) { console.warn('Não foi possível salvar o mundo:', error); }
+}
+
+function scheduleWorldSave() {
+  if (!activeSavedWorldId || !worldDatabase) return;
+  clearTimeout(saveDebounceTimer);
+  saveDebounceTimer = setTimeout(saveActiveWorld, 450);
+}
+
+async function refreshSavedWorldList() {
+  const list = document.getElementById('savedWorldList');
+  const status = document.getElementById('savedWorldsStatus');
+  list.innerHTML = '';
+  try {
+    const worlds = await worldStoreRequest('readonly', 'all');
+    if (!worlds.length) { list.textContent = 'Nenhum mundo criado ainda.'; return; }
+    worlds.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+    for (const world of worlds) {
+      const card = document.createElement('div');
+      card.className = 'savedWorldCard';
+      const name = document.createElement('div');
+      name.className = 'savedWorldName';
+      name.textContent = world.name || 'Mundo sem nome';
+      const actions = document.createElement('div');
+      actions.className = 'savedWorldActions';
+      const creative = document.createElement('button');
+      creative.textContent = 'CRIATIVO';
+      creative.addEventListener('click', () => loadSavedWorld(world.id, 'creative'));
+      const survival = document.createElement('button');
+      survival.textContent = 'SOBREVIVÊNCIA';
+      survival.addEventListener('click', () => loadSavedWorld(world.id, 'survival'));
+      const remove = document.createElement('button');
+      remove.className = 'deleteWorldButton';
+      remove.textContent = 'EXCLUIR';
+      remove.addEventListener('click', async () => {
+        if (!confirm('Excluir o mundo "' + (world.name || 'sem nome') + '"? Essa ação não pode ser desfeita.')) return;
+        await worldStoreRequest('readwrite', 'delete', world.id);
+        if (activeSavedWorldId === world.id) activeSavedWorldId = null;
+        status.textContent = 'Mundo excluído.';
+        refreshSavedWorldList();
+      });
+      actions.append(creative, survival, remove);
+      card.append(name, actions);
+      list.appendChild(card);
+    }
+  } catch (error) {
+    status.textContent = 'Não foi possível acessar os mundos salvos neste navegador.';
+  }
+}
+
+async function createSavedWorld() {
+  const input = document.getElementById('newWorldName');
+  const status = document.getElementById('savedWorldsStatus');
+  const name = input.value.trim();
+  if (!name) { status.textContent = 'Digite um nome para o mundo.'; input.focus(); return; }
+  if (!worldDatabase) { status.textContent = 'O salvamento ainda está carregando.'; return; }
+  const id = 'world-' + Date.now() + '-' + Math.floor(Math.random() * 100000);
+  const seed = Math.floor(Math.random() * 2147483000) + 1;
+  generateRandomTerrain(seed);
+  activeSavedWorldId = id;
+  activeWorldName = name;
+  activeWorldSeed = seed;
+  camera.position.set(0, getSurfaceHeight(0, 8) + 2.12, 8);
+  try {
+    await worldStoreRequest('readwrite', 'put', serializeWorld());
+    input.value = '';
+    status.textContent = 'Mundo "' + name + '" criado! Escolha um modo para jogar.';
+    await refreshSavedWorldList();
+  } catch (error) {
+    activeSavedWorldId = null;
+    status.textContent = 'Erro ao criar o mundo. Verifique o armazenamento do navegador.';
+  }
+}
+
+async function loadSavedWorld(id, mode) {
+  const status = document.getElementById('savedWorldsStatus');
+  status.textContent = 'Carregando mundo...';
+  try {
+    const world = await worldStoreRequest('readonly', 'get', id);
+    if (!world) { status.textContent = 'Esse mundo não foi encontrado.'; return; }
+    blocks.clear();
+    for (const [x, y, z, type] of world.blocks || []) {
+      blocks.set(blockKey(x, y, z), { position: new THREE.Vector3(x, y, z), type });
+    }
+    rebuildInstances();
+    activeSavedWorldId = world.id;
+    activeWorldName = world.name || 'Mundo sem nome';
+    activeWorldSeed = world.seed || 0;
+    savedWorldsMenu.style.display = 'none';
+    startWorld(mode, world);
+  } catch (error) {
+    status.textContent = 'Não foi possível carregar esse mundo.';
+    console.error(error);
+  }
+}
+
+// =================================
 // MENU
 // =================================
 
@@ -2051,12 +2258,20 @@ document.getElementById('start').addEventListener('click', () => {
   worldChoiceMenu.style.display = 'flex';
 });
 
-document.getElementById('savedWorldsButton').addEventListener('click', () => {
+document.getElementById('savedWorldsButton').addEventListener('click', async () => {
   worldChoiceMenu.style.display = 'none';
   savedWorldsMenu.style.display = 'flex';
+  document.getElementById('savedWorldsStatus').textContent = '';
+  await refreshSavedWorldList();
+});
+document.getElementById('newWorldButton').addEventListener('click', createSavedWorld);
+document.getElementById('newWorldName').addEventListener('keydown', event => {
+  if (event.key === 'Enter') createSavedWorld();
 });
 
 document.getElementById('quickGameButton').addEventListener('click', () => {
+  activeSavedWorldId = null;
+  activeWorldName = '';
   worldChoiceMenu.style.display = 'none';
   modeMenu.style.display = 'flex';
 });
@@ -2076,26 +2291,44 @@ document.getElementById('backModeMenuButton').addEventListener('click', () => {
   worldChoiceMenu.style.display = 'flex';
 });
 
-// Os dois modos ainda usam o mesmo mundo; a interface já muda por modo.
-function startWorld(mode) {
+// Inicia um jogo rápido ou restaura o estado de um mundo salvo.
+function startWorld(mode, restoreData = null) {
   gameStarted = true;
   gameMode = mode;
-  inventorySlots = mode === 'creative'
-    ? blockNames.map((type, index) => ({ type, label:blockLabels[index], count:Infinity }))
-    : Array(9).fill(null);
-  selectedBlock = 0;
+  if (restoreData) {
+    const savedInventory = restoreData.inventory || [];
+    inventorySlots = savedInventory.length === 9
+      ? savedInventory.map(item => item ? {
+          type:item.type, label:item.label, count:item.count === -1 ? Infinity : item.count
+        } : null)
+      : (mode === 'creative'
+          ? blockNames.map((type, index) => ({ type, label:blockLabels[index], count:Infinity }))
+          : Array(9).fill(null));
+    selectedBlock = Math.max(0, Math.min(8, restoreData.selectedBlock || 0));
+    health = Math.max(0, Math.min(10, restoreData.health ?? 10));
+    if (restoreData.player) camera.position.set(restoreData.player.x, restoreData.player.y, restoreData.player.z);
+    else camera.position.set(0, getSurfaceHeight(0, 8) + 2.12, 8);
+  } else {
+    inventorySlots = mode === 'creative'
+      ? blockNames.map((type, index) => ({ type, label:blockLabels[index], count:Infinity }))
+      : Array(9).fill(null);
+    selectedBlock = 0;
+    health = 10;
+    camera.position.set(0, 2.12, 8);
+  }
   isFlying = false;
   isCrouching = false;
-  health = 10;
   healthRegenTimer = 0;
   fallStartY = null;
   updateHealthDisplay();
   lastSpacePress = 0;
   velocityY = 0;
+  canJump = false;
   updateHotbar();
   hotbar.style.display = 'flex';
   healthIcons.style.display = mode === 'survival' ? 'flex' : 'none';
   modeMenu.style.display = 'none';
+  scheduleWorldSave();
   controls.lock();
 }
 
@@ -2195,6 +2428,10 @@ function animate() {
 
   updatePlayer(delta);
   updateHealth(delta);
+  if (gameStarted && activeSavedWorldId && performance.now() - lastAutosave > 1800) {
+    lastAutosave = performance.now();
+    saveActiveWorld();
+  }
   updateBlockOutline();
   updateMining();
 
@@ -2220,6 +2457,13 @@ function animate() {
 }
 
 animate();
+
+// Inicializa o banco local: os mundos ficam salvos neste navegador.
+openWorldDatabase().then(() => refreshSavedWorldList()).catch(error => {
+  console.warn('IndexedDB indisponível:', error);
+  document.getElementById('savedWorldsStatus').textContent =
+    'O navegador não permitiu ativar o salvamento de mundos.';
+});
 
 // =================================
 // REDIMENSIONAMENTO
