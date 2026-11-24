@@ -1181,9 +1181,7 @@ function updateHotbar() {
 
     const slot = document.createElement('div');
     slot.className = 'slot' + (selectedBlock === index ? ' selected' : '');
-    const item = gameMode === 'creative'
-      ? { type: blockNames[index], label: blockLabels[index], count: Infinity }
-      : inventorySlots[index];
+    const item = inventorySlots[index];
     if (item) {
       slot.appendChild(createBlockIcon(item.type, item.label));
       if (gameMode === 'survival') {
@@ -1239,7 +1237,9 @@ document.getElementById('inventoryAdd').addEventListener('click', () => {
   let slotIndex = inventorySlots.findIndex(slot => slot && slot.type === item.type);
   if (slotIndex < 0) slotIndex = inventorySlots.findIndex(slot => slot === null || slot.count <= 0);
   if (slotIndex < 0) slotIndex = selectedBlock;
-  if (inventorySlots[slotIndex] && inventorySlots[slotIndex].type === item.type) {
+  if (gameMode === 'creative') {
+    inventorySlots[slotIndex] = { type:item.type, label:item.label, count:Infinity };
+  } else if (inventorySlots[slotIndex] && inventorySlots[slotIndex].type === item.type) {
     inventorySlots[slotIndex].count = Math.min(64, inventorySlots[slotIndex].count + 16);
   } else {
     inventorySlots[slotIndex] = { type:item.type, label:item.label, count:64 };
@@ -1598,9 +1598,7 @@ document.addEventListener('mousedown', (event) => {
   // CONSTRUIR: no modo sobrevivência ainda não há inventário,
   // então o jogador não pode colocar blocos.
   if (event.button === 2) {
-    const selectedItem = gameMode === 'creative'
-      ? { type:blockNames[selectedBlock] }
-      : inventorySlots[selectedBlock];
+    const selectedItem = inventorySlots[selectedBlock];
     if (!selectedItem || (gameMode === 'survival' && selectedItem.count <= 0)) return;
 
     const normal = hit.face.normal.clone();
@@ -1756,7 +1754,9 @@ document.getElementById('backModeMenuButton').addEventListener('click', () => {
 function startWorld(mode) {
   gameStarted = true;
   gameMode = mode;
-  inventorySlots = Array(9).fill(null);
+  inventorySlots = mode === 'creative'
+    ? blockNames.map((type, index) => ({ type, label:blockLabels[index], count:Infinity }))
+    : Array(9).fill(null);
   selectedBlock = 0;
   isFlying = false;
   lastSpacePress = 0;
