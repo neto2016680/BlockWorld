@@ -417,7 +417,7 @@ canvas { display: block; }
 
 <div id="menu">
   <h1>BlockWorld</h1>
-  <div id="updateSubtitle">VERSÃO 2.02</div>
+  <div id="updateSubtitle">VERSÃO 2.12</div>
   <button id="start">JOGAR</button>
 </div>
 
@@ -1675,9 +1675,29 @@ const WORLD_MIN = -12.5;
 const WORLD_MAX = 11.5;
 const WORLD_MARGIN = PLAYER_RADIUS + 0.02;
 
-function moveHorizontal(dx, dz) {
+function hasGroundSupport(px, pz) {
+  const feet = camera.position.y - EYE_HEIGHT;
+  const supportY = Math.round(feet - 0.5);
+  const minX = px - PLAYER_RADIUS + 0.03;
+  const maxX = px + PLAYER_RADIUS - 0.03;
+  const minZ = pz - PLAYER_RADIUS + 0.03;
+  const maxZ = pz + PLAYER_RADIUS - 0.03;
 
-  // A margem mantém o jogador dentro da borda dos blocos.
+  for (let x = Math.floor(minX - 0.5); x <= Math.ceil(maxX + 0.5); x++) {
+    for (let z = Math.floor(minZ - 0.5); z <= Math.ceil(maxZ + 0.5); z++) {
+      const block = blocks.get(blockKey(x, supportY, z));
+      if (!block) continue;
+      const top = block.position.y + 0.5;
+      if (Math.abs(top - feet) <= 0.12 &&
+          maxX > x - 0.5 && minX < x + 0.5 &&
+          maxZ > z - 0.5 && minZ < z + 0.5) return true;
+    }
+  }
+  return false;
+}
+
+function moveHorizontal(dx, dz) {
+  const sneaking = keys['ShiftLeft'] || keys['ShiftRight'];
   const nextX = THREE.MathUtils.clamp(
     camera.position.x + dx,
     WORLD_MIN + WORLD_MARGIN,
@@ -1685,11 +1705,8 @@ function moveHorizontal(dx, dz) {
   );
 
   if (
-    !getCollidingBlock(
-      nextX,
-      camera.position.y,
-      camera.position.z
-    )
+    !getCollidingBlock(nextX, camera.position.y, camera.position.z) &&
+    (!sneaking || !canJump || isFlying || hasGroundSupport(nextX, camera.position.z))
   ) {
     camera.position.x = nextX;
   }
@@ -1701,11 +1718,8 @@ function moveHorizontal(dx, dz) {
   );
 
   if (
-    !getCollidingBlock(
-      camera.position.x,
-      camera.position.y,
-      nextZ
-    )
+    !getCollidingBlock(camera.position.x, camera.position.y, nextZ) &&
+    (!sneaking || !canJump || isFlying || hasGroundSupport(camera.position.x, nextZ))
   ) {
     camera.position.z = nextZ;
   }
@@ -1801,9 +1815,8 @@ document.addEventListener('keydown', (event) => {
     event.code === 'Space' &&
     canJump &&
     controls.isLocked &&
-    gameMode !== 'creative'
+    !(gameMode === 'creative' && isFlying)
   ) {
-
     velocityY = JUMP_FORCE;
     canJump = false;
   }
