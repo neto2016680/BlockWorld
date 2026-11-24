@@ -1353,6 +1353,7 @@ const hud = document.getElementById('hud');
 const pauseMenu = document.getElementById('pauseMenu');
 const optionsMenu = document.getElementById('optionsMenu');
 const instructions = document.getElementById('instructions');
+const fpsDisplay = document.getElementById('fps');
 
 let gameStarted = false;
 let showTutorial = true;
@@ -1452,8 +1453,6 @@ document.getElementById('exitGameButton').addEventListener('click', () => {
 // =================================
 
 const clock = new THREE.Clock();
-
-const fpsDisplay = document.getElementById('fps');
 
 let fpsFrames = 0;
 let fpsLastUpdate = performance.now();
