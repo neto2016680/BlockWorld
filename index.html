@@ -221,8 +221,11 @@ canvas { display: block; }
 }
 
 .blockFace.front { transform: translateZ(13.5px); }
+.blockFace.back { transform: rotateY(180deg) translateZ(13.5px); }
 .blockFace.right { transform: rotateY(90deg) translateZ(13.5px); }
+.blockFace.left { transform: rotateY(-90deg) translateZ(13.5px); }
 .blockFace.top { transform: rotateX(90deg) translateZ(13.5px); }
+.blockFace.bottom { transform: rotateX(-90deg) translateZ(13.5px); }
 
 #selectedBlockName {
   position: absolute;
@@ -993,21 +996,26 @@ function updateHotbar() {
       const cube = document.createElement('div');
       cube.className = 'blockCube';
 
-      const front = document.createElement('div');
-      front.className = 'blockFace front';
-      front.style.backgroundImage = `url("${type === 'grass' ? blockIcons.grassSide : blockIcons[type]}")`;
+      const sideTexture = type === 'grass' ? blockIcons.grassSide : blockIcons[type];
+      const topTexture = type === 'grass' ? blockIcons.grassTop : blockIcons[type];
+      const bottomTexture = type === 'grass' ? blockIcons.dirt : blockIcons[type];
 
-      const right = document.createElement('div');
-      right.className = 'blockFace right';
-      right.style.backgroundImage = `url("${type === 'grass' ? blockIcons.grassSide : blockIcons[type]}")`;
+      ['front', 'back', 'right', 'left'].forEach((faceName) => {
+        const face = document.createElement('div');
+        face.className = 'blockFace ' + faceName;
+        face.style.backgroundImage = `url("${sideTexture}")`;
+        cube.appendChild(face);
+      });
 
       const top = document.createElement('div');
       top.className = 'blockFace top';
-      top.style.backgroundImage = `url("${type === 'grass' ? blockIcons.grassTop : blockIcons[type]}")`;
-
-      cube.appendChild(front);
-      cube.appendChild(right);
+      top.style.backgroundImage = `url("${topTexture}")`;
       cube.appendChild(top);
+
+      const bottom = document.createElement('div');
+      bottom.className = 'blockFace bottom';
+      bottom.style.backgroundImage = `url("${bottomTexture}")`;
+      cube.appendChild(bottom);
       icon.appendChild(cube);
       slot.appendChild(icon);
     }
