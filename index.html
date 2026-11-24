@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BlockWorld - Versão 2.01</title>
+<title>BlockWorld - Versão 2.02</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 
 <script type="importmap">
@@ -417,7 +417,7 @@ canvas { display: block; }
 
 <div id="menu">
   <h1>BlockWorld</h1>
-  <div id="updateSubtitle">VERSÃO 2.01</div>
+  <div id="updateSubtitle">VERSÃO 2.02</div>
   <button id="start">JOGAR</button>
 </div>
 
@@ -1519,7 +1519,10 @@ window.addEventListener('wheel', (event) => {
 
   selectedBlock = (selectedBlock + 9) % 9;
 
-  updateHotbar();
+  // Só move o destaque da seleção; não recria os 9 slots e seus cubos.
+  for (let index = 0; index < hotbar.children.length; index++) {
+    hotbar.children[index].classList.toggle('selected', index === selectedBlock);
+  }
   showSelectedBlockName();
 
 }, { passive: false });
