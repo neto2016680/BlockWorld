@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BlockWorld - Versão 1.8</title>
+<title>BlockWorld - Versão 1.9</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 
 <script type="importmap">
@@ -384,7 +384,7 @@ canvas { display: block; }
 
 <div id="menu">
   <h1>BlockWorld</h1>
-  <div id="updateSubtitle">VERSÃO 1.8</div>
+  <div id="updateSubtitle">VERSÃO 1.9</div>
   <button id="start">JOGAR</button>
 </div>
 
@@ -758,21 +758,91 @@ const materials = {
 };
 
 
-// Textura original enviada para as laterais da madeira.
-// Usamos o arquivo diretamente: a conversão por canvas estava deixando
-// as faces pretas em alguns navegadores antigos.
-const woodSideTexture = new THREE.TextureLoader().load('./wood-side.jpg');
-woodSideTexture.magFilter = THREE.NearestFilter;
-woodSideTexture.minFilter = THREE.NearestFilter;
-woodSideTexture.generateMipmaps = false;
-woodSideTexture.colorSpace = THREE.SRGBColorSpace;
+// Madeira: laterais com veios verticais claros, bem diferentes da terra.
+// O desenho é gerado em 16x16 para não depender de arquivo externo.
+function makeWoodSideTexture() {
+  const canvas = document.createElement('canvas');
+  canvas.width = 16;
+  canvas.height = 16;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#a97845';
+  ctx.fillRect(0, 0, 16, 16);
 
+  const strips = [
+    [1, '#bd925d'], [2, '#98683b'], [4, '#c39862'],
+    [5, '#a97845'], [7, '#d0a36a'], [8, '#98683b'],
+    [10, '#bd925d'], [12, '#d0a36a'], [13, '#a97845'],
+    [15, '#98683b']
+  ];
+  strips.forEach(([x, color]) => {
+    ctx.fillStyle = color;
+    ctx.fillRect(x, 0, 1, 16);
+  });
+
+  // Pequenas marcas horizontais de madeira, sem o aspecto granulado da terra.
+  ctx.fillStyle = '#80552f';
+  ctx.fillRect(3, 4, 1, 3);
+  ctx.fillRect(9, 10, 1, 4);
+  ctx.fillRect(14, 2, 1, 2);
+  ctx.fillStyle = '#dfb77f';
+  ctx.fillRect(0, 6, 1, 4);
+  ctx.fillRect(6, 1, 1, 5);
+  ctx.fillRect(11, 7, 1, 5);
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.magFilter = THREE.NearestFilter;
+  texture.minFilter = THREE.NearestFilter;
+  texture.generateMipmaps = false;
+  texture.colorSpace = THREE.SRGBColorSpace;
+  return texture;
+}
+
+// Extremidades do tronco: anéis quadrados em tons de mel e bege.
+function makeWoodEndTexture() {
+  const canvas = document.createElement('canvas');
+  canvas.width = 16;
+  canvas.height = 16;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#72502f';
+  ctx.fillRect(0, 0, 16, 16);
+  ctx.fillStyle = '#c69a61';
+  ctx.fillRect(1, 1, 14, 14);
+  ctx.fillStyle = '#987044';
+  ctx.fillRect(2, 2, 12, 12);
+  ctx.fillStyle = '#d7b27a';
+  ctx.fillRect(3, 3, 10, 10);
+  ctx.fillStyle = '#b58a53';
+  ctx.fillRect(4, 4, 8, 8);
+  ctx.fillStyle = '#d0a66d';
+  ctx.fillRect(5, 5, 6, 6);
+  ctx.fillStyle = '#b98d57';
+  ctx.fillRect(6, 6, 4, 4);
+  ctx.fillStyle = '#d7b27a';
+  ctx.fillRect(7, 7, 2, 2);
+  // Pequenos veios interrompidos dão aparência de madeira cortada.
+  ctx.fillStyle = '#8a653d';
+  ctx.fillRect(0, 5, 2, 1);
+  ctx.fillRect(13, 10, 3, 1);
+  ctx.fillRect(5, 0, 1, 2);
+  ctx.fillRect(10, 14, 1, 2);
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.magFilter = THREE.NearestFilter;
+  texture.minFilter = THREE.NearestFilter;
+  texture.generateMipmaps = false;
+  texture.colorSpace = THREE.SRGBColorSpace;
+  return texture;
+}
+
+const woodSideTexture = makeWoodSideTexture();
+const woodEndTexture = makeWoodEndTexture();
 const woodSideMaterial = new THREE.MeshLambertMaterial({ map: woodSideTexture });
+const woodEndMaterial = new THREE.MeshLambertMaterial({ map: woodEndTexture });
 const woodMaterials = [
   woodSideMaterial,
   woodSideMaterial,
-  materials.wood,
-  materials.wood,
+  woodEndMaterial,
+  woodEndMaterial,
   woodSideMaterial,
   woodSideMaterial
 ];
@@ -831,7 +901,8 @@ const blockIcons = {
   grassSide: textureToDataURL(grassSideTexture),
   dirt: textureToDataURL(pixelTextures.dirt),
   stone: textureToDataURL(pixelTextures.stone),
-  wood: textureToDataURL(pixelTextures.wood),
+  wood: textureToDataURL(woodSideTexture),
+  woodTop: textureToDataURL(woodEndTexture),
   leaves: textureToDataURL(pixelTextures.leaves),
   wool: textureToDataURL(pixelTextures.wool),
   planks: textureToDataURL(pixelTextures.planks),
