@@ -807,6 +807,38 @@ const blockIcons = {
   flower_yellow: textureToDataURL(pixelTextures.flower_yellow)
 };
 
+// 16 cores clássicas de lã.
+const woolColors = [
+  { id:'white', label:'Branca', color:'#e8e8e8' },
+  { id:'orange', label:'Laranja', color:'#e87924' },
+  { id:'magenta', label:'Magenta', color:'#b44bb5' },
+  { id:'light_blue', label:'Azul-clara', color:'#6aaed6' },
+  { id:'yellow', label:'Amarela', color:'#f2d52b' },
+  { id:'lime', label:'Verde-limão', color:'#83b832' },
+  { id:'pink', label:'Rosa', color:'#e69aaa' },
+  { id:'gray', label:'Cinza', color:'#55585b' },
+  { id:'light_gray', label:'Cinza-clara', color:'#aeb2b3' },
+  { id:'cyan', label:'Ciano', color:'#168b91' },
+  { id:'purple', label:'Roxa', color:'#783ca5' },
+  { id:'blue', label:'Azul', color:'#354caa' },
+  { id:'brown', label:'Marrom', color:'#70452b' },
+  { id:'green', label:'Verde', color:'#536d25' },
+  { id:'red', label:'Vermelha', color:'#b02b2b' },
+  { id:'black', label:'Preta', color:'#242126' }
+];
+woolColors.forEach((wool, index) => {
+  const type = 'wool_' + wool.id;
+  pixelTextures[type] = makePixelTexture(
+    wool.color,
+    ['#ffffff', wool.color, wool.color, '#000000'],
+    200 + index * 17,
+    48
+  );
+  materials[type] = new THREE.MeshLambertMaterial({ map: pixelTextures[type] });
+  blockIcons[type] = textureToDataURL(pixelTextures[type]);
+  blockTypes.push(type);
+});
+
 let selectedBlock = 0;
 let selectedNameTimeout = null;
 
@@ -1134,7 +1166,8 @@ const inventoryChoices = document.getElementById('inventoryChoices');
 const inventoryPreview = document.getElementById('inventoryPreview');
 let gameMode = 'creative';
 let inventoryOpen = false;
-let chosenInventoryType = 'wool';
+let chosenInventoryType = 'wool_white';
+let woolCatalogOpen = false;
 const inventoryCatalog = [
   { type:'grass', label:'Grama' },
   { type:'dirt', label:'Terra' },
@@ -1197,9 +1230,19 @@ function updateHotbar() {
 
 updateHotbar();
 
+function getInventoryItem(type) {
+  const basic = inventoryCatalog.find(item => item.type === type);
+  if (basic) return basic;
+  const wool = woolColors.find(item => 'wool_' + item.id === type);
+  return wool ? { type:'wool_' + wool.id, label:'Lã ' + wool.label } : null;
+}
+
 function renderInventory() {
   inventoryChoices.innerHTML = '';
-  inventoryCatalog.forEach((item) => {
+  const visibleItems = woolCatalogOpen
+    ? woolColors.map(color => ({ type:'wool_' + color.id, label:color.label }))
+    : inventoryCatalog;
+  visibleItems.forEach((item) => {
     const button = document.createElement('button');
     button.className = 'inventoryItem' + (chosenInventoryType === item.type ? ' selected' : '');
     button.appendChild(createBlockIcon(item.type, item.label));
@@ -1207,17 +1250,40 @@ function renderInventory() {
     label.textContent = item.label;
     button.appendChild(label);
     button.addEventListener('click', () => {
-      chosenInventoryType = item.type;
+      if (item.type === 'wool') {
+        woolCatalogOpen = true;
+        chosenInventoryType = 'wool_white';
+      } else {
+        chosenInventoryType = item.type;
+        if (item.type.startsWith('wool_')) woolCatalogOpen = false;
+      }
       renderInventory();
     });
     inventoryChoices.appendChild(button);
   });
-  const selected = inventoryCatalog.find(item => item.type === chosenInventoryType);
+  const selected = getInventoryItem(chosenInventoryType) || inventoryCatalog.find(item => item.type === 'wool');
   inventoryPreview.innerHTML = '';
   inventoryPreview.appendChild(createBlockIcon(selected.type, selected.label));
   const name = document.createElement('strong');
   name.textContent = selected.label;
   inventoryPreview.appendChild(name);
+  const back = document.getElementById('inventoryWoolBack');
+  if (woolCatalogOpen) {
+    if (!back) {
+      const button = document.createElement('button');
+      button.id = 'inventoryWoolBack';
+      button.textContent = '← VOLTAR AOS BLOCOS';
+      button.className = 'inventoryItem';
+      button.style.marginTop = '10px';
+      button.addEventListener('click', () => {
+        woolCatalogOpen = false;
+        renderInventory();
+      });
+      inventoryChoices.after(button);
+    }
+  } else if (back) {
+    back.remove();
+  }
 }
 
 function closeInventory() {
@@ -1233,7 +1299,7 @@ function openInventory() {
 }
 
 document.getElementById('inventoryAdd').addEventListener('click', () => {
-  const item = inventoryCatalog.find(entry => entry.type === chosenInventoryType);
+  const item = getInventoryItem(chosenInventoryType);
   let slotIndex = inventorySlots.findIndex(slot => slot && slot.type === item.type);
   if (slotIndex < 0) slotIndex = inventorySlots.findIndex(slot => slot === null || slot.count <= 0);
   if (slotIndex < 0) slotIndex = selectedBlock;
