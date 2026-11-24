@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BlockWorld - Versão 1.91</title>
+<title>BlockWorld - Versão 2.01</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 
 <script type="importmap">
@@ -59,6 +59,39 @@ canvas { display: block; }
   border: 3px solid #333;
   background: #65ae36;
   color: white;
+}
+
+#mobileWarning {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 24px;
+  background: #101820ee;
+  color: white;
+  text-align: center;
+}
+#mobileWarning h2 {
+  margin: 0 0 14px;
+  font-size: 30px;
+  text-shadow: 2px 2px #000;
+}
+#mobileWarning p {
+  max-width: 440px;
+  font-size: 18px;
+  line-height: 1.5;
+  margin: 0 0 22px;
+}
+#mobileWarning button {
+  padding: 13px 28px;
+  border: 3px solid #263d20;
+  background: #65ae36;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
 }
 
 #worldChoiceMenu, #savedWorldsMenu {
@@ -384,8 +417,16 @@ canvas { display: block; }
 
 <div id="menu">
   <h1>BlockWorld</h1>
-  <div id="updateSubtitle">VERSÃO 1.91</div>
+  <div id="updateSubtitle">VERSÃO 2.01</div>
   <button id="start">JOGAR</button>
+</div>
+
+<div id="mobileWarning" role="dialog" aria-modal="true" aria-labelledby="mobileWarningTitle">
+  <h2 id="mobileWarningTitle">⚠️ ATENÇÃO!</h2>
+  <p>O BlockWorld precisa de um <strong>teclado e mouse</strong> para jogar.<br>
+  No momento, a versão para celular não possui controles de toque.<br>
+  Acesse pelo computador para jogar corretamente!</p>
+  <button id="mobileWarningClose">ENTENDI</button>
 </div>
 
 <div id="worldChoiceMenu">
@@ -1907,6 +1948,16 @@ function updatePlayer(delta) {
 // =================================
 
 const menu = document.getElementById('menu');
+
+// Avisa quem acessa por celular/tablet que o jogo ainda exige teclado e mouse.
+const mobileDevice = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) ||
+  (window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
+const mobileWarning = document.getElementById('mobileWarning');
+if (mobileDevice) mobileWarning.style.display = 'flex';
+document.getElementById('mobileWarningClose').addEventListener('click', () => {
+  mobileWarning.style.display = 'none';
+});
+
 const worldChoiceMenu = document.getElementById('worldChoiceMenu');
 const savedWorldsMenu = document.getElementById('savedWorldsMenu');
 const modeMenu = document.getElementById('modeMenu');
