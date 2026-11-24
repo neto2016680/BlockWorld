@@ -51,6 +51,38 @@ canvas { display: block; }
   color: white;
 }
 
+#modeMenu {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(#5c9bce, #263d50);
+  color: white;
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 6;
+}
+
+#modeMenu h1 {
+  font-size: 42px;
+  text-shadow: 3px 3px #333;
+}
+
+.modeButton {
+  width: 240px;
+  padding: 15px;
+  margin: 10px;
+  font-size: 20px;
+  cursor: pointer;
+  border: 3px solid #333;
+  background: #65ae36;
+  color: white;
+}
+
+#survivalButton {
+  background: #777;
+}
+
 #hud {
   position: fixed;
   inset: 0;
@@ -123,6 +155,12 @@ canvas { display: block; }
   <p>Um mundo de blocos espera por você.</p>
   <button id="start">JOGAR</button>
   <p>Versão 0.7 - Pixel Update</p>
+</div>
+
+<div id="modeMenu">
+  <h1>ESCOLHA SEU MODO</h1>
+  <button class="modeButton" id="creativeButton">CRIATIVO</button>
+  <button class="modeButton" id="survivalButton">SOBREVIVÊNCIA</button>
 </div>
 
 <div id="hud">
@@ -1169,27 +1207,38 @@ function updatePlayer(delta) {
 // =================================
 
 const menu = document.getElementById('menu');
+const modeMenu = document.getElementById('modeMenu');
 const hud = document.getElementById('hud');
 
-document.getElementById('start').addEventListener(
-  'click',
-  () => controls.lock()
-);
+// JOGAR abre a seleção de modos.
+document.getElementById('start').addEventListener('click', () => {
+  menu.style.display = 'none';
+  modeMenu.style.display = 'flex';
+});
+
+// Criativo continua entrando no jogo normalmente.
+document.getElementById('creativeButton').addEventListener('click', () => {
+  modeMenu.style.display = 'none';
+  controls.lock();
+});
+
+// Sobrevivência ainda não foi implementado: o botão não faz nada.
+document.getElementById('survivalButton').addEventListener('click', () => {
+  // Reservado para a futura implementação do modo sobrevivência.
+});
 
 controls.addEventListener('lock', () => {
-
   menu.style.display = 'none';
+  modeMenu.style.display = 'none';
   hud.style.display = 'block';
-
 });
 
 controls.addEventListener('unlock', () => {
-
-  menu.style.display = 'flex';
+  // Ao apertar ESC, volta para a seleção de modos.
+  menu.style.display = 'none';
+  modeMenu.style.display = 'flex';
   hud.style.display = 'none';
-
   blockOutline.visible = false;
-
 });
 
 // =================================
