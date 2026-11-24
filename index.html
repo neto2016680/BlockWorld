@@ -1410,8 +1410,11 @@ document.addEventListener('mousedown', (event) => {
     if (!miningActive) startMining(hit);
   }
 
-  // CONSTRUIR
+  // CONSTRUIR: no modo sobrevivência ainda não há inventário,
+  // então o jogador não pode colocar blocos.
   if (event.button === 2) {
+    if (gameMode === 'survival') return;
+
     const normal = hit.face.normal.clone();
     normal.transformDirection(hit.object.matrixWorld);
     const p = block.position.clone().add(normal);
