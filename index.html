@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BlockWorld 0.8 - Caves Update</title>
+<title>BlockWorld 0.9 - Atualização do Inventário</title>
 
 <script type="importmap">
 {
@@ -187,12 +187,17 @@ canvas { display: block; }
   height: 65px;
   background: #333a;
   border: 3px solid #888;
-  color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 11px;
-  text-shadow: 1px 1px black;
+}
+
+.slot img {
+  width: 46px;
+  height: 46px;
+  image-rendering: pixelated;
+  object-fit: contain;
+  pointer-events: none;
 }
 
 .slot.selected {
@@ -225,7 +230,7 @@ canvas { display: block; }
 
 <div id="menu">
   <h1>BlockWorld</h1>
-  <div id="updateSubtitle">0.8 - Caves Update</div>
+  <div id="updateSubtitle">0.9 - Atualização do Inventário</div>
   <button id="start">JOGAR</button>
 </div>
 
@@ -586,6 +591,25 @@ const blockLabels = [
   'Madeira'
 ];
 
+// Ícones 2D dos blocos para a hotbar.
+function makeBlockIcon(texture) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 32;
+  canvas.height = 32;
+  const ctx = canvas.getContext('2d');
+  ctx.imageSmoothingEnabled = false;
+  ctx.drawImage(texture.image, 0, 0, 16, 16, 0, 0, 32, 32);
+  return canvas.toDataURL('image/png');
+}
+
+const blockIcons = {
+  grass: makeBlockIcon(pixelTextures.grassTop),
+  dirt: makeBlockIcon(pixelTextures.dirt),
+  stone: makeBlockIcon(pixelTextures.stone),
+  wood: makeBlockIcon(pixelTextures.wood),
+  leaves: makeBlockIcon(pixelTextures.leaves)
+};
+
 let selectedBlock = 0;
 
 // =================================
@@ -906,11 +930,14 @@ function updateHotbar() {
       'slot' +
       (selectedBlock === index ? ' selected' : '');
 
-    // No sobrevivência, os espaços aparecem vazios.
+    // No criativo, cada espaço mostra a imagem pixelada do bloco.
+    // Na sobrevivência, os espaços continuam vazios até existir inventário.
     if (gameMode === 'creative') {
-      slot.textContent = `${index + 1}: ${name}`;
-    } else {
-      slot.textContent = '';
+      const icon = document.createElement('img');
+      icon.src = blockIcons[blockNames[index]];
+      icon.alt = name;
+      icon.title = name;
+      slot.appendChild(icon);
     }
 
     hotbar.appendChild(slot);
