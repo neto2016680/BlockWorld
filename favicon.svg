@@ -1,18 +1,28 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" shape-rendering="crispEdges">
-<rect width="64" height="64" rx="9" fill="#263d24"/>
-<path d="M7 22 31 9 57 21 33 35Z" fill="#65c936"/>
-<path d="m7 22 26 13v27L7 48Z" fill="#8a542d"/>
-<path d="m33 35 24-14v27L33 62Z" fill="#70401f"/>
-<path d="m7 22 24 13 26-14-26-12Z" fill="#70df38"/>
-<path d="m7 22 26 13v5L7 27Z" fill="#57ad2c"/>
-<path d="m33 35 24-14v5L33 40Z" fill="#438e25"/>
-<g fill="#9a6539">
-<path d="M12 32h4v5h-4zM21 37h3v7h-3zM13 43h5v3h-5zM27 48h3v5h-3z"/>
+<rect width="64" height="64" rx="8" fill="#263d24"/>
+<!-- face esquerda -->
+<path d="M6 22 32 35v26L6 48Z" fill="#8a542d"/>
+<!-- face direita -->
+<path d="m32 35 26-13v26L32 61Z" fill="#70401f"/>
+<!-- faixa de grama nas laterais -->
+<path d="M6 22 32 35v5L6 27Z" fill="#4f9d2b"/>
+<path d="m32 35 26-13v5L32 40Z" fill="#397d20"/>
+<!-- topo -->
+<path d="M6 22 32 8l26 14-26 13Z" fill="#65c936"/>
+<path d="M6 22 32 8l26 14-26 13Z" fill="none" stroke="#315d20" stroke-width="1.5"/>
+<!-- textura do topo -->
+<g fill="#4fae29">
+<path d="M15 20h5v3h-5zM26 13h4v3h-4zM39 18h5v3h-5zM20 26h4v3h-4zM46 25h3v3h-3z"/>
 </g>
-<g fill="#4d9c28">
-<path d="M14 22h5v3h-5zM28 15h4v3h-4zM40 22h4v3h-4zM20 27h3v3h-3z"/>
+<g fill="#a16a3c">
+<path d="M11 32h4v4h-4zM21 38h3v6h-3zM13 43h5v3h-5zM27 49h3v5h-3z"/>
 </g>
-<path d="m7 22 24-13 26 12-24 14Z" fill="none" stroke="#315d20" stroke-width="1.5"/>
-<path d="M7 22v26l26 14V35Z" fill="none" stroke="#51331e" stroke-width="1.5"/>
-<path d="M33 35v27l24-14V21Z" fill="none" stroke="#402819" stroke-width="1.5"/>
+<g fill="#956039">
+<path d="M37 40h4v5h-4zM49 34h4v4h-4zM39 51h3v5h-3zM45 44h5v3h-5z"/>
+</g>
+<g fill="#5d371e">
+<path d="M6 22 32 35v5L6 27Z" opacity=".35"/>
+</g>
+<path d="M6 22v26l26 13V35Z" fill="none" stroke="#51331e" stroke-width="1.5"/>
+<path d="M32 35v26l26-13V22Z" fill="none" stroke="#402819" stroke-width="1.5"/>
 </svg>
