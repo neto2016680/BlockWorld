@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BlockWorld - Versão 3.00</title>
+<title>BlockWorld - Versão 3.10</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 
 <script type="importmap">
@@ -480,7 +480,7 @@ canvas { display: block; }
   <h1>BlockWorld</h1>
   <button id="start">JOGAR</button>
   <button id="homeOptionsButton" aria-label="Opções">⚙ OPÇÕES</button>
-  <div id="homeVersion">3.00</div>
+  <div id="homeVersion">3.10</div>
 </div>
 
 <div id="mobileWarning" role="dialog" aria-modal="true" aria-labelledby="mobileWarningTitle">
@@ -593,7 +593,7 @@ canvas { display: block; }
 <div id="hud">
   <div id="instructions">
     WASD - Mover<br>
-    CTRL - Correr<br>
+    CTRL - Alternar corrida<br>
     ESPAÇO 2x - Ativar/desativar voo<br>
     ESPAÇO / SHIFT - Subir / descer<br>
     Mouse - Olhar<br>
@@ -2176,6 +2176,7 @@ const WALK_SPEED = 5;
 let velocityY = 0;
 let canJump = false;
 let isFlying = false;
+let sprintToggled = false;
 let lastSpacePress = 0;
 
 function getCollidingBlock(px, eyeY, pz) {
@@ -2359,6 +2360,10 @@ const keys = {};
 
 document.addEventListener('keydown', (event) => {
 
+  if ((event.code === 'ControlLeft' || event.code === 'ControlRight') && !event.repeat) {
+    sprintToggled = !sprintToggled;
+    event.preventDefault();
+  }
   keys[event.code] = true;
 
   if ((event.code === 'ShiftLeft' || event.code === 'ShiftRight') && gameMode === 'survival' && controls.isLocked && canJump && !isCrouching) {
@@ -2519,7 +2524,7 @@ function updatePlayer(delta) {
     forward /= length;
     sideways /= length;
 
-    const sprinting = keys['ControlLeft'] || keys['ControlRight'];
+    const sprinting = sprintToggled;
     const speed = WALK_SPEED * (sprinting ? 1.7 : 1) * delta;
 
     const forwardVector = new THREE.Vector3();
