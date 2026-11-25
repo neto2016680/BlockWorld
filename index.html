@@ -668,7 +668,7 @@ canvas { display: block; }
   <h1>BlockWorld</h1>
   <button id="start">JOGAR</button>
   <button id="homeOptionsButton" aria-label="Opções">⚙ OPÇÕES</button>
-  <div id="homeVersion">3.40</div>
+  <div id="homeVersion">3.50</div>
 </div>
 
 <div id="mobileWarning" role="dialog" aria-modal="true" aria-labelledby="mobileWarningTitle">
@@ -3416,7 +3416,7 @@ function animate() {
         : (direction.z > 0 ? 'Sul (+Z)' : 'Norte (-Z)');
       const feetY = camera.position.y - getEyeHeight();
       debugCoordinates.textContent =
-        `BlockWorld 3.30 | Debug\n` +
+        `BlockWorld 3.50 | Debug\n` +
         `XYZ: ${camera.position.x.toFixed(2)} / ${feetY.toFixed(2)} / ${camera.position.z.toFixed(2)}\n` +
         `Bloco: ${Math.floor(camera.position.x)} / ${Math.floor(feetY)} / ${Math.floor(camera.position.z)}\n` +
         `Direção: ${facing}\nFPS: ${fps}`;
