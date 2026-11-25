@@ -689,7 +689,7 @@ canvas { display: block; }
   <h1>BlockWorld</h1>
   <button id="start">JOGAR</button>
   <button id="homeOptionsButton" aria-label="Opções">⚙ OPÇÕES</button>
-  <div id="homeVersion">3.80</div>
+  <div id="homeVersion">3.90</div>
 </div>
 
 <div id="mobileWarning" role="dialog" aria-modal="true" aria-labelledby="mobileWarningTitle">
@@ -2635,6 +2635,51 @@ function addChatMessage(message) {
   clearTimeout(chatHideTimer);
   if (!chatOpen) chatHideTimer = setTimeout(() => { chatMessages.style.display = 'none'; }, 9000);
 }
+function runChatCommand(message) {
+  const command = message.trim().toLowerCase().replace(/\\s+/g, ' ');
+  if (command === '/gamemode creative') {
+    if (gameMode === 'creative') {
+      addChatMessage(gameLanguage === 'en' ? 'Already in Creative mode.' : 'Você já está no modo Criativo.');
+      return true;
+    }
+    gameMode = 'creative';
+    inventorySlots = blockNames.map((type, index) => ({ type, label:blockLabels[index], count:Infinity }));
+    selectedBlock = Math.max(0, Math.min(8, selectedBlock));
+    isFlying = false;
+    isCrouching = false;
+    velocityY = 0;
+    healthIcons.style.display = 'none';
+    updateHotbar();
+    updateHealthDisplay();
+    scheduleWorldSave();
+    addChatMessage(gameLanguage === 'en' ? 'Game mode changed to Creative.' : 'Modo de jogo alterado para Criativo.');
+    return true;
+  }
+  if (command === '/gamemode survival') {
+    if (gameMode === 'survival') {
+      addChatMessage(gameLanguage === 'en' ? 'Already in Survival mode.' : 'Você já está no modo Sobrevivência.');
+      return true;
+    }
+    gameMode = 'survival';
+    inventorySlots = Array(9).fill(null);
+    selectedBlock = 0;
+    isFlying = false;
+    isCrouching = false;
+    velocityY = 0;
+    health = 10;
+    healthIcons.style.display = 'flex';
+    updateHealthDisplay();
+    updateHotbar();
+    scheduleWorldSave();
+    addChatMessage(gameLanguage === 'en' ? 'Game mode changed to Survival.' : 'Modo de jogo alterado para Sobrevivência.');
+    return true;
+  }
+  if (command.startsWith('/gamemode')) {
+    addChatMessage(gameLanguage === 'en' ? 'Usage: /gamemode creative or /gamemode survival' : 'Use: /gamemode creative ou /gamemode survival');
+    return true;
+  }
+  return false;
+}
 function openChat() {
   if (!gameStarted || inventoryOpen || playerDead || chatOpen) return;
   chatOpen = true;
@@ -2650,7 +2695,7 @@ chatInput.addEventListener('keydown', event => {
     const message = chatInput.value.trim();
     if (message) {
       localChatHistory.push(message);
-      addChatMessage((gameLanguage === 'en' ? 'You: ' : 'Você: ') + message);
+      if (!runChatCommand(message)) addChatMessage((gameLanguage === 'en' ? 'You: ' : 'Você: ') + message);
     }
     closeChat();
     event.preventDefault();
