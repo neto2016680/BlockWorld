@@ -652,6 +652,13 @@ canvas { display: block; }
   pointer-events: none;
 }
 
+
+/* BLOCKWORLD 3.40 — tela de morte */
+#deathScreen { position:fixed; inset:0; z-index:100; display:none; flex-direction:column; align-items:center; justify-content:center; gap:18px; background:rgba(0,0,0,.78); color:#fff; text-align:center; }
+#deathScreen h1 { margin:0; color:#ef3b3b; font-size:clamp(42px,8vw,76px); text-shadow:4px 4px #350909; }
+#deathScreen p { margin:0 18px; font-size:18px; text-shadow:2px 2px #111; }
+#deathScreen button { min-width:220px; padding:13px 22px; color:white; background:#666; border:3px solid; border-color:#ddd #222 #222 #ddd; font-size:18px; font-weight:bold; cursor:pointer; }
+#respawnButton { background:#579b35 !important; }
 </style>
 </head>
 
@@ -661,7 +668,7 @@ canvas { display: block; }
   <h1>BlockWorld</h1>
   <button id="start">JOGAR</button>
   <button id="homeOptionsButton" aria-label="Opções">⚙ OPÇÕES</button>
-  <div id="homeVersion">3.30</div>
+  <div id="homeVersion">3.40</div>
 </div>
 
 <div id="mobileWarning" role="dialog" aria-modal="true" aria-labelledby="mobileWarningTitle">
@@ -740,6 +747,13 @@ canvas { display: block; }
   <button class="graphicsChoice" data-quality="maximum">MÁXIMO — melhor qualidade</button>
   <div id="graphicsStatus"></div>
   <button class="pauseButton" id="backGraphicsButton">VOLTAR</button>
+</div>
+
+<div id="deathScreen" role="dialog" aria-modal="true" aria-labelledby="deathTitle">
+  <h1 id="deathTitle">VOCÊ MORREU!</h1>
+  <p>Você caiu no vazio. Sua aventura ainda pode continuar!</p>
+  <button id="respawnButton">RENASCER</button>
+  <button id="deathMenuButton">VOLTAR AO MENU INICIAL</button>
 </div>
 
 <div id="inventoryMenu">
@@ -2332,13 +2346,46 @@ function updateHealthDisplay() {
 }
 
 function damageFromFall(distance) {
-  if (gameMode !== "survival" || distance <= 3) return;
+  if (gameMode !== "survival" || distance <= 3 || playerDead) return;
   const damage = Math.ceil((distance - 3) / 2);
   health = Math.max(0, health - damage);
   updateHealthDisplay();
+  if (health <= 0) showDeathScreen();
 }
 
+function showDeathScreen() {
+  if (playerDead || gameMode !== 'survival') return;
+  playerDead = true;
+  velocityY = 0;
+  sprintToggled = false;
+  debugCoordinates.style.display = 'none';
+  showDebugCoordinates = false;
+  saveActiveWorld();
+  controls.unlock();
+  hud.style.display = 'none';
+  pauseMenu.style.display = 'none';
+  inventoryMenu.style.display = 'none';
+  deathScreen.style.display = 'flex';
+}
+
+function respawnPlayer() {
+  playerDead = false;
+  health = 10;
+  healthRegenTimer = 0;
+  fallStartY = null;
+  velocityY = 0;
+  isFlying = false;
+  isCrouching = false;
+  camera.position.set(0, getSurfaceHeight(0, 8) + 2.12, 8);
+  updateHealthDisplay();
+  deathScreen.style.display = 'none';
+  scheduleWorldSave();
+  controls.lock();
+}
+
+
 function updateHealth(delta) {
+  if (playerDead) return;
   if (gameMode !== "survival" || !gameStarted || !controls.isLocked || health >= 10) {
     healthRegenTimer = 0;
     return;
@@ -2540,15 +2587,16 @@ function moveVertical(delta) {
 
 const keys = {};
 
-document.addEventListener('keydown', (event) => {
-
-  if (event.altKey && event.code === 'F3' && !event.repeat) {
+window.addEventListener('keydown', (event) => {
+  if (event.code === 'F3' && event.altKey && !event.repeat && gameStarted && controls.isLocked) {
     showDebugCoordinates = !showDebugCoordinates;
     debugCoordinates.style.display = showDebugCoordinates ? 'block' : 'none';
     event.preventDefault();
     event.stopPropagation();
-    return;
   }
+}, true);
+
+document.addEventListener('keydown', (event) => {
 
   if ((event.code === 'ControlLeft' || event.code === 'ControlRight') && !event.repeat) {
     sprintToggled = !sprintToggled;
@@ -2696,7 +2744,7 @@ document.addEventListener('contextmenu', (event) => {
 
 function updatePlayer(delta) {
 
-  if (!controls.isLocked) return;
+  if (!controls.isLocked || playerDead) return;
 
   let forward = 0;
   let sideways = 0;
@@ -2754,6 +2802,9 @@ function updatePlayer(delta) {
   } else {
     moveVertical(delta);
   }
+
+  // Abaixo do limite do mundo, o vazio elimina apenas no modo Sobrevivência.
+  if (gameMode === 'survival' && camera.position.y < -12) showDeathScreen();
 }
 
 // =================================
@@ -3068,7 +3119,9 @@ const optionsMenu = document.getElementById('optionsMenu');
 const instructions = document.getElementById('instructions');
 const fpsDisplay = document.getElementById('fps');
 const debugCoordinates = document.getElementById('debugCoordinates');
+const deathScreen = document.getElementById('deathScreen');
 let showDebugCoordinates = false;
+let playerDead = false;
 
 let gameStarted = false;
 let optionsReturnTo = 'pause';
@@ -3184,6 +3237,8 @@ function startWorld(mode, restoreData = null, lockAlreadyRequested = false) {
   }
   isFlying = false;
   isCrouching = false;
+  playerDead = false;
+  deathScreen.style.display = 'none';
   healthRegenTimer = 0;
   fallStartY = null;
   updateHealthDisplay();
@@ -3211,6 +3266,13 @@ controls.addEventListener('lock', () => {
 
 controls.addEventListener('unlock', () => {
   stopBackgroundMusic();
+  if (playerDead) {
+    hud.style.display = 'none';
+    pauseMenu.style.display = 'none';
+    inventoryMenu.style.display = 'none';
+    deathScreen.style.display = 'flex';
+    return;
+  }
   hud.style.display = 'none';
   blockOutline.visible = false;
   cancelMining();
@@ -3232,6 +3294,13 @@ controls.addEventListener('unlock', () => {
     menu.style.display = 'none';
     modeMenu.style.display = 'flex';
   }
+});
+
+document.getElementById('respawnButton').addEventListener('click', respawnPlayer);
+document.getElementById('deathMenuButton').addEventListener('click', () => {
+  deathScreen.style.display = 'none';
+  playerDead = false;
+  document.getElementById('exitGameButton').click();
 });
 
 document.getElementById('resumeButton').addEventListener('click', () => {
