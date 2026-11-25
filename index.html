@@ -2427,8 +2427,7 @@ document.querySelectorAll('.graphicsChoice').forEach(button => {
     graphicsQuality = button.dataset.quality;
     try { localStorage.setItem('blockWorldGraphics', graphicsQuality); } catch (error) {}
     applyGraphicsQuality();
-    if (graphicsQuality === 'minimum' && gameStarted) rebuildInstances();
-    else if (gameStarted) rebuildInstances();
+    rebuildInstances();
   });
 });
 document.getElementById('backGraphicsButton').addEventListener('click', () => {
