@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BlockWorld - Versão 2.52</title>
+<title>BlockWorld - Versão 2.53</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 
 <script type="importmap">
@@ -458,7 +458,7 @@ canvas { display: block; }
   <h1>BlockWorld</h1>
   <button id="start">JOGAR</button>
   <button id="homeOptionsButton" aria-label="Opções">⚙ OPÇÕES</button>
-  <div id="homeVersion">2.52</div>
+  <div id="homeVersion">2.53</div>
 </div>
 
 <div id="mobileWarning" role="dialog" aria-modal="true" aria-labelledby="mobileWarningTitle">
@@ -1122,6 +1122,8 @@ function showSelectedBlockName() {
 const blocks = new Map();
 
 const instancedMeshes = [];
+const droppedItems = [];
+const dropGeometry = new THREE.BoxGeometry(0.28, 0.28, 0.28);
 
 const dummy = new THREE.Object3D();
 
@@ -1162,14 +1164,28 @@ function addBlock(x, y, z, type, rebuild = true) {
   }
 }
 
+function spawnDroppedItem(type, position) {
+  const material = graphicsQuality === 'minimum'
+    ? getFlatBlockMaterial(type)
+    : (type === 'grass' ? grassMaterials : type === 'wood' ? woodMaterials : materials[type]) || getFlatBlockMaterial(type);
+  const mesh = new THREE.Mesh(dropGeometry, material);
+  mesh.position.copy(position);
+  mesh.position.y += 0.25;
+  mesh.rotation.set(Math.random() * 0.5, Math.random() * Math.PI, Math.random() * 0.5);
+  scene.add(mesh);
+  droppedItems.push({
+    type, mesh,
+    velocity: new THREE.Vector3((Math.random() - 0.5) * 2, 2.2 + Math.random(), (Math.random() - 0.5) * 2),
+    age: 0
+  });
+}
+
 function removeBlock(block) {
-
   const p = block.position;
-
   const key = blockKey(p.x, p.y, p.z);
-
+  if (!blocks.has(key)) return;
   blocks.delete(key);
-
+  if (gameMode === 'survival' && block.type !== 'bedrock') spawnDroppedItem(block.type, p);
   rebuildInstances();
   scheduleWorldSave();
 }
@@ -1333,12 +1349,12 @@ function generateRandomTerrain(seed, chunksPerSide = 2) {
       for (let y = Math.max(-4, height - 2); y < height; y++) addBlock(x, y, z, 'dirt', false);
       addBlock(x, height, z, 'grass', false);
       const noise = Math.abs(Math.sin((x * 127.1 + z * 311.7 + seed * 0.013) * 0.017));
-      if (noise > 0.91 && Math.abs(x) > 2 && Math.abs(z) > 2) treeSpots.push({ x, z, height });
+      if (noise > 0.82 && Math.abs(x) > 2 && Math.abs(z) > 2) treeSpots.push({ x, z, height });
     }
   }
   for (const spot of treeSpots) {
     const nearby = treeSpots.some(other =>
-      other !== spot && Math.abs(other.x - spot.x) < 3 && Math.abs(other.z - spot.z) < 3
+      other !== spot && Math.abs(other.x - spot.x) < 4 && Math.abs(other.z - spot.z) < 4
     );
     if (!nearby) {
       for (let y = 1; y <= 3; y++) addBlock(spot.x, spot.height + y, spot.z, 'wood', false);
@@ -2204,6 +2220,7 @@ function serializeWorld() {
   return {
     id: activeSavedWorldId, name: activeWorldName, seed: activeWorldSeed, chunks: activeWorldChunks,
     blocks: Array.from(blocks.values(), block => [block.position.x, block.position.y, block.position.z, block.type]),
+    droppedItems: droppedItems.map(item => ({ type:item.type, x:item.mesh.position.x, y:item.mesh.position.y, z:item.mesh.position.z })),
     mode: gameMode,
     player: { x: camera.position.x, y: camera.position.y, z: camera.position.z },
     inventory: inventorySlots.map(item => item ? {
@@ -2211,6 +2228,65 @@ function serializeWorld() {
     } : null),
     selectedBlock, health, updatedAt: Date.now()
   };
+}
+
+function clearDroppedItems() {
+  for (const item of droppedItems) scene.remove(item.mesh);
+  droppedItems.length = 0;
+}
+
+function restoreDroppedItems(savedItems) {
+  clearDroppedItems();
+  for (const item of savedItems || []) {
+    if (!item || !item.type || !Number.isFinite(item.x) || !Number.isFinite(item.y) || !Number.isFinite(item.z)) continue;
+    const position = new THREE.Vector3(item.x, item.y, item.z);
+    spawnDroppedItem(item.type, position);
+    const created = droppedItems[droppedItems.length - 1];
+    created.velocity.set(0, 0, 0);
+  }
+}
+
+function addItemToSurvivalInventory(type) {
+  const itemInfo = getInventoryItem(type);
+  if (!itemInfo) return false;
+  for (const slot of inventorySlots) {
+    if (slot && slot.type === type && slot.count < 64) {
+      slot.count++;
+      updateHotbar();
+      scheduleWorldSave();
+      return true;
+    }
+  }
+  const empty = inventorySlots.findIndex(slot => !slot || slot.count <= 0);
+  if (empty < 0) return false;
+  inventorySlots[empty] = { type, label:itemInfo.label, count:1 };
+  updateHotbar();
+  scheduleWorldSave();
+  return true;
+}
+
+function updateDroppedItems(delta) {
+  if (!gameStarted || gameMode !== 'survival' || !controls.isLocked) return;
+  for (let i = droppedItems.length - 1; i >= 0; i--) {
+    const item = droppedItems[i];
+    item.age += delta;
+    item.velocity.y -= 9.8 * delta;
+    item.mesh.position.addScaledVector(item.velocity, delta);
+    const groundY = getSurfaceHeight(Math.round(item.mesh.position.x), Math.round(item.mesh.position.z)) + 0.68;
+    if (item.mesh.position.y < groundY) {
+      item.mesh.position.y = groundY;
+      item.velocity.y = 0;
+      item.velocity.x *= 0.82;
+      item.velocity.z *= 0.82;
+    }
+    item.mesh.rotation.y += delta * 1.8;
+    item.mesh.position.y += Math.sin(item.age * 4) * delta * 0.035;
+    if (item.mesh.position.distanceTo(camera.position) < 1.35 && addItemToSurvivalInventory(item.type)) {
+      scene.remove(item.mesh);
+      droppedItems.splice(i, 1);
+      scheduleWorldSave();
+    }
+  }
 }
 
 async function saveActiveWorld() {
@@ -2340,6 +2416,7 @@ async function createSavedWorld() {
   const id = 'world-' + Date.now() + '-' + Math.floor(Math.random() * 100000);
   const seed = Math.floor(Math.random() * 2147483000) + 1;
   generateRandomTerrain(seed, chunksPerSide);
+  clearDroppedItems();
   activeSavedWorldId = id;
   activeWorldName = name;
   activeWorldSeed = seed;
@@ -2368,6 +2445,7 @@ async function loadSavedWorld(id, mode) {
     for (const [x, y, z, type] of world.blocks || []) {
       blocks.set(blockKey(x, y, z), { position: new THREE.Vector3(x, y, z), type });
     }
+    restoreDroppedItems(world.droppedItems || []);
     rebuildInstances();
     activeSavedWorldId = world.id;
     activeWorldName = world.name || 'Mundo sem nome';
@@ -2599,6 +2677,7 @@ document.getElementById('exitGameButton').addEventListener('click', () => {
   clearTimeout(saveDebounceTimer);
   saveActiveWorld();
   gameStarted = false;
+  clearDroppedItems();
   pauseMenu.style.display = 'none';
   optionsMenu.style.display = 'none';
   hud.style.display = 'none';
@@ -2640,6 +2719,7 @@ function animate() {
   }
   updateBlockOutline();
   updateMining();
+  updateDroppedItems(delta);
 
   // No menu, exibe a paisagem; durante a partida, usa a câmera do jogador.
   renderer.render(scene, gameStarted ? camera : menuCamera);
