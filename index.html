@@ -253,6 +253,27 @@ canvas { display: block; }
   display: none;
 }
 
+#chatBox {
+  position: fixed; left: 18px; bottom: 112px;
+  width: min(520px, calc(100vw - 36px)); z-index: 30;
+  display: none; pointer-events: auto; color: #fff;
+  font: 15px monospace; text-shadow: 2px 2px #222;
+}
+#chatMessages {
+  max-height: 190px; overflow: hidden; display: flex;
+  flex-direction: column; gap: 4px; margin-bottom: 8px;
+}
+.chatMessage {
+  width: fit-content; max-width: 100%; padding: 4px 7px;
+  background: #0009; overflow-wrap: anywhere;
+}
+#chatInput {
+  box-sizing: border-box; width: 100%; padding: 9px 10px;
+  color: white; background: #111d; border: 2px solid #ddd;
+  outline: none; font: 16px monospace;
+}
+#chatInput::placeholder { color: #ccc; }
+
 #crosshair {
   position: absolute;
   left: 50%;
@@ -668,7 +689,7 @@ canvas { display: block; }
   <h1>BlockWorld</h1>
   <button id="start">JOGAR</button>
   <button id="homeOptionsButton" aria-label="Opções">⚙ OPÇÕES</button>
-  <div id="homeVersion">3.60</div>
+  <div id="homeVersion">3.70</div>
 </div>
 
 <div id="mobileWarning" role="dialog" aria-modal="true" aria-labelledby="mobileWarningTitle">
@@ -784,6 +805,11 @@ canvas { display: block; }
       <button id="inventoryCancel">VOLTAR AO JOGO</button>
     </div>
   </div>
+</div>
+
+<div id="chatBox" aria-label="Game chat">
+  <div id="chatMessages"></div>
+  <input id="chatInput" type="text" maxlength="160" autocomplete="off" placeholder="Digite uma mensagem e pressione Enter..." aria-label="Mensagem do chat">
 </div>
 
 <div id="hud">
@@ -2586,6 +2612,54 @@ function moveVertical(delta) {
 // TECLADO
 // =================================
 
+const chatBox = document.getElementById('chatBox');
+const chatInput = document.getElementById('chatInput');
+const chatMessages = document.getElementById('chatMessages');
+let chatOpen = false;
+let chatHideTimer = null;
+const localChatHistory = [];
+
+function closeChat() {
+  chatOpen = false;
+  chatBox.style.display = 'none';
+  chatInput.blur();
+  if (controls.isLocked) renderer.domElement.focus();
+}
+function addChatMessage(message) {
+  const row = document.createElement('div');
+  row.className = 'chatMessage';
+  row.textContent = message;
+  chatMessages.appendChild(row);
+  while (chatMessages.children.length > 6) chatMessages.removeChild(chatMessages.firstChild);
+  chatMessages.style.display = 'flex';
+  clearTimeout(chatHideTimer);
+  if (!chatOpen) chatHideTimer = setTimeout(() => { chatMessages.style.display = 'none'; }, 9000);
+}
+function openChat() {
+  if (!gameStarted || !controls.isLocked || inventoryOpen || playerDead || chatOpen) return;
+  chatOpen = true;
+  chatBox.style.display = 'block';
+  chatMessages.style.display = 'flex';
+  clearTimeout(chatHideTimer);
+  chatInput.value = '';
+  chatInput.focus();
+}
+chatInput.addEventListener('keydown', event => {
+  event.stopPropagation();
+  if (event.key === 'Enter') {
+    const message = chatInput.value.trim();
+    if (message) {
+      localChatHistory.push(message);
+      addChatMessage((gameLanguage === 'en' ? 'You: ' : 'Você: ') + message);
+    }
+    closeChat();
+    event.preventDefault();
+  } else if (event.key === 'Escape') {
+    closeChat();
+    event.preventDefault();
+  }
+});
+
 const keys = {};
 
 window.addEventListener('keydown', (event) => {
@@ -2598,6 +2672,9 @@ window.addEventListener('keydown', (event) => {
 }, true);
 
 document.addEventListener('keydown', (event) => {
+
+  if (chatOpen) { event.preventDefault(); return; }
+  if (event.code === 'KeyT' && !event.repeat) { openChat(); event.preventDefault(); return; }
 
   if ((event.code === 'ControlLeft' || event.code === 'ControlRight') && !event.repeat) {
     sprintToggled = !sprintToggled;
@@ -3183,8 +3260,8 @@ function applyLanguage() {
   const craft=document.querySelector('#craftingArea h3'); if(craft) craft.textContent=labels.crafting;
   const instructions=document.getElementById('instructions');
   if(instructions) instructions.innerHTML=en
-    ? 'WASD - Move<br>CTRL - Toggle sprint<br>SPACE 2x - Toggle flight<br>SPACE / SHIFT - Up / down<br>Mouse - Look around<br>Scroll - Change block<br>Left click - Break<br>Right click - Build<br>E - Inventory<br>B - Get blocks<br>ESC - Pause'
-    : 'WASD - Mover<br>CTRL - Alternar corrida<br>ESPAÇO 2x - Ativar/desativar voo<br>ESPAÇO / SHIFT - Subir / descer<br>Mouse - Olhar<br>Scroll - Trocar bloco<br>Clique esquerdo - Quebrar<br>Clique direito - Construir<br>E - Inventário<br>B - Pegar blocos<br>ESC - Pausar';
+    ? 'WASD - Move<br>CTRL - Toggle sprint<br>SPACE 2x - Toggle flight<br>SPACE / SHIFT - Up / down<br>Mouse - Look around<br>Scroll - Change block<br>Left click - Break<br>Right click - Build<br>E - Inventory<br>B - Get blocks<br>T - Chat<br>ESC - Pause'
+    : 'WASD - Mover<br>CTRL - Alternar corrida<br>ESPAÇO 2x - Ativar/desativar voo<br>ESPAÇO / SHIFT - Subir / descer<br>Mouse - Olhar<br>Scroll - Trocar bloco<br>Clique esquerdo - Quebrar<br>Clique direito - Construir<br>E - Inventário<br>B - Pegar blocos<br>T - Chat<br>ESC - Pausar';
   const hint=document.getElementById('craftRecipeHint');
   if(hint) hint.innerHTML=en ? '1 log = 4 planks<br>4 planks = 1 crafting table' : '1 tronco = 4 tábuas<br>4 tábuas = 1 bancada de trabalho';
   updateOptionButtons();
