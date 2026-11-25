@@ -668,7 +668,7 @@ canvas { display: block; }
   <h1>BlockWorld</h1>
   <button id="start">JOGAR</button>
   <button id="homeOptionsButton" aria-label="Opções">⚙ OPÇÕES</button>
-  <div id="homeVersion">3.50</div>
+  <div id="homeVersion">3.60</div>
 </div>
 
 <div id="mobileWarning" role="dialog" aria-modal="true" aria-labelledby="mobileWarningTitle">
@@ -736,6 +736,7 @@ canvas { display: block; }
     <span>Sons e efeitos</span>
     <button class="optionToggle" id="soundToggle">LIGADO</button>
   </div>
+  <div class="optionRow"><span id="languageLabel">Idioma</span><button class="optionToggle" id="languageToggle">Português (Brasil)</button></div>
   <button class="pauseButton" id="backOptionsButton">VOLTAR</button>
 </div>
 
@@ -3128,15 +3129,83 @@ let optionsReturnTo = 'pause';
 let showTutorial = true;
 let showFPS = true;
 
+let gameLanguage = 'pt';
+try { gameLanguage = localStorage.getItem('blockWorldLanguage') === 'en' ? 'en' : 'pt'; } catch (error) {}
+
+function applyLanguage() {
+  const en = gameLanguage === 'en';
+  const set = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = value; };
+  const labels = en ? {
+    start:'PLAY', home:'⚙ OPTIONS', worlds:'HOW DO YOU WANT TO PLAY?', saved:'MY WORLDS', quick:'QUICK PLAY', back:'BACK',
+    create:'CREATE', mode:'CHOOSE YOUR MODE', creative:'CREATIVE', survival:'SURVIVAL', paused:'GAME PAUSED',
+    resume:'RESUME', options:'OPTIONS', exit:'EXIT GAME', graphics:'GRAPHICS', tutorial:'On-screen tutorial',
+    fps:'FPS counter', sounds:'Sounds and effects', language:'Language', languageButton:'English (US)',
+    on:'ON', off:'OFF', graphicsDesc:'Choose the visual quality of BlockWorld.',
+    minimum:'MINIMUM — simple colors', medium:'MEDIUM — light pixelation', maximum:'MAXIMUM — best quality',
+    dead:'YOU DIED!', deadDesc:'You fell into the void. Your adventure can still continue!',
+    respawn:'RESPAWN', deathMenu:'RETURN TO MAIN MENU', inventory:'INVENTORY',
+    inventoryHelp:'Organize your items and craft new blocks.', yourItems:'YOUR ITEMS', crafting:'CRAFTING 2×2',
+    catalog:'CREATIVE CATALOG', add:'ADD TO INVENTORY', returnGame:'BACK TO GAME'
+  } : {
+    start:'JOGAR', home:'⚙ OPÇÕES', worlds:'COMO DESEJA JOGAR?', saved:'MEUS MUNDOS', quick:'JOGO RÁPIDO', back:'VOLTAR',
+    create:'CRIAR', mode:'ESCOLHA SEU MODO', creative:'CRIATIVO', survival:'SOBREVIVÊNCIA', paused:'JOGO PAUSADO',
+    resume:'CONTINUAR', options:'OPÇÕES', exit:'SAIR DO JOGO', graphics:'GRÁFICOS', tutorial:'Tutorial na tela',
+    fps:'Contador de FPS', sounds:'Sons e efeitos', language:'Idioma', languageButton:'Português (Brasil)',
+    on:'LIGADO', off:'DESLIGADO', graphicsDesc:'Escolha a qualidade visual do BlockWorld.',
+    minimum:'MÍNIMO — cores simples', medium:'MÉDIO — pixelado leve', maximum:'MÁXIMO — melhor qualidade',
+    dead:'VOCÊ MORREU!', deadDesc:'Você caiu no vazio. Sua aventura ainda pode continuar!',
+    respawn:'RENASCER', deathMenu:'VOLTAR AO MENU INICIAL', inventory:'INVENTÁRIO',
+    inventoryHelp:'Organize seus itens e fabrique novos blocos.', yourItems:'SEUS ITENS', crafting:'FABRICAÇÃO 2×2',
+    catalog:'CATÁLOGO CRIATIVO', add:'ADICIONAR AO INVENTÁRIO', returnGame:'VOLTAR AO JOGO'
+  };
+  set('start',labels.start); set('homeOptionsButton',labels.home); set('languageLabel',labels.language);
+  set('languageToggle',labels.languageButton); set('worldChoiceMenu',labels.worlds);
+  set('savedWorldsButton',labels.saved); set('quickGameButton',labels.quick);
+  set('backWorldChoiceButton',labels.back); set('savedWorldsMenu',labels.saved);
+  set('newWorldButton',labels.create); set('backSavedWorldsButton',labels.back);
+  set('modeMenu',labels.mode); set('creativeButton',labels.creative); set('survivalButton',labels.survival);
+  set('backModeMenuButton',labels.back); set('pauseMenu',labels.paused);
+  set('resumeButton',labels.resume); set('openOptionsButton',labels.options); set('exitGameButton',labels.exit);
+  set('optionsMenu',labels.options); set('openGraphicsButton',labels.graphics); set('backOptionsButton',labels.back);
+  const rows=document.querySelectorAll('#optionsMenu .optionRow span');
+  if(rows[0]) rows[0].textContent=labels.tutorial; if(rows[1]) rows[1].textContent=labels.fps;
+  if(rows[2]) rows[2].textContent=labels.sounds;
+  set('graphicsMenu',labels.graphics); const gp=document.querySelector('#graphicsMenu p'); if(gp) gp.textContent=labels.graphicsDesc;
+  const choices=document.querySelectorAll('.graphicsChoice');
+  [labels.minimum,labels.medium,labels.maximum].forEach((v,i)=>{if(choices[i]) choices[i].textContent=v;});
+  set('backGraphicsButton',labels.back); set('deathTitle',labels.dead);
+  const dp=document.querySelector('#deathScreen p'); if(dp) dp.textContent=labels.deadDesc;
+  set('respawnButton',labels.respawn); set('deathMenuButton',labels.deathMenu);
+  set('inventoryHelp',labels.inventoryHelp); set('creativeCatalogTitle',labels.catalog);
+  set('inventoryAdd',labels.add); set('inventoryCancel',labels.returnGame);
+  const inv=document.querySelector('#inventoryMenu h2'); if(inv) inv.textContent=labels.inventory;
+  const storage=document.querySelector('#inventoryStorageArea h3'); if(storage) storage.textContent=labels.yourItems;
+  const craft=document.querySelector('#craftingArea h3'); if(craft) craft.textContent=labels.crafting;
+  const instructions=document.getElementById('instructions');
+  if(instructions) instructions.innerHTML=en
+    ? 'WASD - Move<br>CTRL - Toggle sprint<br>SPACE 2x - Toggle flight<br>SPACE / SHIFT - Up / down<br>Mouse - Look around<br>Scroll - Change block<br>Left click - Break<br>Right click - Build<br>E - Inventory<br>B - Get blocks<br>ESC - Pause'
+    : 'WASD - Mover<br>CTRL - Alternar corrida<br>ESPAÇO 2x - Ativar/desativar voo<br>ESPAÇO / SHIFT - Subir / descer<br>Mouse - Olhar<br>Scroll - Trocar bloco<br>Clique esquerdo - Quebrar<br>Clique direito - Construir<br>E - Inventário<br>B - Pegar blocos<br>ESC - Pausar';
+  const hint=document.getElementById('craftRecipeHint');
+  if(hint) hint.innerHTML=en ? '1 log = 4 planks<br>4 planks = 1 crafting table' : '1 tronco = 4 tábuas<br>4 tábuas = 1 bancada de trabalho';
+  updateOptionButtons();
+}
+
 function updateOptionButtons() {
-  document.getElementById('tutorialToggle').textContent = showTutorial ? 'LIGADO' : 'DESLIGADO';
-  document.getElementById('fpsToggle').textContent = showFPS ? 'LIGADO' : 'DESLIGADO';
-  document.getElementById('soundToggle').textContent = soundsEnabled ? 'LIGADO' : 'DESLIGADO';
+  const en = gameLanguage === 'en';
+  document.getElementById('tutorialToggle').textContent = showTutorial ? (en ? 'ON' : 'LIGADO') : (en ? 'OFF' : 'DESLIGADO');
+  document.getElementById('fpsToggle').textContent = showFPS ? (en ? 'ON' : 'LIGADO') : (en ? 'OFF' : 'DESLIGADO');
+  document.getElementById('soundToggle').textContent = soundsEnabled ? (en ? 'ON' : 'LIGADO') : (en ? 'OFF' : 'DESLIGADO');
   instructions.style.display = showTutorial ? 'block' : 'none';
   fpsDisplay.style.display = showFPS ? 'block' : 'none';
 }
 
 updateOptionButtons();
+applyLanguage();
+document.getElementById('languageToggle').addEventListener('click', () => {
+  gameLanguage = gameLanguage === 'pt' ? 'en' : 'pt';
+  try { localStorage.setItem('blockWorldLanguage', gameLanguage); } catch (error) {}
+  applyLanguage();
+});
 
 // JOGAR abre a escolha entre mundos salvos e jogo rápido.
 document.getElementById('homeOptionsButton').addEventListener('click', () => {
