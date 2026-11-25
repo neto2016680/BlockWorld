@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BlockWorld - Versão 2.32</title>
+<title>BlockWorld - Versão 2.42</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 
 <script type="importmap">
@@ -118,7 +118,9 @@ canvas { display: block; }
   line-height: 1.4; font-size: 15px;
 }
 #newWorldForm { display:flex; gap:8px; width:min(520px,90vw); margin:0 16px 14px; }
-#newWorldName { flex:1; min-width:0; padding:12px; font-size:17px; border:3px solid #333; }
+#newWorldName { flex:1; min-width:100px; padding:12px; font-size:17px; border:3px solid #333; }
+#newWorldChunks { width:150px; max-width:36%; padding:10px 6px; font-size:14px; border:3px solid #333; }
+#chunkRecommendation { max-width:520px; margin:0 16px 10px; padding:9px 12px; background:#0005; border:2px solid #ffffff55; text-align:center; font-size:14px; line-height:1.4; }
 #newWorldButton { padding:12px 16px; color:white; background:#65ae36; border:3px solid #263d20; font-size:16px; font-weight:bold; cursor:pointer; }
 #savedWorldList { width:min(560px,92vw); max-height:42vh; overflow-y:auto; margin-bottom:12px; }
 .savedWorldCard { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; padding:12px; margin:7px 0; background:#172b38cc; border:2px solid #ffffff66; }
@@ -422,7 +424,7 @@ canvas { display: block; }
 
 <div id="menu">
   <h1>BlockWorld</h1>
-  <div id="updateSubtitle">VERSÃO 2.32</div>
+  <div id="updateSubtitle">VERSÃO 2.42</div>
   <button id="start">JOGAR</button>
 </div>
 
@@ -448,8 +450,15 @@ canvas { display: block; }
   </div>
   <div id="newWorldForm">
     <input id="newWorldName" type="text" maxlength="24" placeholder="Nome do mundo..." aria-label="Nome do mundo">
+    <select id="newWorldChunks" aria-label="Tamanho do mundo">
+      <option value="auto">Automático</option>
+      <option value="1">1 chunk</option>
+      <option value="4">4 chunks</option>
+      <option value="9">9 chunks</option>
+    </select>
     <button id="newWorldButton">CRIAR</button>
   </div>
+  <div id="chunkRecommendation">Analisando o desempenho deste computador...</div>
   <div id="savedWorldList"></div>
   <div id="savedWorldsStatus"></div>
   <button class="pauseButton" id="backSavedWorldsButton">VOLTAR</button>
@@ -1229,11 +1238,12 @@ function randomWorldHeight(x, z, seed) {
   return THREE.MathUtils.clamp(Math.round(a * 1.25 + b * 1.05 + c * 0.8 + d * 0.45), -2, 3);
 }
 
-function generateRandomTerrain(seed) {
+function generateRandomTerrain(seed, chunksPerSide = 2) {
   blocks.clear();
   const treeSpots = [];
-  for (let x = -12; x < 12; x++) {
-    for (let z = -12; z < 12; z++) {
+  const halfSize = chunksPerSide * 8;
+  for (let x = -halfSize; x < halfSize; x++) {
+    for (let z = -halfSize; z < halfSize; z++) {
       const height = randomWorldHeight(x, z, seed);
       addBlock(x, -5, z, 'bedrock', false);
       for (let y = -4; y < height - 2; y++) addBlock(x, y, z, 'stone', false);
@@ -2076,6 +2086,9 @@ let saveDebounceTimer = null;
 let lastAutosave = 0;
 let activeWorldName = '';
 let activeWorldSeed = 0;
+let activeWorldChunks = 4;
+let recommendedChunks = 1;
+let chunkBenchmarkRunning = false;
 
 function openWorldDatabase() {
   return new Promise((resolve, reject) => {
@@ -2105,7 +2118,7 @@ function worldStoreRequest(mode, action, value) {
 
 function serializeWorld() {
   return {
-    id: activeSavedWorldId, name: activeWorldName, seed: activeWorldSeed,
+    id: activeSavedWorldId, name: activeWorldName, seed: activeWorldSeed, chunks: activeWorldChunks,
     blocks: Array.from(blocks.values(), block => [block.position.x, block.position.y, block.position.z, block.type]),
     mode: gameMode,
     player: { x: camera.position.x, y: camera.position.y, z: camera.position.z },
@@ -2141,7 +2154,7 @@ async function refreshSavedWorldList() {
       card.className = 'savedWorldCard';
       const name = document.createElement('div');
       name.className = 'savedWorldName';
-      name.textContent = world.name || 'Mundo sem nome';
+      name.textContent = (world.name || 'Mundo sem nome') + ' — ' + (world.chunks || 4) + ' chunks';
       const actions = document.createElement('div');
       actions.className = 'savedWorldActions';
       const creative = document.createElement('button');
@@ -2169,23 +2182,74 @@ async function refreshSavedWorldList() {
   }
 }
 
+async function measureChunkFps() {
+  return new Promise(resolve => {
+    let frames = 0;
+    const started = performance.now();
+    function sample(now) {
+      frames++;
+      const elapsed = now - started;
+      if (elapsed >= 850) resolve(Math.round(frames * 1000 / elapsed));
+      else requestAnimationFrame(sample);
+    }
+    requestAnimationFrame(sample);
+  });
+}
+
+async function benchmarkChunkSizes() {
+  if (chunkBenchmarkRunning) return;
+  chunkBenchmarkRunning = true;
+  const panel = document.getElementById('chunkRecommendation');
+  panel.textContent = 'Testando 1, 4 e 9 chunks... aguarde alguns segundos.';
+  const originalBlocks = Array.from(blocks.entries());
+  const testResults = [];
+  try {
+    for (const chunks of [1, 4, 9]) {
+      generateRandomTerrain(24681357, chunks === 1 ? 1 : chunks === 4 ? 2 : 3);
+      await new Promise(resolve => setTimeout(resolve, 120));
+      const fps = await measureChunkFps();
+      testResults.push({ chunks, fps });
+    }
+    const supported = testResults.filter(result => result.fps >= 40);
+    recommendedChunks = supported.length ? supported[supported.length - 1].chunks : 1;
+    const summary = testResults.map(result => result.chunks + ' chunk(s): ' + result.fps + ' FPS').join(' | ');
+    panel.textContent = 'Recomendado: ' + recommendedChunks + ' chunks (meta: 40 FPS). Teste: ' + summary + '.';
+    const selector = document.getElementById('newWorldChunks');
+    if (selector.value === 'auto') selector.title = 'Recomendação atual: ' + recommendedChunks + ' chunks';
+  } catch (error) {
+    recommendedChunks = 1;
+    panel.textContent = 'Não foi possível medir o desempenho. Recomendação segura: 1 chunk.';
+    console.warn('Falha no teste de chunks:', error);
+  } finally {
+    blocks.clear();
+    for (const [key, block] of originalBlocks) blocks.set(key, block);
+    rebuildInstances();
+    chunkBenchmarkRunning = false;
+  }
+}
+
 async function createSavedWorld() {
   const input = document.getElementById('newWorldName');
   const status = document.getElementById('savedWorldsStatus');
   const name = input.value.trim();
   if (!name) { status.textContent = 'Digite um nome para o mundo.'; input.focus(); return; }
   if (!worldDatabase) { status.textContent = 'O salvamento ainda está carregando.'; return; }
+  if (chunkBenchmarkRunning) { status.textContent = 'Aguarde o teste de desempenho terminar.'; return; }
+  const selector = document.getElementById('newWorldChunks');
+  const chunks = selector.value === 'auto' ? recommendedChunks : Number(selector.value);
+  const chunksPerSide = chunks === 1 ? 1 : chunks === 4 ? 2 : 3;
   const id = 'world-' + Date.now() + '-' + Math.floor(Math.random() * 100000);
   const seed = Math.floor(Math.random() * 2147483000) + 1;
-  generateRandomTerrain(seed);
+  generateRandomTerrain(seed, chunksPerSide);
   activeSavedWorldId = id;
   activeWorldName = name;
   activeWorldSeed = seed;
+  activeWorldChunks = chunks;
   camera.position.set(0, getSurfaceHeight(0, 8) + 2.12, 8);
   try {
     await worldStoreRequest('readwrite', 'put', serializeWorld());
     input.value = '';
-    status.textContent = 'Mundo "' + name + '" criado! Escolha um modo para jogar.';
+    status.textContent = 'Mundo "' + name + '" criado com ' + chunks + ' chunk(s)! Escolha um modo para jogar.';
     await refreshSavedWorldList();
   } catch (error) {
     activeSavedWorldId = null;
@@ -2209,6 +2273,7 @@ async function loadSavedWorld(id, mode) {
     activeSavedWorldId = world.id;
     activeWorldName = world.name || 'Mundo sem nome';
     activeWorldSeed = world.seed || 0;
+    activeWorldChunks = world.chunks || 4;
     savedWorldsMenu.style.display = 'none';
     startWorld(mode, world, true);
   } catch (error) {
@@ -2268,6 +2333,7 @@ document.getElementById('savedWorldsButton').addEventListener('click', async () 
   savedWorldsMenu.style.display = 'flex';
   document.getElementById('savedWorldsStatus').textContent = '';
   await refreshSavedWorldList();
+  await benchmarkChunkSizes();
 });
 document.getElementById('newWorldButton').addEventListener('click', createSavedWorld);
 document.getElementById('newWorldName').addEventListener('keydown', event => {
@@ -2277,6 +2343,7 @@ document.getElementById('newWorldName').addEventListener('keydown', event => {
 document.getElementById('quickGameButton').addEventListener('click', () => {
   activeSavedWorldId = null;
   activeWorldName = '';
+  activeWorldChunks = 4;
   worldChoiceMenu.style.display = 'none';
   modeMenu.style.display = 'flex';
 });
