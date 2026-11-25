@@ -622,6 +622,7 @@ function applyGraphicsQuality() {
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1));
 
 document.body.appendChild(renderer.domElement);
+applyGraphicsQuality();
 
 const controls = new PointerLockControls(
   camera,
