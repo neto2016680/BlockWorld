@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BlockWorld - Versão 3.20</title>
+<title>BlockWorld - Versão 4.40</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 
 <script type="importmap">
@@ -689,7 +689,7 @@ canvas { display: block; }
   <h1>BlockWorld</h1>
   <button id="start">JOGAR</button>
   <button id="homeOptionsButton" aria-label="Opções">⚙ OPÇÕES</button>
-  <div id="homeVersion">4.30</div>
+  <div id="homeVersion">4.40</div>
 </div>
 
 <div id="mobileWarning" role="dialog" aria-modal="true" aria-labelledby="mobileWarningTitle">
@@ -2826,9 +2826,13 @@ window.addEventListener('keydown', (event) => {
 document.addEventListener('keydown', (event) => {
 
   if (chatOpen) { event.preventDefault(); return; }
-  if ((event.code === 'KeyQ' || event.key.toLowerCase() === 'q') && !event.repeat && gameStarted && !inventoryOpen && !playerDead) {
-    dropRepeatTimer = 0;
-    dropHeldBlock();
+  const isQKey = event.code === 'KeyQ' || (event.key && event.key.toLowerCase() === 'q');
+  if (isQKey) {
+    keys['KeyQ'] = true;
+    if (!event.repeat && gameStarted && !inventoryOpen && !playerDead) {
+      dropRepeatTimer = 0;
+      dropHeldBlock();
+    }
     event.preventDefault();
   }
   if (event.code === 'KeyT' && !event.repeat) { openChat(); event.preventDefault(); return; }
@@ -2894,7 +2898,10 @@ document.addEventListener('keydown', (event) => {
 
 document.addEventListener('keyup', (event) => {
   keys[event.code] = false;
-  if (event.code === 'KeyQ' || event.key.toLowerCase() === 'q') dropRepeatTimer = 0;
+  if (event.code === 'KeyQ' || (event.key && event.key.toLowerCase() === 'q')) {
+    keys['KeyQ'] = false;
+    dropRepeatTimer = 0;
+  }
   if ((event.code === 'ShiftLeft' || event.code === 'ShiftRight') && isCrouching) {
     isCrouching = false;
     camera.position.y += CROUCH_OFFSET;
@@ -3000,15 +3007,17 @@ function dropHeldBlock() {
 }
 function updatePlayer(delta) {
 
-  if (!controls.isLocked || playerDead) return;
-
-  if (keys['KeyQ'] && !inventoryOpen && !chatOpen) {
+  if (keys['KeyQ'] && gameStarted && !inventoryOpen && !chatOpen && !playerDead) {
     dropRepeatTimer += delta;
     if (dropRepeatTimer >= 0.25) {
       dropRepeatTimer = 0;
       dropHeldBlock();
     }
+  } else {
+    dropRepeatTimer = 0;
   }
+
+  if (!controls.isLocked || playerDead) return;
 
   let forward = 0;
   let sideways = 0;
