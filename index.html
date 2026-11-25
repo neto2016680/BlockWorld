@@ -689,7 +689,7 @@ canvas { display: block; }
   <h1>BlockWorld</h1>
   <button id="start">JOGAR</button>
   <button id="homeOptionsButton" aria-label="Opções">⚙ OPÇÕES</button>
-  <div id="homeVersion">4.00</div>
+  <div id="homeVersion">4.10</div>
 </div>
 
 <div id="mobileWarning" role="dialog" aria-modal="true" aria-labelledby="mobileWarningTitle">
@@ -2635,6 +2635,63 @@ function addChatMessage(message) {
   clearTimeout(chatHideTimer);
   if (!chatOpen) chatHideTimer = setTimeout(() => { chatMessages.style.display = 'none'; }, 9000);
 }
+function normalizeBlockCommandName(value) {
+  return value.trim().toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g, '').replace(/\\s+/g, ' ');
+}
+function getBlockFromCommand(name) {
+  const normalized = normalizeBlockCommandName(name);
+  const aliases = {
+    grass:['grass','grass_block','grama','bloco de grama'],
+    dirt:['dirt','terra','bloco de terra'],
+    stone:['stone','pedra','bloco de pedra'],
+    wood:['wood','log','oak_log','madeira','tronco','tronco de madeira'],
+    leaves:['leaves','leaf','folhas','folha'],
+    wool:['wool','la'],
+    planks:['planks','wooden_planks','oak_planks','tabuas','tabuas de madeira'],
+    crafting_table:['crafting_table','workbench','bancada','bancada de trabalho'],
+    flower_red:['flower_red','red_flower','poppy','flor vermelha'],
+    flower_yellow:['flower_yellow','yellow_flower','dandelion','flor amarela'],
+    glass:['glass','vidro']
+  };
+  for (const item of inventoryCatalog) {
+    const names = aliases[item.type] || [item.type];
+    names.push(item.label);
+    if (names.some(alias => normalizeBlockCommandName(alias) === normalized)) return item;
+  }
+  for (const color of woolColors) {
+    const type = 'wool_' + color.id;
+    const names = [
+      type, color.id + '_wool', color.label + ' wool',
+      'la ' + color.label, 'la ' + color.id.replace('_',' '),
+      'wool ' + color.id.replace('_',' ')
+    ];
+    if (names.some(alias => normalizeBlockCommandName(alias) === normalized)) {
+      return { type, label:'Lã ' + color.label };
+    }
+  }
+  return null;
+}
+function giveBlockFromCommand(name) {
+  const item = getBlockFromCommand(name);
+  if (!item) {
+    addChatMessage(gameLanguage === 'en' ? 'Unknown block. Try /give grass or /give grama.' : 'Bloco desconhecido. Tente /give grass ou /give grama.');
+    return;
+  }
+  const existing = inventorySlots.find(slot => slot && slot.type === item.type && slot.count !== Infinity && slot.count < 64);
+  if (existing) {
+    existing.count += 1;
+  } else {
+    const empty = inventorySlots.findIndex(slot => !slot || slot.count <= 0);
+    if (empty < 0) {
+      addChatMessage(gameLanguage === 'en' ? 'Inventory full!' : 'Inventário cheio!');
+      return;
+    }
+    inventorySlots[empty] = { type:item.type, label:item.label, count:1 };
+  }
+  updateHotbar();
+  scheduleWorldSave();
+  addChatMessage((gameLanguage === 'en' ? 'Given: ' : 'Recebido: ') + item.label);
+}
 function runChatCommand(message) {
   const command = message.trim().toLowerCase().replace(/\\s+/g, ' ');
   if (command === '/gamemode creative') {
@@ -2672,6 +2729,19 @@ function runChatCommand(message) {
     updateHotbar();
     scheduleWorldSave();
     addChatMessage(gameLanguage === 'en' ? 'Game mode changed to Survival.' : 'Modo de jogo alterado para Sobrevivência.');
+    return true;
+  }
+  if (command.startsWith('/give ')) {
+    const blockName = message.trim().slice(6).trim();
+    if (!blockName) {
+      addChatMessage(gameLanguage === 'en' ? 'Usage: /give block_name' : 'Use: /give nome_do_bloco');
+    } else {
+      giveBlockFromCommand(blockName);
+    }
+    return true;
+  }
+  if (command === '/give') {
+    addChatMessage(gameLanguage === 'en' ? 'Usage: /give block_name' : 'Use: /give nome_do_bloco');
     return true;
   }
   if (command === '/tutorial false') {
