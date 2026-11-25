@@ -689,7 +689,7 @@ canvas { display: block; }
   <h1>BlockWorld</h1>
   <button id="start">JOGAR</button>
   <button id="homeOptionsButton" aria-label="Opções">⚙ OPÇÕES</button>
-  <div id="homeVersion">4.10</div>
+  <div id="homeVersion">4.20</div>
 </div>
 
 <div id="mobileWarning" role="dialog" aria-modal="true" aria-labelledby="mobileWarningTitle">
@@ -2818,6 +2818,11 @@ document.addEventListener('keydown', (event) => {
     event.preventDefault();
   }
   keys[event.code] = true;
+  if (event.code === 'KeyQ' && !event.repeat && controls.isLocked && !inventoryOpen) {
+    dropRepeatTimer = 0;
+    dropHeldBlock();
+    event.preventDefault();
+  }
 
   if ((event.code === 'ShiftLeft' || event.code === 'ShiftRight') && gameMode === 'survival' && controls.isLocked && canJump && !isCrouching) {
     isCrouching = true;
@@ -2875,6 +2880,7 @@ document.addEventListener('keydown', (event) => {
 
 document.addEventListener('keyup', (event) => {
   keys[event.code] = false;
+  if (event.code === 'KeyQ') dropRepeatTimer = 0;
   if ((event.code === 'ShiftLeft' || event.code === 'ShiftRight') && isCrouching) {
     isCrouching = false;
     camera.position.y += CROUCH_OFFSET;
@@ -2957,9 +2963,38 @@ document.addEventListener('contextmenu', (event) => {
 // ATUALIZAR JOGADOR
 // =================================
 
+let dropRepeatTimer = 0;
+function dropHeldBlock() {
+  if (!gameStarted || !controls.isLocked || inventoryOpen || playerDead || chatOpen) return;
+  const item = inventorySlots[selectedBlock];
+  if (!item || (gameMode === 'survival' && item.count <= 0)) return;
+  const direction = new THREE.Vector3();
+  camera.getWorldDirection(direction);
+  direction.normalize();
+  const dropPosition = camera.position.clone().add(direction.clone().multiplyScalar(1.15));
+  dropPosition.y -= 0.35;
+  spawnDroppedItem(item.type, dropPosition);
+  const dropped = droppedItems[droppedItems.length - 1];
+  dropped.velocity.copy(direction.multiplyScalar(3.2));
+  dropped.velocity.y += 1.1;
+  if (gameMode === 'survival') {
+    item.count--;
+    if (item.count <= 0) inventorySlots[selectedBlock] = null;
+    updateHotbar();
+    scheduleWorldSave();
+  }
+}
 function updatePlayer(delta) {
 
   if (!controls.isLocked || playerDead) return;
+
+  if (keys['KeyQ'] && !inventoryOpen && !chatOpen) {
+    dropRepeatTimer += delta;
+    if (dropRepeatTimer >= 0.25) {
+      dropRepeatTimer = 0;
+      dropHeldBlock();
+    }
+  }
 
   let forward = 0;
   let sideways = 0;
