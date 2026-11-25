@@ -2841,6 +2841,7 @@ document.getElementById('backModeMenuButton').addEventListener('click', () => {
 function startWorld(mode, restoreData = null, lockAlreadyRequested = false) {
   gameStarted = true;
   gameMode = mode;
+  craftGrid.fill(null);
   if (restoreData) {
     const savedInventory = restoreData.inventory || [];
     const sameSavedMode = restoreData.mode === mode;
