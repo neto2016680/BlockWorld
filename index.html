@@ -564,7 +564,7 @@ canvas { display: block; }
 <div id="inventoryMenu">
   <div id="inventoryPanel">
     <h2>INVENTÁRIO</h2>
-    <p id="inventoryHelp">Clique em um item para colocá-lo na grade de criação. Não há boneco nesta tela.</p>
+    <p id="inventoryHelp">Organize seus itens e fabrique novos blocos.</p>
     <div id="inventoryCraftLayout">
       <section id="inventoryStorageArea">
         <h3>SEUS ITENS</h3>
@@ -599,7 +599,7 @@ canvas { display: block; }
     Scroll - Trocar bloco<br>
     Clique esquerdo - Quebrar<br>
     Clique direito - Construir<br>
-    B - Inventário<br>    ESC - Pausar
+    E - Inventário<br>    B - Pegar blocos<br>    ESC - Pausar
   </div>
 
   <div id="crosshair">+</div>
@@ -1697,6 +1697,7 @@ const inventoryChoices = document.getElementById('inventoryChoices');
 const inventoryPreview = document.getElementById('inventoryPreview');
 let gameMode = 'creative';
 let inventoryOpen = false;
+let blockPickerOpen = false;
 let chosenInventoryType = 'wool_white';
 let woolCatalogOpen = false;
 const inventoryCatalog = [
@@ -1830,12 +1831,16 @@ function renderInventory() {
     craftOutput.title = 'Receita não reconhecida';
   }
   document.getElementById('inventoryPreview').style.display = 'none';
-  document.getElementById('inventoryChoices').style.display = isCreative ? 'grid' : 'none';
-  document.getElementById('creativeCatalogTitle').style.display = isCreative ? 'block' : 'none';
-  document.getElementById('inventoryAdd').style.display = isCreative ? 'inline-block' : 'none';
-  document.getElementById('inventoryHelp').textContent = isCreative
-    ? 'Inventário criativo: use o catálogo abaixo. Também é possível testar as receitas.'
-    : 'Clique em um item para movê-lo à grade 2×2. Clique no resultado para fabricar.';
+  document.getElementById('inventoryCraftLayout').style.display = blockPickerOpen ? 'none' : 'flex';
+  document.getElementById('inventoryChoices').style.display = blockPickerOpen ? 'grid' : 'none';
+  document.getElementById('creativeCatalogTitle').style.display = blockPickerOpen ? 'block' : 'none';
+  document.getElementById('inventoryAdd').style.display = blockPickerOpen ? 'inline-block' : 'none';
+  document.getElementById('inventoryAdd').textContent = 'PEGAR BLOCO';
+  document.getElementById('inventoryHelp').textContent = blockPickerOpen
+    ? 'Escolha um bloco no catálogo e clique em PEGAR BLOCO.'
+    : 'Clique nos seus itens para colocá-los na grade 2×2 e fabricar.';
+  document.getElementById('inventoryPanel').querySelector('h2').textContent = blockPickerOpen ? 'PEGAR BLOCOS' : 'INVENTÁRIO';
+  document.getElementById('inventoryCancel').textContent = blockPickerOpen ? 'VOLTAR AO JOGO' : 'VOLTAR AO JOGO';
   inventoryChoices.innerHTML = '';
   const visibleItems = woolCatalogOpen ? woolColors.map(color => ({ type:'wool_' + color.id, label:color.label })) : inventoryCatalog;
   visibleItems.forEach(item => {
@@ -1903,13 +1908,15 @@ function addCraftedItem(type, amount) {
 
 function closeInventory() {
   inventoryOpen = false;
+  blockPickerOpen = false;
   inventoryMenu.style.display = 'none';
   controls.lock();
 }
 
-function openInventory() {
+function openInventory(picker = false) {
   if (!controls.isLocked || !gameStarted || inventoryOpen) return;
   inventoryOpen = true;
+  blockPickerOpen = picker;
   controls.unlock();
 }
 
@@ -2258,8 +2265,13 @@ document.addEventListener('keydown', (event) => {
     camera.position.y -= CROUCH_OFFSET;
   }
 
+  if (event.code === 'KeyE' && !event.repeat) {
+    openInventory(false);
+    return;
+  }
+
   if (event.code === 'KeyB' && !event.repeat) {
-    openInventory();
+    openInventory(true);
     return;
   }
 
