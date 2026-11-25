@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BlockWorld - Versão 2.58</title>
+<title>BlockWorld - Versão 2.59</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 
 <script type="importmap">
@@ -369,14 +369,36 @@ canvas { display: block; }
   pointer-events: auto;
 }
 #inventoryPanel {
-  width: min(680px, 92vw);
-  max-height: 86vh;
+  width: min(790px, 94vw);
+  max-height: 90vh;
   overflow-y: auto;
-  padding: 22px;
+  padding: 20px;
   background: #454545;
   border: 5px solid #222;
   box-shadow: inset 0 0 0 3px #888;
 }
+#inventoryCraftLayout { display:flex; gap:24px; align-items:flex-start; justify-content:center; flex-wrap:wrap; }
+#inventoryStorageArea, #craftingArea { background:#333; border:2px solid #777; padding:12px; }
+#inventoryStorageArea h3, #craftingArea h3, #creativeCatalogTitle { margin:0 0 10px; text-align:center; font-size:16px; }
+#inventorySlots { display:grid; grid-template-columns:repeat(3,68px); gap:5px; }
+.inventoryStorageSlot, .craftSlot {
+  position:relative; width:68px; height:68px; padding:0;
+  display:flex; align-items:center; justify-content:center;
+  background:#555; border:3px solid #222; cursor:pointer; color:white;
+}
+.inventoryStorageSlot:hover, .craftSlot:hover { border-color:#ddd; background:#666; }
+.inventoryStorageSlot .blockIcon, .craftSlot .blockIcon { transform:scale(1.15); }
+.inventoryStorageSlot .slotCount, .craftSlot .slotCount { position:absolute; right:3px; bottom:1px; margin:0; }
+#craftingWorkbench { display:flex; align-items:center; gap:12px; }
+#craftGrid { display:grid; grid-template-columns:repeat(2,58px); gap:5px; }
+.craftSlot { width:58px; height:58px; }
+#craftArrow { font-size:32px; color:#ddd; text-shadow:2px 2px #111; }
+#craftOutput { width:68px; height:68px; display:flex; align-items:center; justify-content:center; background:#777; border:3px solid #222; cursor:pointer; color:white; }
+#craftOutput.ready { border-color:#a6e477; background:#647f4d; }
+#craftOutput .blockIcon { transform:scale(1.25); }
+#craftRecipeHint { color:#ddd; text-align:center; font-size:13px; line-height:1.5; margin:10px 0 0; }
+#inventoryPreview { display:none; }
+#creativeCatalogTitle { margin-top:14px; }
 #inventoryPanel h2 {
   margin: 0 0 8px;
   text-align: center;
@@ -458,7 +480,7 @@ canvas { display: block; }
   <h1>BlockWorld</h1>
   <button id="start">JOGAR</button>
   <button id="homeOptionsButton" aria-label="Opções">⚙ OPÇÕES</button>
-  <div id="homeVersion">2.58</div>
+  <div id="homeVersion">2.59</div>
 </div>
 
 <div id="mobileWarning" role="dialog" aria-modal="true" aria-labelledby="mobileWarningTitle">
@@ -542,8 +564,24 @@ canvas { display: block; }
 <div id="inventoryMenu">
   <div id="inventoryPanel">
     <h2>INVENTÁRIO</h2>
-    <p id="inventoryHelp">Escolha um bloco para ver a prévia e adicioná-lo à sua hotbar.</p>
+    <p id="inventoryHelp">Clique em um item para colocá-lo na grade de criação. Não há boneco nesta tela.</p>
+    <div id="inventoryCraftLayout">
+      <section id="inventoryStorageArea">
+        <h3>SEUS ITENS</h3>
+        <div id="inventorySlots"></div>
+      </section>
+      <section id="craftingArea">
+        <h3>FABRICAÇÃO 2×2</h3>
+        <div id="craftingWorkbench">
+          <div id="craftGrid"></div>
+          <div id="craftArrow">➜</div>
+          <button id="craftOutput" aria-label="Resultado da fabricação"><span>?</span></button>
+        </div>
+        <p id="craftRecipeHint">1 tronco = 4 tábuas<br>4 tábuas = 1 bancada de trabalho</p>
+      </section>
+    </div>
     <div id="inventoryPreview"><span>Selecione um bloco</span></div>
+    <h3 id="creativeCatalogTitle">CATÁLOGO CRIATIVO</h3>
     <div id="inventoryChoices"></div>
     <div class="inventoryActions">
       <button id="inventoryAdd">ADICIONAR AO INVENTÁRIO</button>
@@ -1002,6 +1040,7 @@ const materials = {
   }),
   wool: new THREE.MeshLambertMaterial({ map: pixelTextures.wool }),
   planks: new THREE.MeshLambertMaterial({ map: pixelTextures.planks }),
+  crafting_table: new THREE.MeshLambertMaterial({ map: pixelTextures.planks }),
   flower_red: new THREE.MeshLambertMaterial({ map: pixelTextures.flower_red }),
   flower_yellow: new THREE.MeshLambertMaterial({ map: pixelTextures.flower_yellow }),
   glass: new THREE.MeshLambertMaterial({ map: glassTexture, transparent: true, opacity: 0.58, depthWrite: false })
@@ -1156,6 +1195,7 @@ const blockIcons = {
   leaves: textureToDataURL(pixelTextures.leaves),
   wool: textureToDataURL(pixelTextures.wool),
   planks: textureToDataURL(pixelTextures.planks),
+  crafting_table: textureToDataURL(pixelTextures.planks),
   flower_red: textureToDataURL(pixelTextures.flower_red),
   flower_yellow: textureToDataURL(pixelTextures.flower_yellow),
   glass: textureToDataURL(glassTexture)
@@ -1264,6 +1304,7 @@ const blockTypes = [
   'bedrock',
   'wool',
   'planks',
+  'crafting_table',
   'flower_red',
   'flower_yellow',
   'glass'
@@ -1328,7 +1369,7 @@ const flatBlockColors = {
   wood:0x9a6a3e, leaves:0x397b2c, bedrock:0x333333,
   wool:0xdedede, planks:0xb98a52, flower_red:0xd94343,
   flower_yellow:0xf0d43a,
-  glass:0x9bddeb
+  glass:0x9bddeb, crafting_table:0x9b6737
 };
 const flatBlockMaterials = new Map();
 function getFlatBlockMaterial(type) {
@@ -1666,6 +1707,7 @@ const inventoryCatalog = [
   { type:'leaves', label:'Folhas' },
   { type:'wool', label:'Lã' },
   { type:'planks', label:'Tábuas' },
+  { type:'crafting_table', label:'Bancada de trabalho' },
   { type:'flower_red', label:'Flor vermelha' },
   { type:'flower_yellow', label:'Flor amarela' },
   { type:'glass', label:'Vidro' }
@@ -1729,52 +1771,134 @@ function getInventoryItem(type) {
 }
 
 function renderInventory() {
+  const storage = document.getElementById('inventorySlots');
+  const craftGridElement = document.getElementById('craftGrid');
+  const craftOutput = document.getElementById('craftOutput');
+  const isCreative = gameMode === 'creative';
+  storage.innerHTML = '';
+  inventorySlots.forEach((item, index) => {
+    const slot = document.createElement('button');
+    slot.className = 'inventoryStorageSlot';
+    slot.title = item ? item.label + ' — ' + (item.count === Infinity ? '∞' : item.count) : 'Vazio';
+    if (item) {
+      slot.appendChild(createBlockIcon(item.type, item.label));
+      const count = document.createElement('span');
+      count.className = 'slotCount';
+      count.textContent = item.count === Infinity ? '∞' : item.count;
+      slot.appendChild(count);
+    }
+    slot.addEventListener('click', () => {
+      if (!item) return;
+      const empty = craftGrid.findIndex(entry => !entry || entry.count <= 0);
+      if (empty < 0 || craftGrid.some(entry => entry && entry.type !== item.type)) return;
+      craftGrid[empty] = { type:item.type, label:item.label, count:1 };
+      if (!isCreative && item.count !== Infinity) {
+        item.count--;
+        if (item.count <= 0) inventorySlots[index] = null;
+      }
+      updateHotbar(); scheduleWorldSave(); renderInventory();
+    });
+    storage.appendChild(slot);
+  });
+  craftGridElement.innerHTML = '';
+  craftGrid.forEach((item, index) => {
+    const slot = document.createElement('button');
+    slot.className = 'craftSlot';
+    slot.title = item ? item.label + ' — clique para devolver' : 'Espaço de fabricação';
+    if (item) {
+      slot.appendChild(createBlockIcon(item.type, item.label));
+      const count = document.createElement('span');
+      count.className = 'slotCount'; count.textContent = item.count; slot.appendChild(count);
+    }
+    slot.addEventListener('click', () => {
+      if (!item || !addCraftedItem(item.type, 1)) return;
+      item.count--; if (item.count <= 0) craftGrid[index] = null;
+      updateHotbar(); scheduleWorldSave(); renderInventory();
+    });
+    craftGridElement.appendChild(slot);
+  });
+  const recipe = getCraftingRecipe();
+  craftOutput.innerHTML = '';
+  craftOutput.classList.toggle('ready', !!recipe);
+  if (recipe) {
+    craftOutput.appendChild(createBlockIcon(recipe.type, recipe.label));
+    const count = document.createElement('span');
+    count.className = 'slotCount'; count.textContent = '×' + recipe.count; craftOutput.appendChild(count);
+    craftOutput.title = recipe.label + ' ×' + recipe.count + ' — fabricar';
+  } else {
+    const empty = document.createElement('span'); empty.textContent = '?'; empty.style.fontSize = '28px'; craftOutput.appendChild(empty);
+    craftOutput.title = 'Receita não reconhecida';
+  }
+  document.getElementById('inventoryPreview').style.display = 'none';
+  document.getElementById('inventoryChoices').style.display = isCreative ? 'grid' : 'none';
+  document.getElementById('creativeCatalogTitle').style.display = isCreative ? 'block' : 'none';
+  document.getElementById('inventoryAdd').style.display = isCreative ? 'inline-block' : 'none';
+  document.getElementById('inventoryHelp').textContent = isCreative
+    ? 'Inventário criativo: use o catálogo abaixo. Também é possível testar as receitas.'
+    : 'Clique em um item para movê-lo à grade 2×2. Clique no resultado para fabricar.';
   inventoryChoices.innerHTML = '';
-  const visibleItems = woolCatalogOpen
-    ? woolColors.map(color => ({ type:'wool_' + color.id, label:color.label }))
-    : inventoryCatalog;
-  visibleItems.forEach((item) => {
+  const visibleItems = woolCatalogOpen ? woolColors.map(color => ({ type:'wool_' + color.id, label:color.label })) : inventoryCatalog;
+  visibleItems.forEach(item => {
     const button = document.createElement('button');
     button.className = 'inventoryItem' + (chosenInventoryType === item.type ? ' selected' : '');
     button.appendChild(createBlockIcon(item.type, item.label));
-    const label = document.createElement('span');
-    label.textContent = item.label;
-    button.appendChild(label);
+    const label = document.createElement('span'); label.textContent = item.label; button.appendChild(label);
     button.addEventListener('click', () => {
-      if (item.type === 'wool') {
-        woolCatalogOpen = true;
-        chosenInventoryType = 'wool_white';
-      } else {
-        chosenInventoryType = item.type;
-        if (item.type.startsWith('wool_')) woolCatalogOpen = false;
-      }
+      if (item.type === 'wool') { woolCatalogOpen = true; chosenInventoryType = 'wool_white'; }
+      else { chosenInventoryType = item.type; if (item.type.startsWith('wool_')) woolCatalogOpen = false; }
       renderInventory();
     });
     inventoryChoices.appendChild(button);
   });
-  const selected = getInventoryItem(chosenInventoryType) || inventoryCatalog.find(item => item.type === 'wool');
-  inventoryPreview.innerHTML = '';
-  inventoryPreview.appendChild(createBlockIcon(selected.type, selected.label));
-  const name = document.createElement('strong');
-  name.textContent = selected.label;
-  inventoryPreview.appendChild(name);
-  const back = document.getElementById('inventoryWoolBack');
-  if (woolCatalogOpen) {
-    if (!back) {
-      const button = document.createElement('button');
-      button.id = 'inventoryWoolBack';
-      button.textContent = '← VOLTAR AOS BLOCOS';
-      button.className = 'inventoryItem';
-      button.style.marginTop = '10px';
-      button.addEventListener('click', () => {
-        woolCatalogOpen = false;
-        renderInventory();
-      });
-      inventoryChoices.after(button);
+  craftOutput.onclick = () => {
+    const currentRecipe = getCraftingRecipe();
+    if (!currentRecipe || !addCraftedItem(currentRecipe.type, currentRecipe.count)) return;
+    if (!isCreative) {
+      craftGrid.forEach(entry => { if (entry) entry.count--; });
+      for (let i = 0; i < craftGrid.length; i++) if (craftGrid[i] && craftGrid[i].count <= 0) craftGrid[i] = null;
     }
-  } else if (back) {
-    back.remove();
+    updateHotbar(); scheduleWorldSave(); renderInventory(); playGameSound('pickup');
+  };
+}
+
+const craftGrid = Array(4).fill(null);
+
+function getCraftingRecipe() {
+  const occupied = craftGrid.filter(Boolean);
+  if (occupied.length === 1 && occupied[0].type === 'wood' && occupied[0].count >= 1)
+    return { type:'planks', label:'Tábuas', count:4 };
+  if (occupied.length === 4 && occupied.every(item => item.type === 'planks' && item.count >= 1))
+    return { type:'crafting_table', label:'Bancada de trabalho', count:1 };
+  return null;
+}
+
+function addCraftedItem(type, amount) {
+  const info = getInventoryItem(type);
+  if (!info) return false;
+  if (gameMode === 'creative') {
+    const existing = inventorySlots.findIndex(item => item && item.type === type);
+    const target = existing >= 0 ? existing : inventorySlots.findIndex(item => !item);
+    if (target < 0) return false;
+    inventorySlots[target] = { type, label:info.label, count:Infinity };
+    return true;
   }
+  let remaining = amount;
+  const freeSlots = inventorySlots.filter(item => !item || item.count <= 0).length;
+  const stackSpace = inventorySlots.reduce((sum,item) => sum + (item && item.type === type ? Math.max(0,64-item.count) : 0),0);
+  if (stackSpace + freeSlots * 64 < amount) return false;
+  for (const slot of inventorySlots) {
+    if (slot && slot.type === type && slot.count < 64) {
+      const moved = Math.min(64-slot.count,remaining); slot.count += moved; remaining -= moved;
+      if (remaining <= 0) return true;
+    }
+  }
+  while (remaining > 0) {
+    const empty = inventorySlots.findIndex(slot => !slot || slot.count <= 0);
+    if (empty < 0) return false;
+    const moved = Math.min(64,remaining);
+    inventorySlots[empty] = { type, label:info.label, count:moved }; remaining -= moved;
+  }
+  return true;
 }
 
 function closeInventory() {
