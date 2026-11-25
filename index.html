@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BlockWorld - Versão 2.42</title>
+<title>BlockWorld - Versão 2.52</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 
 <script type="importmap">
@@ -45,12 +45,30 @@ canvas { display: block; }
   margin: 0 0 4px;
 }
 
-#updateSubtitle {
-  font-size: 17px;
-  color: #e5e5e5;
-  text-shadow: 2px 2px #333;
-  margin: 0 0 28px;
+#updateSubtitle { display:none; }
+#homeOptionsButton {
+  position:fixed; left:18px; bottom:16px; z-index:7;
+  padding:10px 16px !important; font-size:16px !important;
+  background:#444b !important; border:2px solid #ddd !important;
 }
+#homeVersion {
+  position:fixed; right:18px; bottom:18px; z-index:7;
+  color:#fff; font-size:15px; font-weight:bold;
+  text-shadow:2px 2px 3px #111; pointer-events:none;
+}
+#graphicsMenu {
+  position:fixed; inset:0; z-index:12; display:none;
+  flex-direction:column; justify-content:center; align-items:center;
+  background:#000b; color:white;
+}
+#graphicsMenu h1 { font-size:38px; text-shadow:3px 3px #222; margin-bottom:12px; }
+#graphicsMenu p { margin:0 20px 18px; text-align:center; max-width:440px; }
+.graphicsChoice {
+  width:250px; padding:13px; margin:7px; font-size:18px;
+  color:white; background:#555; border:3px solid #222; cursor:pointer;
+}
+.graphicsChoice.active { background:#65ae36; border-color:#d8f4c2; }
+#graphicsStatus { min-height:22px; margin:8px 16px; text-align:center; font-size:14px; }
 
 #menu button {
   padding: 15px 35px;
@@ -424,8 +442,9 @@ canvas { display: block; }
 
 <div id="menu">
   <h1>BlockWorld</h1>
-  <div id="updateSubtitle">VERSÃO 2.42</div>
   <button id="start">JOGAR</button>
+  <button id="homeOptionsButton" aria-label="Opções">⚙ OPÇÕES</button>
+  <div id="homeVersion">2.52</div>
 </div>
 
 <div id="mobileWarning" role="dialog" aria-modal="true" aria-labelledby="mobileWarningTitle">
@@ -480,6 +499,7 @@ canvas { display: block; }
 
 <div id="optionsMenu">
   <h1>OPÇÕES</h1>
+  <button class="pauseButton" id="openGraphicsButton">GRÁFICOS</button>
   <div class="optionRow">
     <span>Tutorial na tela</span>
     <button class="optionToggle" id="tutorialToggle">LIGADO</button>
@@ -489,6 +509,16 @@ canvas { display: block; }
     <button class="optionToggle" id="fpsToggle">LIGADO</button>
   </div>
   <button class="pauseButton" id="backOptionsButton">VOLTAR</button>
+</div>
+
+<div id="graphicsMenu">
+  <h1>GRÁFICOS</h1>
+  <p>Escolha a qualidade visual do BlockWorld.</p>
+  <button class="graphicsChoice" data-quality="minimum">MÍNIMO — cores simples</button>
+  <button class="graphicsChoice" data-quality="medium">MÉDIO — pixelado leve</button>
+  <button class="graphicsChoice" data-quality="maximum">MÁXIMO — melhor qualidade</button>
+  <div id="graphicsStatus"></div>
+  <button class="pauseButton" id="backGraphicsButton">VOLTAR</button>
 </div>
 
 <div id="inventoryMenu">
@@ -558,6 +588,9 @@ const menuCamera = new THREE.PerspectiveCamera(
 menuCamera.position.set(16, 10, 18);
 menuCamera.lookAt(0, 0.5, 0);
 
+let graphicsQuality = 'medium';
+try { graphicsQuality = localStorage.getItem('blockWorldGraphics') || 'medium'; } catch (error) {}
+
 const renderer = new THREE.WebGLRenderer({
   antialias: false,
   powerPreference: 'high-performance'
@@ -569,9 +602,24 @@ renderer.setSize(
 );
 
 // Resolução limitada para aliviar o computador.
-renderer.setPixelRatio(
-  Math.min(window.devicePixelRatio, 1)
-);
+function applyGraphicsQuality() {
+  const pixelRatio = graphicsQuality === 'minimum' ? 0.65
+    : graphicsQuality === 'medium' ? 0.85
+    : Math.min(window.devicePixelRatio, 1.5);
+  renderer.setPixelRatio(pixelRatio);
+  if (scene && scene.fog) {
+    scene.fog.near = graphicsQuality === 'minimum' ? 18 : graphicsQuality === 'medium' ? 25 : 30;
+    scene.fog.far = graphicsQuality === 'minimum' ? 48 : graphicsQuality === 'medium' ? 65 : 85;
+  }
+  document.querySelectorAll('.graphicsChoice').forEach(button => {
+    button.classList.toggle('active', button.dataset.quality === graphicsQuality);
+  });
+  const labels = { minimum:'Mínimo', medium:'Médio', maximum:'Máximo' };
+  const status = document.getElementById('graphicsStatus');
+  if (status) status.textContent = 'Qualidade atual: ' + (labels[graphicsQuality] || 'Médio');
+  renderer.setSize(window.innerWidth, window.innerHeight);
+}
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1));
 
 document.body.appendChild(renderer.domElement);
 
@@ -1115,6 +1163,25 @@ function removeBlock(block) {
 // INSTANCED MESH
 // =================================
 
+const flatBlockColors = {
+  grass:0x65a832, dirt:0x8b5a32, stone:0x888888,
+  wood:0x9a6a3e, leaves:0x397b2c, bedrock:0x333333,
+  wool:0xdedede, planks:0xb98a52, flower_red:0xd94343,
+  flower_yellow:0xf0d43a
+};
+const flatBlockMaterials = new Map();
+function getFlatBlockMaterial(type) {
+  if (!flatBlockMaterials.has(type)) {
+    let color = flatBlockColors[type] || 0xb0b0b0;
+    if (type.startsWith('wool_')) {
+      const wool = woolColors.find(item => type === 'wool_' + item.id);
+      if (wool) color = wool.color;
+    }
+    flatBlockMaterials.set(type, new THREE.MeshLambertMaterial({ color }));
+  }
+  return flatBlockMaterials.get(type);
+}
+
 function rebuildInstances() {
 
   // Remover grupos antigos.
@@ -1139,8 +1206,9 @@ function rebuildInstances() {
 
     if (positions.length === 0) continue;
 
-    const material =
-      type === 'grass'
+    const material = graphicsQuality === 'minimum'
+      ? getFlatBlockMaterial(type)
+      : type === 'grass'
         ? grassMaterials
         : type === 'wood'
           ? woodMaterials
@@ -2326,6 +2394,7 @@ const instructions = document.getElementById('instructions');
 const fpsDisplay = document.getElementById('fps');
 
 let gameStarted = false;
+let optionsReturnTo = 'pause';
 let showTutorial = true;
 let showFPS = true;
 
@@ -2339,6 +2408,33 @@ function updateOptionButtons() {
 updateOptionButtons();
 
 // JOGAR abre a escolha entre mundos salvos e jogo rápido.
+document.getElementById('homeOptionsButton').addEventListener('click', () => {
+  optionsReturnTo = 'home';
+  menu.style.display = 'none';
+  optionsMenu.style.display = 'flex';
+  updateOptionButtons();
+  applyGraphicsQuality();
+});
+
+document.getElementById('openGraphicsButton').addEventListener('click', () => {
+  optionsMenu.style.display = 'none';
+  document.getElementById('graphicsMenu').style.display = 'flex';
+  applyGraphicsQuality();
+});
+document.querySelectorAll('.graphicsChoice').forEach(button => {
+  button.addEventListener('click', () => {
+    graphicsQuality = button.dataset.quality;
+    try { localStorage.setItem('blockWorldGraphics', graphicsQuality); } catch (error) {}
+    applyGraphicsQuality();
+    if (graphicsQuality === 'minimum' && gameStarted) rebuildInstances();
+    else if (gameStarted) rebuildInstances();
+  });
+});
+document.getElementById('backGraphicsButton').addEventListener('click', () => {
+  document.getElementById('graphicsMenu').style.display = 'none';
+  optionsMenu.style.display = 'flex';
+});
+
 document.getElementById('start').addEventListener('click', () => {
   menu.style.display = 'none';
   worldChoiceMenu.style.display = 'flex';
@@ -2463,8 +2559,10 @@ document.getElementById('resumeButton').addEventListener('click', () => {
 });
 
 document.getElementById('openOptionsButton').addEventListener('click', () => {
+  optionsReturnTo = 'pause';
   pauseMenu.style.display = 'none';
   optionsMenu.style.display = 'flex';
+  applyGraphicsQuality();
 });
 
 document.getElementById('tutorialToggle').addEventListener('click', () => {
@@ -2479,7 +2577,8 @@ document.getElementById('fpsToggle').addEventListener('click', () => {
 
 document.getElementById('backOptionsButton').addEventListener('click', () => {
   optionsMenu.style.display = 'none';
-  pauseMenu.style.display = 'flex';
+  if (optionsReturnTo === 'home') menu.style.display = 'flex';
+  else pauseMenu.style.display = 'flex';
 });
 
 document.getElementById('exitGameButton').addEventListener('click', () => {
@@ -2575,6 +2674,7 @@ window.addEventListener('resize', () => {
     window.innerWidth,
     window.innerHeight
   );
+  applyGraphicsQuality();
 
 });
 
