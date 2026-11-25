@@ -2089,6 +2089,7 @@ let activeWorldSeed = 0;
 let activeWorldChunks = 4;
 let recommendedChunks = 1;
 let chunkBenchmarkRunning = false;
+let chunkBenchmarkComplete = false;
 
 function openWorldDatabase() {
   return new Promise((resolve, reject) => {
@@ -2210,10 +2211,20 @@ async function benchmarkChunkSizes() {
       const fps = await measureChunkFps();
       testResults.push({ chunks, fps });
     }
-    const supported = testResults.filter(result => result.fps >= 40);
-    recommendedChunks = supported.length ? supported[supported.length - 1].chunks : 1;
+    let passedAny = false;
+    recommendedChunks = 1;
+    for (const result of testResults) {
+      if (result.fps > 40) {
+        recommendedChunks = result.chunks;
+        passedAny = true;
+      } else {
+        break;
+      }
+    }
     const summary = testResults.map(result => result.chunks + ' chunk(s): ' + result.fps + ' FPS').join(' | ');
-    panel.textContent = 'Recomendado: ' + recommendedChunks + ' chunks (meta: 40 FPS). Teste: ' + summary + '.';
+    panel.textContent = (passedAny
+      ? 'Recomendado: ' + recommendedChunks + ' chunks (acima de 40 FPS). '
+      : 'Nenhum tamanho passou de 40 FPS; 1 chunk é a opção mais leve. ') + 'Teste: ' + summary + '.';
     const selector = document.getElementById('newWorldChunks');
     if (selector.value === 'auto') selector.title = 'Recomendação atual: ' + recommendedChunks + ' chunks';
   } catch (error) {
@@ -2221,6 +2232,7 @@ async function benchmarkChunkSizes() {
     panel.textContent = 'Não foi possível medir o desempenho. Recomendação segura: 1 chunk.';
     console.warn('Falha no teste de chunks:', error);
   } finally {
+    chunkBenchmarkComplete = true;
     blocks.clear();
     for (const [key, block] of originalBlocks) blocks.set(key, block);
     rebuildInstances();
@@ -2236,6 +2248,10 @@ async function createSavedWorld() {
   if (!worldDatabase) { status.textContent = 'O salvamento ainda está carregando.'; return; }
   if (chunkBenchmarkRunning) { status.textContent = 'Aguarde o teste de desempenho terminar.'; return; }
   const selector = document.getElementById('newWorldChunks');
+  if (selector.value === 'auto' && !chunkBenchmarkComplete) {
+    status.textContent = 'Aguarde o teste de desempenho para receber a recomendação automática.';
+    return;
+  }
   const chunks = selector.value === 'auto' ? recommendedChunks : Number(selector.value);
   const chunksPerSide = chunks === 1 ? 1 : chunks === 4 ? 2 : 3;
   const id = 'world-' + Date.now() + '-' + Math.floor(Math.random() * 100000);
