@@ -689,7 +689,7 @@ canvas { display: block; }
   <h1>BlockWorld</h1>
   <button id="start">JOGAR</button>
   <button id="homeOptionsButton" aria-label="Opções">⚙ OPÇÕES</button>
-  <div id="homeVersion">3.90</div>
+  <div id="homeVersion">4.00</div>
 </div>
 
 <div id="mobileWarning" role="dialog" aria-modal="true" aria-labelledby="mobileWarningTitle">
@@ -2672,6 +2672,22 @@ function runChatCommand(message) {
     updateHotbar();
     scheduleWorldSave();
     addChatMessage(gameLanguage === 'en' ? 'Game mode changed to Survival.' : 'Modo de jogo alterado para Sobrevivência.');
+    return true;
+  }
+  if (command === '/tutorial false') {
+    showTutorial = false;
+    updateOptionButtons();
+    addChatMessage(gameLanguage === 'en' ? 'On-screen tutorial disabled.' : 'Tutorial na tela desativado.');
+    return true;
+  }
+  if (command === '/tutorial true') {
+    showTutorial = true;
+    updateOptionButtons();
+    addChatMessage(gameLanguage === 'en' ? 'On-screen tutorial enabled.' : 'Tutorial na tela ativado.');
+    return true;
+  }
+  if (command.startsWith('/tutorial')) {
+    addChatMessage(gameLanguage === 'en' ? 'Usage: /tutorial false or /tutorial true' : 'Use: /tutorial false ou /tutorial true');
     return true;
   }
   if (command.startsWith('/gamemode')) {
