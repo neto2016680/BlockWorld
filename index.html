@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BlockWorld - Versão 2.57</title>
+<title>BlockWorld - Versão 2.58</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 
 <script type="importmap">
@@ -458,7 +458,7 @@ canvas { display: block; }
   <h1>BlockWorld</h1>
   <button id="start">JOGAR</button>
   <button id="homeOptionsButton" aria-label="Opções">⚙ OPÇÕES</button>
-  <div id="homeVersion">2.57</div>
+  <div id="homeVersion">2.58</div>
 </div>
 
 <div id="mobileWarning" role="dialog" aria-modal="true" aria-labelledby="mobileWarningTitle">
@@ -1469,7 +1469,6 @@ function randomWorldHeight(x, z, seed) {
 
 function generateRandomTerrain(seed, chunksPerSide = 2) {
   blocks.clear();
-  const treeSpots = [];
   const halfSize = chunksPerSide * 8;
   for (let x = -halfSize; x < halfSize; x++) {
     for (let z = -halfSize; z < halfSize; z++) {
@@ -1478,20 +1477,28 @@ function generateRandomTerrain(seed, chunksPerSide = 2) {
       for (let y = -4; y < height - 2; y++) addBlock(x, y, z, 'stone', false);
       for (let y = Math.max(-4, height - 2); y < height; y++) addBlock(x, y, z, 'dirt', false);
       addBlock(x, height, z, 'grass', false);
-      const noise = Math.abs(Math.sin((x * 127.1 + z * 311.7 + seed * 0.013) * 0.017));
-      if (noise > 0.82 && Math.abs(x) > 2 && Math.abs(z) > 2) treeSpots.push({ x, z, height });
     }
   }
-  for (const spot of treeSpots) {
-    const nearby = treeSpots.some(other =>
-      other !== spot && Math.abs(other.x - spot.x) < 4 && Math.abs(other.z - spot.z) < 4
-    );
-    if (!nearby) {
-      for (let y = 1; y <= 3; y++) addBlock(spot.x, spot.height + y, spot.z, 'wood', false);
+
+  // Árvores distribuídas em uma grade para garantir presença em todos os tamanhos
+  // de mundo, sem fazer comparações caras entre milhares de posições.
+  for (let cellX = -halfSize + 1; cellX <= halfSize - 3; cellX += 7) {
+    for (let cellZ = -halfSize + 1; cellZ <= halfSize - 3; cellZ += 7) {
+      const hash = Math.abs(Math.sin((cellX * 127.1 + cellZ * 311.7 + seed * 0.013) * 0.017) * 43758.5453);
+      const treeX = cellX + 2 + Math.floor((hash % 1) * 3);
+      const treeZ = cellZ + 2 + Math.floor(((hash * 1.618) % 1) * 3);
+
+      // Deixa a área inicial do jogador livre para não nascer dentro de uma árvore.
+      if (Math.hypot(treeX, treeZ - 8) < 5.5) continue;
+
+      const groundY = randomWorldHeight(treeX, treeZ, seed);
+      for (let y = 1; y <= 3; y++) addBlock(treeX, groundY + y, treeZ, 'wood', false);
       for (let dx = -1; dx <= 1; dx++) {
-        for (let dz = -1; dz <= 1; dz++) addBlock(spot.x + dx, spot.height + 3, spot.z + dz, 'leaves', false);
+        for (let dz = -1; dz <= 1; dz++) {
+          addBlock(treeX + dx, groundY + 3, treeZ + dz, 'leaves', false);
+        }
       }
-      addBlock(spot.x, spot.height + 4, spot.z, 'leaves', false);
+      addBlock(treeX, groundY + 4, treeZ, 'leaves', false);
     }
   }
   rebuildInstances();
