@@ -631,6 +631,9 @@ function playGameSound(kind) {
   else if (kind === 'place') playTone(170, 95, 0.075, 'triangle', 0.04);
   else if (kind === 'pickup') { playTone(520, 780, 0.09, 'sine', 0.04); setTimeout(() => playTone(780, 1040, 0.10, 'sine', 0.035), 65); }
 }
+// Libera o áudio após a primeira interação do jogador (política do navegador).
+document.addEventListener('pointerdown', unlockAudio);
+document.addEventListener('keydown', unlockAudio);
 
 // =================================
 // CENA
