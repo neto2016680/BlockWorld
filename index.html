@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BlockWorld - Versão 2.54</title>
+<title>BlockWorld - Versão 2.55</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 
 <script type="importmap">
@@ -458,7 +458,7 @@ canvas { display: block; }
   <h1>BlockWorld</h1>
   <button id="start">JOGAR</button>
   <button id="homeOptionsButton" aria-label="Opções">⚙ OPÇÕES</button>
-  <div id="homeVersion">2.54</div>
+  <div id="homeVersion">2.55</div>
 </div>
 
 <div id="mobileWarning" role="dialog" aria-modal="true" aria-labelledby="mobileWarningTitle">
@@ -522,6 +522,10 @@ canvas { display: block; }
     <span>Contador de FPS</span>
     <button class="optionToggle" id="fpsToggle">LIGADO</button>
   </div>
+  <div class="optionRow">
+    <span>Sons e efeitos</span>
+    <button class="optionToggle" id="soundToggle">LIGADO</button>
+  </div>
   <button class="pauseButton" id="backOptionsButton">VOLTAR</button>
 </div>
 
@@ -572,6 +576,61 @@ import * as THREE from 'three';
 
 import { PointerLockControls } from
 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/PointerLockControls.js';
+
+// ÁUDIO SINTETIZADO: efeitos leves, sem arquivos externos.
+let audioContext = null;
+let soundsEnabled = true;
+try { soundsEnabled = localStorage.getItem('blockWorldSounds') !== 'off'; } catch (error) {}
+function unlockAudio() {
+  if (!soundsEnabled) return;
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  if (!AudioCtx) return;
+  if (!audioContext) audioContext = new AudioCtx();
+  if (audioContext.state === 'suspended') audioContext.resume().catch(() => {});
+}
+function playTone(startHz, endHz, duration, wave = 'square', volume = 0.045) {
+  if (!soundsEnabled) return;
+  unlockAudio();
+  if (!audioContext) return;
+  const now = audioContext.currentTime;
+  const oscillator = audioContext.createOscillator();
+  const gain = audioContext.createGain();
+  oscillator.type = wave;
+  oscillator.frequency.setValueAtTime(startHz, now);
+  oscillator.frequency.exponentialRampToValueAtTime(Math.max(1, endHz), now + duration);
+  gain.gain.setValueAtTime(volume, now);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+  oscillator.connect(gain);
+  gain.connect(audioContext.destination);
+  oscillator.start(now);
+  oscillator.stop(now + duration);
+}
+function playNoise(duration = 0.09, volume = 0.035) {
+  if (!soundsEnabled) return;
+  unlockAudio();
+  if (!audioContext) return;
+  const length = Math.max(1, Math.floor(audioContext.sampleRate * duration));
+  const buffer = audioContext.createBuffer(1, length, audioContext.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < length; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / length);
+  const source = audioContext.createBufferSource();
+  const filter = audioContext.createBiquadFilter();
+  const gain = audioContext.createGain();
+  source.buffer = buffer;
+  filter.type = 'lowpass';
+  filter.frequency.value = 1400;
+  gain.gain.value = volume;
+  source.connect(filter);
+  filter.connect(gain);
+  gain.connect(audioContext.destination);
+  source.start();
+}
+function playGameSound(kind) {
+  if (kind === 'jump') playTone(220, 520, 0.13, 'square', 0.035);
+  else if (kind === 'break') { playNoise(0.11, 0.045); playTone(105, 55, 0.10, 'triangle', 0.025); }
+  else if (kind === 'place') playTone(170, 95, 0.075, 'triangle', 0.04);
+  else if (kind === 'pickup') { playTone(520, 780, 0.09, 'sine', 0.04); setTimeout(() => playTone(780, 1040, 0.10, 'sine', 0.035), 65); }
+}
 
 // =================================
 // CENA
@@ -1530,6 +1589,7 @@ function updateMining() {
   placeCrackOverlay(hit);
   if (progress >= 1) {
     removeBlock(hit.block);
+    playGameSound('break');
     cancelMining();
   }
 }
@@ -2059,6 +2119,7 @@ document.addEventListener('keydown', (event) => {
   ) {
     velocityY = JUMP_FORCE;
     canJump = false;
+    playGameSound('jump');
   }
 
 });
@@ -2122,6 +2183,7 @@ document.addEventListener('mousedown', (event) => {
     if (blocks.has(blockKey(x, y, z))) return;
     if (playerOverlapsBlock(x, y, z)) return;
     addBlock(x, y, z, selectedItem.type);
+    playGameSound('place');
     if (gameMode === 'survival') {
       selectedItem.count--;
       if (selectedItem.count <= 0) inventorySlots[selectedBlock] = null;
@@ -2311,6 +2373,7 @@ function updateDroppedItems(delta) {
     item.mesh.position.y += Math.sin(item.age * 4) * delta * 0.035;
     if (item.mesh.position.distanceTo(camera.position) < 1.35 && addItemToSurvivalInventory(item.type)) {
       scene.remove(item.mesh);
+      playGameSound('pickup');
       droppedItems.splice(i, 1);
       scheduleWorldSave();
     }
@@ -2522,6 +2585,7 @@ let showFPS = true;
 function updateOptionButtons() {
   document.getElementById('tutorialToggle').textContent = showTutorial ? 'LIGADO' : 'DESLIGADO';
   document.getElementById('fpsToggle').textContent = showFPS ? 'LIGADO' : 'DESLIGADO';
+  document.getElementById('soundToggle').textContent = soundsEnabled ? 'LIGADO' : 'DESLIGADO';
   instructions.style.display = showTutorial ? 'block' : 'none';
   fpsDisplay.style.display = showFPS ? 'block' : 'none';
 }
@@ -2692,6 +2756,13 @@ document.getElementById('tutorialToggle').addEventListener('click', () => {
 
 document.getElementById('fpsToggle').addEventListener('click', () => {
   showFPS = !showFPS;
+  updateOptionButtons();
+});
+
+document.getElementById('soundToggle').addEventListener('click', () => {
+  soundsEnabled = !soundsEnabled;
+  try { localStorage.setItem('blockWorldSounds', soundsEnabled ? 'on' : 'off'); } catch (error) {}
+  if (soundsEnabled) { unlockAudio(); playTone(440, 660, 0.10, 'sine', 0.03); }
   updateOptionButtons();
 });
 
