@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BlockWorld - Versão 2.55</title>
+<title>BlockWorld - Versão 2.56</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 
 <script type="importmap">
@@ -458,7 +458,7 @@ canvas { display: block; }
   <h1>BlockWorld</h1>
   <button id="start">JOGAR</button>
   <button id="homeOptionsButton" aria-label="Opções">⚙ OPÇÕES</button>
-  <div id="homeVersion">2.55</div>
+  <div id="homeVersion">2.56</div>
 </div>
 
 <div id="mobileWarning" role="dialog" aria-modal="true" aria-labelledby="mobileWarningTitle">
@@ -1962,9 +1962,11 @@ function getCollidingBlock(px, eyeY, pz) {
 
 // MOVIMENTAÇÃO HORIZONTAL
 
-// LIMITES DO MUNDO: o terreno vai de -12 até 11 em X e Z.
-const WORLD_MIN = -12.5;
-const WORLD_MAX = 11.5;
+// Limites dinâmicos conforme o tamanho do mundo.
+function getWorldBounds() {
+  const halfSize = activeWorldChunks === 1 ? 8 : activeWorldChunks === 9 ? 24 : 16;
+  return { min: -halfSize - 0.5, max: halfSize - 0.5 };
+}
 const WORLD_MARGIN = PLAYER_RADIUS + 0.02;
 
 function hasGroundSupport(px, pz) {
@@ -1990,10 +1992,11 @@ function hasGroundSupport(px, pz) {
 
 function moveHorizontal(dx, dz) {
   const sneaking = keys['ShiftLeft'] || keys['ShiftRight'];
+  const bounds = getWorldBounds();
   const nextX = THREE.MathUtils.clamp(
     camera.position.x + dx,
-    WORLD_MIN + WORLD_MARGIN,
-    WORLD_MAX - WORLD_MARGIN
+    bounds.min + WORLD_MARGIN,
+    bounds.max - WORLD_MARGIN
   );
 
   if (
@@ -2005,8 +2008,8 @@ function moveHorizontal(dx, dz) {
 
   const nextZ = THREE.MathUtils.clamp(
     camera.position.z + dz,
-    WORLD_MIN + WORLD_MARGIN,
-    WORLD_MAX - WORLD_MARGIN
+    bounds.min + WORLD_MARGIN,
+    bounds.max - WORLD_MARGIN
   );
 
   if (
