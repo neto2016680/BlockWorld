@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BlockWorld - Versão 2.53</title>
+<title>BlockWorld - Versão 2.54</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 
 <script type="importmap">
@@ -458,7 +458,7 @@ canvas { display: block; }
   <h1>BlockWorld</h1>
   <button id="start">JOGAR</button>
   <button id="homeOptionsButton" aria-label="Opções">⚙ OPÇÕES</button>
-  <div id="homeVersion">2.53</div>
+  <div id="homeVersion">2.54</div>
 </div>
 
 <div id="mobileWarning" role="dialog" aria-modal="true" aria-labelledby="mobileWarningTitle">
@@ -811,6 +811,29 @@ const pixelTextures = {
 };
 
 // Textura lateral da grama.
+// Vidro translúcido com bordas claras em pixel art.
+const glassCanvas = document.createElement('canvas');
+glassCanvas.width = 16;
+glassCanvas.height = 16;
+const glassCtx = glassCanvas.getContext('2d');
+glassCtx.clearRect(0, 0, 16, 16);
+glassCtx.fillStyle = 'rgba(139, 218, 235, 0.30)';
+glassCtx.fillRect(1, 1, 14, 14);
+glassCtx.fillStyle = 'rgba(225, 250, 255, 0.85)';
+glassCtx.fillRect(1, 1, 14, 1);
+glassCtx.fillRect(1, 1, 1, 14);
+glassCtx.fillStyle = 'rgba(93, 177, 204, 0.75)';
+glassCtx.fillRect(14, 2, 1, 13);
+glassCtx.fillRect(2, 14, 13, 1);
+glassCtx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+glassCtx.fillRect(4, 3, 1, 4);
+glassCtx.fillRect(5, 3, 3, 1);
+const glassTexture = new THREE.CanvasTexture(glassCanvas);
+glassTexture.magFilter = THREE.NearestFilter;
+glassTexture.minFilter = THREE.NearestFilter;
+glassTexture.generateMipmaps = false;
+glassTexture.colorSpace = THREE.SRGBColorSpace;
+
 const grassSideCanvas = document.createElement('canvas');
 
 grassSideCanvas.width = 16;
@@ -877,7 +900,8 @@ const materials = {
   wool: new THREE.MeshLambertMaterial({ map: pixelTextures.wool }),
   planks: new THREE.MeshLambertMaterial({ map: pixelTextures.planks }),
   flower_red: new THREE.MeshLambertMaterial({ map: pixelTextures.flower_red }),
-  flower_yellow: new THREE.MeshLambertMaterial({ map: pixelTextures.flower_yellow })
+  flower_yellow: new THREE.MeshLambertMaterial({ map: pixelTextures.flower_yellow }),
+  glass: new THREE.MeshLambertMaterial({ map: glassTexture, transparent: true, opacity: 0.58, depthWrite: false })
 };
 
 
@@ -1030,7 +1054,8 @@ const blockIcons = {
   wool: textureToDataURL(pixelTextures.wool),
   planks: textureToDataURL(pixelTextures.planks),
   flower_red: textureToDataURL(pixelTextures.flower_red),
-  flower_yellow: textureToDataURL(pixelTextures.flower_yellow)
+  flower_yellow: textureToDataURL(pixelTextures.flower_yellow),
+  glass: textureToDataURL(glassTexture)
 };
 
 // 16 cores clássicas de lã.
@@ -1137,7 +1162,8 @@ const blockTypes = [
   'wool',
   'planks',
   'flower_red',
-  'flower_yellow'
+  'flower_yellow',
+  'glass'
 ];
 
 // Registra as variantes de lã depois que a lista de blocos foi criada.
@@ -1198,7 +1224,8 @@ const flatBlockColors = {
   grass:0x65a832, dirt:0x8b5a32, stone:0x888888,
   wood:0x9a6a3e, leaves:0x397b2c, bedrock:0x333333,
   wool:0xdedede, planks:0xb98a52, flower_red:0xd94343,
-  flower_yellow:0xf0d43a
+  flower_yellow:0xf0d43a,
+  glass:0x9bddeb
 };
 const flatBlockMaterials = new Map();
 function getFlatBlockMaterial(type) {
@@ -1529,7 +1556,8 @@ const inventoryCatalog = [
   { type:'wool', label:'Lã' },
   { type:'planks', label:'Tábuas' },
   { type:'flower_red', label:'Flor vermelha' },
-  { type:'flower_yellow', label:'Flor amarela' }
+  { type:'flower_yellow', label:'Flor amarela' },
+  { type:'glass', label:'Vidro' }
 ];
 let inventorySlots = Array(9).fill(null);
 
