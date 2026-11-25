@@ -3159,11 +3159,11 @@ function applyLanguage() {
     catalog:'CATÁLOGO CRIATIVO', add:'ADICIONAR AO INVENTÁRIO', returnGame:'VOLTAR AO JOGO'
   };
   set('start',labels.start); set('homeOptionsButton',labels.home); set('languageLabel',labels.language);
-  set('languageToggle',labels.languageButton); set('worldChoiceMenu',labels.worlds);
+  set('languageToggle',labels.languageButton); const worldHeading=document.querySelector('#worldChoiceMenu h1'); if(worldHeading) worldHeading.textContent=labels.worlds;
   set('savedWorldsButton',labels.saved); set('quickGameButton',labels.quick);
   set('backWorldChoiceButton',labels.back); const savedHeading=document.querySelector('#savedWorldsMenu h1'); if(savedHeading) savedHeading.textContent=labels.saved;
   set('newWorldButton',labels.create); set('backSavedWorldsButton',labels.back);
-  set('modeMenu',labels.mode); set('creativeButton',labels.creative); set('survivalButton',labels.survival);
+  const modeHeading2=document.querySelector('#modeMenu h1'); if(modeHeading2) modeHeading2.textContent=labels.mode; set('creativeButton',labels.creative); set('survivalButton',labels.survival);
   set('backModeMenuButton',labels.back); const modeHeading=document.querySelector('#modeMenu h1'); if(modeHeading) modeHeading.textContent=labels.mode; const pauseHeading=document.querySelector('#pauseMenu h1'); if(pauseHeading) pauseHeading.textContent=labels.paused;
   set('resumeButton',labels.resume); set('openOptionsButton',labels.options); set('exitGameButton',labels.exit);
   const optionsHeading=document.querySelector('#optionsMenu h1'); if(optionsHeading) optionsHeading.textContent=labels.options; set('openGraphicsButton',labels.graphics); set('backOptionsButton',labels.back);
