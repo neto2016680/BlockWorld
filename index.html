@@ -2588,7 +2588,7 @@ function moveVertical(delta) {
 const keys = {};
 
 window.addEventListener('keydown', (event) => {
-  if (event.code === 'F3' && event.altKey && !event.repeat && gameStarted && controls.isLocked) {
+  if ((event.code === 'F3' || event.code === 'F5') && event.altKey && !event.repeat && gameStarted && controls.isLocked) {
     showDebugCoordinates = !showDebugCoordinates;
     debugCoordinates.style.display = showDebugCoordinates ? 'block' : 'none';
     event.preventDefault();
