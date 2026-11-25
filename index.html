@@ -689,7 +689,7 @@ canvas { display: block; }
   <h1>BlockWorld</h1>
   <button id="start">JOGAR</button>
   <button id="homeOptionsButton" aria-label="Opções">⚙ OPÇÕES</button>
-  <div id="homeVersion">4.20</div>
+  <div id="homeVersion">4.30</div>
 </div>
 
 <div id="mobileWarning" role="dialog" aria-modal="true" aria-labelledby="mobileWarningTitle">
@@ -2671,26 +2671,32 @@ function getBlockFromCommand(name) {
   }
   return null;
 }
-function giveBlockFromCommand(name) {
+function giveBlockFromCommand(name, amount = 1) {
   const item = getBlockFromCommand(name);
   if (!item) {
     addChatMessage(gameLanguage === 'en' ? 'Unknown block. Try /give grass or /give grama.' : 'Bloco desconhecido. Tente /give grass ou /give grama.');
     return;
   }
-  const existing = inventorySlots.find(slot => slot && slot.type === item.type && slot.count !== Infinity && slot.count < 64);
-  if (existing) {
-    existing.count += 1;
-  } else {
-    const empty = inventorySlots.findIndex(slot => !slot || slot.count <= 0);
-    if (empty < 0) {
-      addChatMessage(gameLanguage === 'en' ? 'Inventory full!' : 'Inventário cheio!');
-      return;
+  let remaining = amount;
+  for (const slot of inventorySlots) {
+    if (slot && slot.type === item.type && slot.count !== Infinity && slot.count < 64) {
+      const added = Math.min(64 - slot.count, remaining);
+      slot.count += added;
+      remaining -= added;
+      if (remaining <= 0) break;
     }
-    inventorySlots[empty] = { type:item.type, label:item.label, count:1 };
+  }
+  while (remaining > 0) {
+    const empty = inventorySlots.findIndex(slot => !slot || slot.count <= 0);
+    if (empty < 0) break;
+    const added = Math.min(64, remaining);
+    inventorySlots[empty] = { type:item.type, label:item.label, count:added };
+    remaining -= added;
   }
   updateHotbar();
   scheduleWorldSave();
-  addChatMessage((gameLanguage === 'en' ? 'Given: ' : 'Recebido: ') + item.label);
+  const received = amount - remaining;
+  addChatMessage((gameLanguage === 'en' ? 'Given: ' : 'Recebido: ') + received + 'x ' + item.label + (remaining > 0 ? (gameLanguage === 'en' ? ' (inventory full)' : ' (inventário cheio)') : ''));
 }
 function runChatCommand(message) {
   const command = message.trim().toLowerCase().replace(/\\s+/g, ' ');
@@ -2732,16 +2738,25 @@ function runChatCommand(message) {
     return true;
   }
   if (command.startsWith('/give ')) {
-    const blockName = message.trim().slice(6).trim();
+    const args = message.trim().slice(6).trim().split(/\\s+/);
+    let amount = 1;
+    if (args.length > 1 && /^\\d+$/.test(args[args.length - 1])) {
+      amount = Number(args.pop());
+      if (amount < 2 || amount > 64) {
+        addChatMessage(gameLanguage === 'en' ? 'Amount must be between 2 and 64.' : 'A quantidade deve ser de 2 a 64.');
+        return true;
+      }
+    }
+    const blockName = args.join(' ');
     if (!blockName) {
-      addChatMessage(gameLanguage === 'en' ? 'Usage: /give block_name' : 'Use: /give nome_do_bloco');
+      addChatMessage(gameLanguage === 'en' ? 'Usage: /give block_name [amount]' : 'Use: /give nome_do_bloco [quantidade]');
     } else {
-      giveBlockFromCommand(blockName);
+      giveBlockFromCommand(blockName, amount);
     }
     return true;
   }
   if (command === '/give') {
-    addChatMessage(gameLanguage === 'en' ? 'Usage: /give block_name' : 'Use: /give nome_do_bloco');
+    addChatMessage(gameLanguage === 'en' ? 'Usage: /give block_name [amount]' : 'Use: /give nome_do_bloco [quantidade]');
     return true;
   }
   if (command === '/tutorial false') {
@@ -2811,6 +2826,11 @@ window.addEventListener('keydown', (event) => {
 document.addEventListener('keydown', (event) => {
 
   if (chatOpen) { event.preventDefault(); return; }
+  if ((event.code === 'KeyQ' || event.key.toLowerCase() === 'q') && !event.repeat && gameStarted && !inventoryOpen && !playerDead) {
+    dropRepeatTimer = 0;
+    dropHeldBlock();
+    event.preventDefault();
+  }
   if (event.code === 'KeyT' && !event.repeat) { openChat(); event.preventDefault(); return; }
 
   if ((event.code === 'ControlLeft' || event.code === 'ControlRight') && !event.repeat) {
@@ -2818,12 +2838,6 @@ document.addEventListener('keydown', (event) => {
     event.preventDefault();
   }
   keys[event.code] = true;
-  if (event.code === 'KeyQ' && !event.repeat && controls.isLocked && !inventoryOpen) {
-    dropRepeatTimer = 0;
-    dropHeldBlock();
-    event.preventDefault();
-  }
-
   if ((event.code === 'ShiftLeft' || event.code === 'ShiftRight') && gameMode === 'survival' && controls.isLocked && canJump && !isCrouching) {
     isCrouching = true;
     camera.position.y -= CROUCH_OFFSET;
@@ -2880,7 +2894,7 @@ document.addEventListener('keydown', (event) => {
 
 document.addEventListener('keyup', (event) => {
   keys[event.code] = false;
-  if (event.code === 'KeyQ') dropRepeatTimer = 0;
+  if (event.code === 'KeyQ' || event.key.toLowerCase() === 'q') dropRepeatTimer = 0;
   if ((event.code === 'ShiftLeft' || event.code === 'ShiftRight') && isCrouching) {
     isCrouching = false;
     camera.position.y += CROUCH_OFFSET;
@@ -2965,7 +2979,7 @@ document.addEventListener('contextmenu', (event) => {
 
 let dropRepeatTimer = 0;
 function dropHeldBlock() {
-  if (!gameStarted || !controls.isLocked || inventoryOpen || playerDead || chatOpen) return;
+  if (!gameStarted || inventoryOpen || playerDead || chatOpen) return;
   const item = inventorySlots[selectedBlock];
   if (!item || (gameMode === 'survival' && item.count <= 0)) return;
   const direction = new THREE.Vector3();
