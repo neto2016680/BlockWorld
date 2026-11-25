@@ -633,6 +633,25 @@ canvas { display: block; }
   #craftingWorkbench { min-height: 125px; }
 }
 
+
+/* BLOCKWORLD 3.30 — painel de coordenadas estilo debug */
+#debugCoordinates {
+  display: none;
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 30;
+  max-width: min(360px, 85vw);
+  padding: 8px 10px;
+  color: #fff;
+  background: rgba(0,0,0,.68);
+  border-left: 3px solid #7CFC00;
+  font: 13px/1.55 Consolas, "Courier New", monospace;
+  text-shadow: 1px 1px 2px #000;
+  white-space: pre-line;
+  pointer-events: none;
+}
+
 </style>
 </head>
 
@@ -642,7 +661,7 @@ canvas { display: block; }
   <h1>BlockWorld</h1>
   <button id="start">JOGAR</button>
   <button id="homeOptionsButton" aria-label="Opções">⚙ OPÇÕES</button>
-  <div id="homeVersion">3.20</div>
+  <div id="homeVersion">3.30</div>
 </div>
 
 <div id="mobileWarning" role="dialog" aria-modal="true" aria-labelledby="mobileWarningTitle">
@@ -770,6 +789,7 @@ canvas { display: block; }
   <div id="selectedBlockName"></div>
   <div id="healthIcons" aria-label="Vida: 10 corações">♥ ♥ ♥ ♥ ♥ ♥ ♥ ♥ ♥ ♥</div>
   <div id="fps">FPS: 0</div>
+  <div id="debugCoordinates" aria-live="off">XYZ</div>
 </div>
 
 <script type="module">
@@ -2522,6 +2542,14 @@ const keys = {};
 
 document.addEventListener('keydown', (event) => {
 
+  if (event.altKey && event.code === 'F3' && !event.repeat) {
+    showDebugCoordinates = !showDebugCoordinates;
+    debugCoordinates.style.display = showDebugCoordinates ? 'block' : 'none';
+    event.preventDefault();
+    event.stopPropagation();
+    return;
+  }
+
   if ((event.code === 'ControlLeft' || event.code === 'ControlRight') && !event.repeat) {
     sprintToggled = !sprintToggled;
     event.preventDefault();
@@ -3039,6 +3067,8 @@ const pauseMenu = document.getElementById('pauseMenu');
 const optionsMenu = document.getElementById('optionsMenu');
 const instructions = document.getElementById('instructions');
 const fpsDisplay = document.getElementById('fps');
+const debugCoordinates = document.getElementById('debugCoordinates');
+let showDebugCoordinates = false;
 
 let gameStarted = false;
 let optionsReturnTo = 'pause';
@@ -3309,6 +3339,21 @@ function animate() {
     );
 
     fpsDisplay.textContent = `FPS: ${fps}`;
+    if (showDebugCoordinates && gameStarted) {
+      const direction = new THREE.Vector3();
+      camera.getWorldDirection(direction);
+      const facing = Math.abs(direction.x) > Math.abs(direction.z)
+        ? (direction.x > 0 ? 'Leste (+X)' : 'Oeste (-X)')
+        : (direction.z > 0 ? 'Sul (+Z)' : 'Norte (-Z)');
+      const feetY = camera.position.y - getEyeHeight();
+      debugCoordinates.textContent =
+        `BlockWorld 3.30 | Debug\n` +
+        `XYZ: ${camera.position.x.toFixed(2)} / ${feetY.toFixed(2)} / ${camera.position.z.toFixed(2)}\n` +
+        `Bloco: ${Math.floor(camera.position.x)} / ${Math.floor(feetY)} / ${Math.floor(camera.position.z)}\n` +
+        `Direção: ${facing}\nFPS: ${fps}`;
+    } else if (!gameStarted) {
+      debugCoordinates.style.display = 'none';
+    }
 
     fpsFrames = 0;
     fpsLastUpdate = now;
