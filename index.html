@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BlockWorld - Versão 2.56</title>
+<title>BlockWorld - Versão 2.57</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 
 <script type="importmap">
@@ -458,7 +458,7 @@ canvas { display: block; }
   <h1>BlockWorld</h1>
   <button id="start">JOGAR</button>
   <button id="homeOptionsButton" aria-label="Opções">⚙ OPÇÕES</button>
-  <div id="homeVersion">2.56</div>
+  <div id="homeVersion">2.57</div>
 </div>
 
 <div id="mobileWarning" role="dialog" aria-modal="true" aria-labelledby="mobileWarningTitle">
@@ -577,18 +577,19 @@ import * as THREE from 'three';
 import { PointerLockControls } from
 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/PointerLockControls.js';
 
-// ÁUDIO SINTETIZADO: efeitos leves, sem arquivos externos.
+// ÁUDIO DO BLOCKWORLD: efeitos mais audíveis e trilha original em chiptune.
 let audioContext = null;
 let soundsEnabled = true;
+let musicTimer = null;
+let musicStep = 0;
 try { soundsEnabled = localStorage.getItem('blockWorldSounds') !== 'off'; } catch (error) {}
 function unlockAudio() {
-  if (!soundsEnabled) return;
   const AudioCtx = window.AudioContext || window.webkitAudioContext;
   if (!AudioCtx) return;
   if (!audioContext) audioContext = new AudioCtx();
   if (audioContext.state === 'suspended') audioContext.resume().catch(() => {});
 }
-function playTone(startHz, endHz, duration, wave = 'square', volume = 0.045) {
+function playTone(startHz, endHz, duration, wave = 'square', volume = 0.075) {
   if (!soundsEnabled) return;
   unlockAudio();
   if (!audioContext) return;
@@ -605,7 +606,7 @@ function playTone(startHz, endHz, duration, wave = 'square', volume = 0.045) {
   oscillator.start(now);
   oscillator.stop(now + duration);
 }
-function playNoise(duration = 0.09, volume = 0.035) {
+function playNoise(duration = 0.09, volume = 0.065) {
   if (!soundsEnabled) return;
   unlockAudio();
   if (!audioContext) return;
@@ -618,7 +619,7 @@ function playNoise(duration = 0.09, volume = 0.035) {
   const gain = audioContext.createGain();
   source.buffer = buffer;
   filter.type = 'lowpass';
-  filter.frequency.value = 1400;
+  filter.frequency.value = 1800;
   gain.gain.value = volume;
   source.connect(filter);
   filter.connect(gain);
@@ -626,10 +627,50 @@ function playNoise(duration = 0.09, volume = 0.035) {
   source.start();
 }
 function playGameSound(kind) {
-  if (kind === 'jump') playTone(220, 520, 0.13, 'square', 0.035);
-  else if (kind === 'break') { playNoise(0.11, 0.045); playTone(105, 55, 0.10, 'triangle', 0.025); }
-  else if (kind === 'place') playTone(170, 95, 0.075, 'triangle', 0.04);
-  else if (kind === 'pickup') { playTone(520, 780, 0.09, 'sine', 0.04); setTimeout(() => playTone(780, 1040, 0.10, 'sine', 0.035), 65); }
+  if (kind === 'jump') playTone(220, 520, 0.15, 'square', 0.075);
+  else if (kind === 'break') { playNoise(0.12, 0.075); playTone(105, 55, 0.12, 'triangle', 0.055); }
+  else if (kind === 'place') playTone(170, 95, 0.10, 'triangle', 0.07);
+  else if (kind === 'pickup') { playTone(520, 780, 0.11, 'sine', 0.07); setTimeout(() => playTone(780, 1040, 0.12, 'sine', 0.065), 75); }
+}
+
+// Pequena música original em estilo 8-bit, feita pelo próprio jogo.
+const musicMelody = [523.25,392,440,392,329.63,349.23,392,0,523.25,587.33,659.25,587.33,523.25,392,440,0];
+const musicBass = [130.81,130.81,110,110,87.31,87.31,98,98];
+function playMusicNote(frequency, startAt, duration, volume, wave) {
+  if (!audioContext || !soundsEnabled || !frequency) return;
+  const oscillator = audioContext.createOscillator();
+  const gain = audioContext.createGain();
+  oscillator.type = wave;
+  oscillator.frequency.setValueAtTime(frequency, startAt);
+  gain.gain.setValueAtTime(0.001, startAt);
+  gain.gain.linearRampToValueAtTime(volume, startAt + 0.025);
+  gain.gain.setValueAtTime(volume, startAt + duration * 0.65);
+  gain.gain.exponentialRampToValueAtTime(0.001, startAt + duration);
+  oscillator.connect(gain);
+  gain.connect(audioContext.destination);
+  oscillator.start(startAt);
+  oscillator.stop(startAt + duration + 0.01);
+}
+function playMusicPattern() {
+  if (!soundsEnabled || !audioContext || audioContext.state !== 'running') return;
+  const startAt = audioContext.currentTime + 0.04;
+  for (let i = 0; i < 16; i++) {
+    const when = startAt + i * 0.22;
+    playMusicNote(musicMelody[(musicStep + i) % musicMelody.length], when, 0.19, 0.045, 'square');
+    if (i % 2 === 0) playMusicNote(musicBass[((musicStep + i) / 2) % musicBass.length], when, 0.32, 0.055, 'triangle');
+  }
+  musicStep = (musicStep + 16) % musicMelody.length;
+}
+function startBackgroundMusic() {
+  if (!soundsEnabled || musicTimer !== null) return;
+  unlockAudio();
+  if (!audioContext) return;
+  playMusicPattern();
+  musicTimer = setInterval(playMusicPattern, 3520);
+}
+function stopBackgroundMusic() {
+  if (musicTimer !== null) clearInterval(musicTimer);
+  musicTimer = null;
 }
 // Libera o áudio após a primeira interação do jogador (política do navegador).
 document.addEventListener('pointerdown', unlockAudio);
@@ -2717,9 +2758,11 @@ controls.addEventListener('lock', () => {
   modeMenu.style.display = 'none';
   inventoryMenu.style.display = 'none';
   hud.style.display = 'block';
+  startBackgroundMusic();
 });
 
 controls.addEventListener('unlock', () => {
+  stopBackgroundMusic();
   hud.style.display = 'none';
   blockOutline.visible = false;
   cancelMining();
@@ -2768,7 +2811,13 @@ document.getElementById('fpsToggle').addEventListener('click', () => {
 document.getElementById('soundToggle').addEventListener('click', () => {
   soundsEnabled = !soundsEnabled;
   try { localStorage.setItem('blockWorldSounds', soundsEnabled ? 'on' : 'off'); } catch (error) {}
-  if (soundsEnabled) { unlockAudio(); playTone(440, 660, 0.10, 'sine', 0.03); }
+  if (soundsEnabled) {
+    unlockAudio();
+    playTone(440, 660, 0.14, 'sine', 0.075);
+    if (gameStarted && controls.isLocked) startBackgroundMusic();
+  } else {
+    stopBackgroundMusic();
+  }
   updateOptionButtons();
 });
 
@@ -2782,6 +2831,7 @@ document.getElementById('exitGameButton').addEventListener('click', () => {
   clearTimeout(saveDebounceTimer);
   saveActiveWorld();
   gameStarted = false;
+  stopBackgroundMusic();
   clearDroppedItems();
   pauseMenu.style.display = 'none';
   optionsMenu.style.display = 'none';
