@@ -1687,6 +1687,16 @@ coalOreCtx.drawImage(pixelTextures.stone.image, 0, 0, 16, 16);
 const coalOreTexture = new THREE.CanvasTexture(coalOreCanvas);
 coalOreTexture.magFilter = THREE.NearestFilter; coalOreTexture.minFilter = THREE.NearestFilter; coalOreTexture.generateMipmaps = false; coalOreTexture.colorSpace = THREE.SRGBColorSpace;
 
+// Minério de ferro: pedra com manchas em tons de ferrugem.
+const ironOreCanvas = document.createElement('canvas');
+ironOreCanvas.width = 16; ironOreCanvas.height = 16;
+const ironOreCtx = ironOreCanvas.getContext('2d');
+ironOreCtx.imageSmoothingEnabled = false;
+ironOreCtx.drawImage(pixelTextures.stone.image, 0, 0, 16, 16);
+[[2,2],[3,2],[4,3],[5,4],[6,4],[10,1],[11,2],[12,2],[11,3],[8,9],[9,9],[10,10],[11,11],[3,12],[4,11],[5,12],[6,13]].forEach(([x,y],i)=>{ironOreCtx.fillStyle=i%3===0?'#8b4b24':i%3===1?'#b66b35':'#d18a4b';ironOreCtx.fillRect(x,y,1,1);});
+const ironOreTexture = new THREE.CanvasTexture(ironOreCanvas);
+ironOreTexture.magFilter = THREE.NearestFilter; ironOreTexture.minFilter = THREE.NearestFilter; ironOreTexture.generateMipmaps = false; ironOreTexture.colorSpace = THREE.SRGBColorSpace;
+
 
 // Textura lateral da grama.
 // Vidro translúcido com bordas claras em pixel art.
@@ -1827,6 +1837,7 @@ const materials = {
   flower_yellow: new THREE.MeshLambertMaterial({ map: pixelTextures.flower_yellow }),
   furnace: new THREE.MeshLambertMaterial({ map: pixelTextures.stone }),
   coal_ore: new THREE.MeshLambertMaterial({ map: coalOreTexture }),
+  iron_ore: new THREE.MeshLambertMaterial({ map: ironOreTexture }),
   glass: new THREE.MeshLambertMaterial({ map: glassTexture, transparent: true, opacity: 0.58, depthWrite: false })
 };
 
@@ -1984,7 +1995,8 @@ const blockIcons = {
   flower_red: textureToDataURL(pixelTextures.flower_red),
   flower_yellow: textureToDataURL(pixelTextures.flower_yellow),
   glass: textureToDataURL(glassTexture),
-  coal_ore: textureToDataURL(coalOreTexture)
+  coal_ore: textureToDataURL(coalOreTexture),
+  iron_ore: textureToDataURL(ironOreTexture)
 };
 
 // 16 cores clássicas de lã.
@@ -2086,6 +2098,7 @@ const blockTypes = [
   'dirt',
   'stone',
   'coal_ore',
+  'iron_ore',
   'wood',
   'leaves',
   'bedrock',
@@ -2143,7 +2156,7 @@ function removeBlock(block) {
   const key = blockKey(p.x, p.y, p.z);
   if (!blocks.has(key)) return;
   blocks.delete(key);
-  if (gameMode === 'survival' && block.type !== 'bedrock') spawnDroppedItem(block.type === 'coal_ore' ? 'coal' : block.type, p);
+  if (gameMode === 'survival' && block.type !== 'bedrock') spawnDroppedItem(block.type === 'coal_ore' ? 'coal' : block.type === 'iron_ore' ? 'raw_iron' : block.type, p);
   rebuildInstances();
   scheduleWorldSave();
 }
@@ -2157,7 +2170,7 @@ const flatBlockColors = {
   wood:0x9a6a3e, leaves:0x397b2c, bedrock:0x333333,
   wool:0xdedede, planks:0xb98a52, flower_red:0xd94343,
   flower_yellow:0xf0d43a,
-  glass:0x9bddeb, crafting_table:0x9b6737, furnace:0x555555, coal_ore:0x555555
+  glass:0x9bddeb, crafting_table:0x9b6737, furnace:0x555555, coal_ore:0x555555, iron_ore:0x9b765e
 };
 const flatBlockMaterials = new Map();
 function getFlatBlockMaterial(type) {
@@ -2299,7 +2312,7 @@ function randomWorldHeight(x, z, seed) {
 }
 
 function coalOreChance(x,y,z,seed) { const value=Math.abs(Math.sin((x*127.1+y*311.7+z*74.7+seed*0.013)*0.017)*43758.5453); return value-Math.floor(value); }
-function addCoalOreToExistingWorld(seed) { for (const block of blocks.values()) { if (block.type !== 'stone') continue; const p=block.position; if (coalOreChance(p.x,p.y,p.z,seed)<0.055) block.type='coal_ore'; } }
+function addOresToExistingWorld(seed) { for (const block of blocks.values()) { if (block.type !== 'stone') continue; const p=block.position; const chance=coalOreChance(p.x,p.y,p.z,seed); if (chance<0.055) block.type='coal_ore'; else if (chance>=0.075 && chance<0.115) block.type='iron_ore'; } }
 
 function generateRandomTerrain(seed, chunksPerSide = 2) {
   blocks.clear();
@@ -2308,9 +2321,9 @@ function generateRandomTerrain(seed, chunksPerSide = 2) {
     for (let z = -halfSize; z < halfSize; z++) {
       const height = randomWorldHeight(x, z, seed);
       addBlock(x, height - 5, z, 'bedrock', false);
-      addBlock(x, height - 4, z, coalOreChance(x,height-4,z,seed)<0.055?'coal_ore':'stone', false);
-      addBlock(x, height - 3, z, coalOreChance(x,height-3,z,seed)<0.055?'coal_ore':'stone', false);
-      addBlock(x, height - 2, z, coalOreChance(x,height-2,z,seed)<0.055?'coal_ore':'stone', false);
+      addBlock(x, height - 4, z, coalOreChance(x,height-4,z,seed)<0.055?'coal_ore':(coalOreChance(x,height-4,z,seed)>=0.075 && coalOreChance(x,height-4,z,seed)<0.115?'iron_ore':'stone'), false);
+      addBlock(x, height - 3, z, coalOreChance(x,height-3,z,seed)<0.055?'coal_ore':(coalOreChance(x,height-3,z,seed)>=0.075 && coalOreChance(x,height-3,z,seed)<0.115?'iron_ore':'stone'), false);
+      addBlock(x, height - 2, z, coalOreChance(x,height-2,z,seed)<0.055?'coal_ore':(coalOreChance(x,height-2,z,seed)>=0.075 && coalOreChance(x,height-2,z,seed)<0.115?'iron_ore':'stone'), false);
       addBlock(x, height - 1, z, 'dirt', false);
       addBlock(x, height, z, 'grass', false);
     }
@@ -2425,7 +2438,7 @@ let miningActive = false;
 let miningTargetKey = null;
 let miningStartTime = 0;
 let miningStage = 0;
-const miningTimes = { grass: 1000, dirt: 900, stone: 3000, coal_ore: 3000, wood: 1800, leaves: 600, bedrock: 1200 };
+const miningTimes = { grass: 1000, dirt: 900, stone: 3000, coal_ore: 3000, iron_ore: 3000, wood: 1800, leaves: 600, bedrock: 1200 };
 
 function cancelMining() {
   miningActive = false;
@@ -2468,7 +2481,7 @@ function updateMining() {
   const hasWoodenPickaxe = heldItem && heldItem.type === 'wooden_pickaxe';
   const hasStonePickaxe = heldItem && heldItem.type === 'stone_pickaxe';
   const baseDuration = miningTimes[hit.block.type] || 500;
-  const duration = (hit.block.type === 'stone' || hit.block.type === 'coal_ore')
+  const duration = (hit.block.type === 'stone' || hit.block.type === 'coal_ore' || hit.block.type === 'iron_ore')
     ? (hasStonePickaxe ? 650 : hasWoodenPickaxe ? 1000 : baseDuration)
     : baseDuration;
   const progress = Math.min((performance.now() - miningStartTime) / duration, 1);
@@ -2514,6 +2527,7 @@ const inventoryCatalog = [
   { type:'furnace', label:'Fornalha' },
   { type:'charcoal', label:'Carvão vegetal' },
   { type:'coal', label:'Carvão mineral' },
+  { type:'raw_iron', label:'Ferro bruto' },
   { type:'stick', label:'Graveto' },
   { type:'wooden_pickaxe', label:'Picareta de madeira' },
   { type:'stone_pickaxe', label:'Picareta de pedra' },
@@ -3969,7 +3983,7 @@ async function loadSavedWorld(id, mode) {
     activeWorldName = world.name || 'Mundo sem nome';
     activeWorldSeed = world.seed || 0;
     activeWorldChunks = world.chunks || 4;
-    addCoalOreToExistingWorld(activeWorldSeed);
+    addOresToExistingWorld(activeWorldSeed);
     rebuildInstances();
     scheduleWorldSave();
     savedWorldsMenu.style.display = 'none';
