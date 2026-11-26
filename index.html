@@ -2534,9 +2534,9 @@ function createBlockIcon(type, label) {
   }
   const cube = document.createElement('div');
   cube.className = 'blockCube';
-  const sideTexture = type === 'grass' ? blockIcons.grassSide : blockIcons[type];
-  const topTexture = type === 'grass' ? blockIcons.grassTop : type === 'wood' ? blockIcons.woodTop : type === 'crafting_table' ? blockIcons.crafting_tableTop : blockIcons[type];
-  const bottomTexture = type === 'grass' ? blockIcons.dirt : type === 'wood' ? blockIcons.woodTop : type === 'crafting_table' ? blockIcons.planks : blockIcons[type];
+  const sideTexture = type === 'grass' ? blockIcons.grassSide : type === 'furnace' ? blockIcons.stone : blockIcons[type];
+  const topTexture = type === 'grass' ? blockIcons.grassTop : type === 'wood' ? blockIcons.woodTop : type === 'crafting_table' ? blockIcons.crafting_tableTop : type === 'furnace' ? blockIcons.stone : blockIcons[type];
+  const bottomTexture = type === 'grass' ? blockIcons.dirt : type === 'wood' ? blockIcons.woodTop : type === 'crafting_table' ? blockIcons.planks : type === 'furnace' ? blockIcons.stone : blockIcons[type];
   ['front', 'back', 'right', 'left'].forEach((faceName) => {
     const face = document.createElement('div');
     face.className = 'blockFace ' + faceName;
