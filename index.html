@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BlockWorld - Versão 4.40</title>
+<title>BlockWorld - Versão 4.50</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 
 <script type="importmap">
@@ -689,7 +689,7 @@ canvas { display: block; }
   <h1>BlockWorld</h1>
   <button id="start">JOGAR</button>
   <button id="homeOptionsButton" aria-label="Opções">⚙ OPÇÕES</button>
-  <div id="homeVersion">4.40</div>
+  <div id="homeVersion">4.50</div>
 </div>
 
 <div id="mobileWarning" role="dialog" aria-modal="true" aria-labelledby="mobileWarningTitle">
@@ -3171,7 +3171,7 @@ function addItemToSurvivalInventory(type) {
 }
 
 function updateDroppedItems(delta) {
-  if (!gameStarted || gameMode !== 'survival' || !controls.isLocked) return;
+  if (!gameStarted || gameMode !== 'survival') return;
   for (let i = droppedItems.length - 1; i >= 0; i--) {
     const item = droppedItems[i];
     item.age += delta;
@@ -3185,7 +3185,7 @@ function updateDroppedItems(delta) {
       item.velocity.z *= 0.82;
     }
     item.mesh.rotation.y += delta * 1.8;
-    item.mesh.position.y += Math.sin(item.age * 4) * delta * 0.035;
+    // Mantém o item apoiado no chão; a animação anterior acumulava deslocamento vertical.
     if (item.mesh.position.distanceTo(camera.position) < 1.35 && addItemToSurvivalInventory(item.type)) {
       scene.remove(item.mesh);
       playGameSound('pickup');
