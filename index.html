@@ -3872,7 +3872,7 @@ const loadingStartedAt = performance.now();
 function finishLoadingScreen() {
   const screen = document.getElementById('loadingScreen');
   if (!screen) return;
-  const wait = Math.max(0, 500 - (performance.now() - loadingStartedAt));
+  const wait = Math.max(0, 5000 - (performance.now() - loadingStartedAt));
   setTimeout(() => {
     // Aguarda o navegador pintar o menu 3D antes de retirar o fundo preto.
     requestAnimationFrame(() => requestAnimationFrame(() => screen.classList.add('finished')));
