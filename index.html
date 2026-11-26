@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BlockWorld - Versão 1.33</title>
+<title>BlockWorld - Versão 1.34</title>
 <link rel="icon" type="image/png" sizes="128x128" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAEqElEQVR42u2dS2tTQRzFZ8KtD1rJQolGaclG6MKFotJFN9nqZ9Bv4MfpN3DvMt0WiqsW7KILwU2x+CBUpNgiVTAu2ltjyE3uY2b+r3NWlbbYm/Ob8z8z94Y4B0EQBEEQBEEQBEEQBEEQBEEQBEEQBEH69Ohlb2T5+jPrxj951XHOuZFzzr17feCtvQ7euPH/aXdj6KyB4GG8Mw2Ch/G2QfAw3jYIHsbbBsFrMz+G8dNA0AKBx6q3nQYextsGwWszfvjpx9zf79y7ARAulGHFh9HY3yTqVDGD8bZByGC8bRAyzuZLNH4WCBwhyLDqk4LALg08jLe9dfQw3jYIHsbbBsHDeNsgeBhvGwSfynwYXw+E2BB4rHrbaeBhvG0QfErjqe7UpVCZawtxfaFByLDiZSn0PYYMxtsGIatrOoznCUJVGFpV/rP+anfU3jlz7Z0zvPIMlXvTX+2OoiXAtEKCJKDfHZCWwN2NYSkIpDb8FO2ewvxGAKz0F51zzn3cOkUaEBt/rXfxxQ5BAqz0Fy8hAAjpV/yl+ZQjYDINAAJ/44MCABDkGV9rG1gFhByGkIXF+pwPbX7wBEBRjFjwIinJU8EoijzingwA9AN+xjcGYH3zvD68ffYHIBAbv7Z9fvK7R1ECcxBQFGkKXm4+6QiomwbWimLIgtfU+CgdoCkIWsdCjLhnXQLRD/gbH6wDzAOhTkfQ0A9Czfm17VE085NtA9c3W2b6Acc5z+IcYH2z5W532jN/5s3j72L7gYS4JwWgqbj2A6nGiwOAGwihjH9x2P33j4Lf/3DwOdp1tJxQURbFkAWPWuI/MCJlUZRW8MQBwPUgSfqcF5cAXA6SNBsvYgRQgWDBeFElMOUdR0536lACA/aDeUVRY8Ero0rvKB1/z9nzB7dI//A6IEyOhSJJXfF7X39dfr31/otXlQAx+sH4m1yPn15VHfVqzwGagHA8BoDUgxwTJTBmUbQw51UnQKiiaM14kQAsLi0Vfu/05CQqCNqMV5kAMRJBq/EmAGgCgnbj1ZXAkEXRivlmEqBsGlgyPjoAswpbUXlLDcLAuPkmE6CJ7vfuzv2ZmI9voQNAAAACABAAgNiXQKp2DyneBQAqjAAIAEAsRsBg/4j8ucDU4nzIM/48YLQEmHzQcLB/5Ab7R1hGxMZPml/2gVDnGnxq2LRPpZCWCOPwPrxzRZzx8xZoVACKQJAEgVQAmqz44ABIBkEaACGND74LQD/gO+eTJIDEfsA9AULN+eQASAGBKwApjE8CAHcQuAGQ0vikAHAFgQsAFMaTAMBtxxASgG8/i58pvHndJ232VURyNzC/yByE3AhLR8vUxgffBmLrSL+lE5MAs9JAayJQznl2HYBLUUzRAQ6Pf7M0ni0AKUGICQB349kDkAKEGABIMZ5FCSzbEaaVRY6aNH+5veCW2wusX1/2CRDzDCFUAnBq9eoSgPPWkduWzkQChOwHdROA65bOHABNQagKgCbjVQFQF4SyAGg0XiUAVUGYB4Bm41UDUHbHMAsA6eUOAJQAYRoAVow3BUDRWKi65QQARkCwYLxZAGaBYMl4qMFogCAIgiAIgiAIgiCh+guqTm9bU+7aPAAAAABJRU5ErkJggg==">
 <link rel="shortcut icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAEqElEQVR42u2dS2tTQRzFZ8KtD1rJQolGaclG6MKFotJFN9nqZ9Bv4MfpN3DvMt0WiqsW7KILwU2x+CBUpNgiVTAu2ltjyE3uY2b+r3NWlbbYm/Ob8z8z94Y4B0EQBEEQBEEQBEEQBEEQBEEQBEEQBEH69Ohlb2T5+jPrxj951XHOuZFzzr17feCtvQ7euPH/aXdj6KyB4GG8Mw2Ch/G2QfAw3jYIHsbbBsFrMz+G8dNA0AKBx6q3nQYextsGwWszfvjpx9zf79y7ARAulGHFh9HY3yTqVDGD8bZByGC8bRAyzuZLNH4WCBwhyLDqk4LALg08jLe9dfQw3jYIHsbbBsHDeNsgeBhvGwSfynwYXw+E2BB4rHrbaeBhvG0QfErjqe7UpVCZawtxfaFByLDiZSn0PYYMxtsGIatrOoznCUJVGFpV/rP+anfU3jlz7Z0zvPIMlXvTX+2OoiXAtEKCJKDfHZCWwN2NYSkIpDb8FO2ewvxGAKz0F51zzn3cOkUaEBt/rXfxxQ5BAqz0Fy8hAAjpV/yl+ZQjYDINAAJ/44MCABDkGV9rG1gFhByGkIXF+pwPbX7wBEBRjFjwIinJU8EoijzingwA9AN+xjcGYH3zvD68ffYHIBAbv7Z9fvK7R1ECcxBQFGkKXm4+6QiomwbWimLIgtfU+CgdoCkIWsdCjLhnXQLRD/gbH6wDzAOhTkfQ0A9Czfm17VE085NtA9c3W2b6Acc5z+IcYH2z5W532jN/5s3j72L7gYS4JwWgqbj2A6nGiwOAGwihjH9x2P33j4Lf/3DwOdp1tJxQURbFkAWPWuI/MCJlUZRW8MQBwPUgSfqcF5cAXA6SNBsvYgRQgWDBeFElMOUdR0536lACA/aDeUVRY8Ero0rvKB1/z9nzB7dI//A6IEyOhSJJXfF7X39dfr31/otXlQAx+sH4m1yPn15VHfVqzwGagHA8BoDUgxwTJTBmUbQw51UnQKiiaM14kQAsLi0Vfu/05CQqCNqMV5kAMRJBq/EmAGgCgnbj1ZXAkEXRivlmEqBsGlgyPjoAswpbUXlLDcLAuPkmE6CJ7vfuzv2ZmI9voQNAAAACABAAgNiXQKp2DyneBQAqjAAIAEAsRsBg/4j8ucDU4nzIM/48YLQEmHzQcLB/5Ab7R1hGxMZPml/2gVDnGnxq2LRPpZCWCOPwPrxzRZzx8xZoVACKQJAEgVQAmqz44ABIBkEaACGND74LQD/gO+eTJIDEfsA9AULN+eQASAGBKwApjE8CAHcQuAGQ0vikAHAFgQsAFMaTAMBtxxASgG8/i58pvHndJ232VURyNzC/yByE3AhLR8vUxgffBmLrSL+lE5MAs9JAayJQznl2HYBLUUzRAQ6Pf7M0ni0AKUGICQB349kDkAKEGABIMZ5FCSzbEaaVRY6aNH+5veCW2wusX1/2CRDzDCFUAnBq9eoSgPPWkduWzkQChOwHdROA65bOHABNQagKgCbjVQFQF4SyAGg0XiUAVUGYB4Bm41UDUHbHMAsA6eUOAJQAYRoAVow3BUDRWKi65QQARkCwYLxZAGaBYMl4qMFogCAIgiAIgiAIgiCh+guqTm9bU+7aPAAAAABJRU5ErkJggg==">
 
@@ -70,6 +70,51 @@ canvas { display: block; position: fixed; inset: 0; z-index: 0; }
 #skinEditor button, #skinEditor input { padding:10px; font-weight:bold; }
 #skinStatus { min-height:20px; font-size:13px; }
 @media(max-width:650px) { #characterMenuButton { right:8px; width:105px; min-height:160px; font-size:12px; } #menuSteve { transform:scale(.75); margin:-12px 0; } }
+/* Prévia 3D do personagem no menu principal. */
+#characterPreviewPanel {
+  position:fixed; z-index:9; right:3%; top:50%; transform:translateY(-42%);
+  width:230px; min-height:330px; display:flex; flex-direction:column;
+  align-items:center; justify-content:flex-end; gap:10px; pointer-events:none;
+}
+#characterDragArea {
+  width:100%; height:245px; cursor:grab; touch-action:none;
+  display:flex; align-items:flex-end; justify-content:center;
+  color:#fff; font-size:12px; font-weight:bold; text-shadow:1px 2px #111;
+  pointer-events:auto; user-select:none;
+}
+#characterDragArea:active { cursor:grabbing; }
+#characterMenuButton, #capesButton {
+  position:static; transform:none; width:100%; min-height:0; padding:11px 8px;
+  border:2px solid #222; border-radius:5px; background:#263b50e8; color:#fff;
+  font-weight:bold; cursor:pointer; pointer-events:auto;
+}
+#characterMenuButton:hover, #capesButton:hover { background:#42617a; }
+#capesMenu {
+  display:none; position:fixed; inset:0; z-index:31; background:#000b;
+  align-items:center; justify-content:center; color:white;
+}
+#capesPanel {
+  width:min(420px,92vw); padding:22px; border:3px solid #222;
+  border-radius:8px; background:#34495e; display:flex; flex-direction:column;
+  align-items:center; gap:12px; text-align:center;
+}
+#capesPanel p { margin:0; line-height:1.4; }
+#capesPanel button { width:100%; padding:11px; font-weight:bold; cursor:pointer; }
+#capeStatus { min-height:20px; font-size:14px; }
+#commemorativeCapePreview {
+  width:62px; height:92px; background:#a61925; border:4px solid #5b1118;
+  clip-path:polygon(8% 0,92% 0,100% 100%,50% 82%,0 100%);
+  box-shadow:inset 0 0 0 5px #e5b84b;
+}
+#commemorativeCapePreview div {
+  height:100%; width:100%; border-top:10px solid #e5b84b;
+  background:repeating-linear-gradient(90deg,transparent 0 12px,#d33 12px 16px);
+}
+@media(max-width:650px) {
+  #characterPreviewPanel { right:1%; width:135px; min-height:245px; top:49%; }
+  #characterDragArea { height:175px; font-size:10px; }
+  #characterMenuButton, #capesButton { font-size:11px; padding:8px 4px; }
+}
 #menu h1 {
   font-family: "Arial Black", Impact, sans-serif;
   font-size: clamp(54px, 8vw, 82px);
@@ -831,12 +876,13 @@ window.setTimeout(function checkBlockWorldReady() {
   <h1>BlockWorld</h1>
   <button id="start">JOGAR</button>
   <button id="homeOptionsButton" aria-label="Opções">⚙ OPÇÕES</button>
-  <div id="homeVersion">1.33</div>
+  <div id="homeVersion">1.34</div>
 </div>
-<button id="characterMenuButton" aria-label="Personalizar personagem">
-  <div id="menuSteve"><div class="steveHead"></div><div class="steveArm left"></div><div class="steveArm right"></div><div class="steveBody"></div><div class="steveLeg left"></div><div class="steveLeg right"></div></div>
-  PERSONALIZAR<br>PERSONAGEM
-</button>
+<div id="characterPreviewPanel">
+  <div id="characterDragArea" title="Clique e arraste para girar o personagem"><span>↔ ARRASTE PARA GIRAR</span></div>
+  <button id="characterMenuButton" aria-label="Personalizar personagem">PERSONALIZAR PERSONAGEM</button>
+  <button id="capesButton" type="button">CAPAS</button>
+</div>
 <div id="skinEditor" role="dialog" aria-modal="true" aria-label="Personalização do personagem">
   <div id="skinEditorPanel">
     <h2>PERSONALIZAR PERSONAGEM</h2>
@@ -846,6 +892,19 @@ window.setTimeout(function checkBlockWorldReady() {
     <div id="skinStatus">Skin padrão: Steve</div>
     <button id="skinResetButton" type="button">USAR STEVE PADRÃO</button>
     <button id="skinCloseButton" type="button">VOLTAR</button>
+  </div>
+</div>
+</div>
+
+<div id="capesMenu" role="dialog" aria-modal="true" aria-label="Capas">
+  <div id="capesPanel">
+    <h2>CAPAS</h2>
+    <div id="commemorativeCapePreview"><div></div></div>
+    <h3>1 SEMANA DE DESENVOLVIMENTO</h3>
+    <p>Uma capa comemorativa para celebrar a primeira semana de desenvolvimento do BlockWorld!</p>
+    <div id="capeStatus">Recompensa especial disponível.</div>
+    <button id="claimCapeButton" type="button">RESGATAR CAPA</button>
+    <button id="closeCapesButton" type="button">VOLTAR</button>
   </div>
 </div>
 
@@ -1171,6 +1230,13 @@ const controls = new PointerLockControls(
 // Personagem em blocos e câmera em terceira pessoa.
 let thirdPersonView = false;
 let importedSkinData = '';
+let capeOwned = false;
+let capeEquipped = false;
+let capeMesh = null;
+let menuPreviewYaw = 0;
+let menuDragActive = false;
+let menuLastPointerX = 0;
+try { capeOwned = localStorage.getItem('blockWorldWeekCape') === 'owned'; capeEquipped = capeOwned && localStorage.getItem('blockWorldWeekCapeEquipped') !== 'false'; } catch (error) {}
 const playerModel = new THREE.Group();
 const playerParts = [];
 function makeSkinMaterial(color, image, crop) {
@@ -1209,6 +1275,23 @@ function rebuildPlayerModel(image = null) {
   addPlayerPart([0.25,0.75,0.25],[0.375,0.875,0],0xc58b62,image,[44,20,4,12]);
   addPlayerPart([0.25,0.75,0.25],[-0.13,0.375,0],0x344c91,image,[4,20,4,12]);
   addPlayerPart([0.25,0.75,0.25],[0.13,0.375,0],0x344c91,image,[4,20,4,12]);
+  const capeCanvas = document.createElement('canvas');
+  capeCanvas.width = 16; capeCanvas.height = 32;
+  const capeCtx = capeCanvas.getContext('2d');
+  capeCtx.fillStyle = '#a61925'; capeCtx.fillRect(0,0,16,32);
+  capeCtx.fillStyle = '#e5b84b'; capeCtx.fillRect(0,0,16,4);
+  capeCtx.fillStyle = '#f2d27a'; capeCtx.fillRect(6,8,4,16);
+  capeCtx.fillRect(3,14,10,4);
+  const capeTexture = new THREE.CanvasTexture(capeCanvas);
+  capeTexture.magFilter = THREE.NearestFilter;
+  capeTexture.minFilter = THREE.NearestFilter;
+  capeMesh = new THREE.Mesh(
+    new THREE.BoxGeometry(0.62,0.92,0.035),
+    new THREE.MeshLambertMaterial({map:capeTexture})
+  );
+  capeMesh.position.set(0,0.92,-0.19);
+  capeMesh.visible = capeEquipped;
+  playerModel.add(capeMesh);
 }
 scene.add(playerModel);
 playerModel.visible = false;
@@ -1236,11 +1319,61 @@ if (importedSkinData) {
   skinPreview.alt = 'Steve clássico';
 }
 document.getElementById('characterMenuButton').addEventListener('click', () => { skinEditor.style.display = 'flex'; });
+const characterDragArea = document.getElementById('characterDragArea');
+characterDragArea.addEventListener('pointerdown', event => {
+  menuDragActive = true; menuLastPointerX = event.clientX;
+  characterDragArea.setPointerCapture(event.pointerId);
+  event.preventDefault();
+});
+characterDragArea.addEventListener('pointermove', event => {
+  if (!menuDragActive) return;
+  const dx = event.clientX - menuLastPointerX;
+  menuLastPointerX = event.clientX;
+  menuPreviewYaw += dx * 0.012;
+  menuNeedsRender = true;
+});
+function stopMenuCharacterDrag() { menuDragActive = false; }
+characterDragArea.addEventListener('pointerup', stopMenuCharacterDrag);
+characterDragArea.addEventListener('pointercancel', stopMenuCharacterDrag);
+document.getElementById('capesButton').addEventListener('click', () => {
+  document.getElementById('capesMenu').style.display = 'flex';
+  updateCapeMenu();
+});
+document.getElementById('closeCapesButton').addEventListener('click', () => {
+  document.getElementById('capesMenu').style.display = 'none';
+});
+function updateCapeMenu() {
+  const status = document.getElementById('capeStatus');
+  const button = document.getElementById('claimCapeButton');
+  if (capeOwned && capeEquipped) {
+    status.textContent = 'Capa resgatada e equipada!';
+    button.textContent = 'CAPA EQUIPADA';
+  } else if (capeOwned) {
+    status.textContent = 'Você já resgatou esta capa comemorativa.';
+    button.textContent = 'EQUIPAR CAPA';
+  } else {
+    status.textContent = 'Recompensa especial disponível.';
+    button.textContent = 'RESGATAR CAPA';
+  }
+}
+document.getElementById('claimCapeButton').addEventListener('click', () => {
+  if (!capeOwned) capeOwned = true;
+  capeEquipped = !capeEquipped || !capeOwned ? true : capeEquipped;
+  if (!capeEquipped) capeEquipped = true;
+  try {
+    localStorage.setItem('blockWorldWeekCape', 'owned');
+    localStorage.setItem('blockWorldWeekCapeEquipped', 'true');
+  } catch (error) {}
+  if (capeMesh) capeMesh.visible = true;
+  updateCapeMenu();
+  menuNeedsRender = true;
+});
 document.getElementById('skinCloseButton').addEventListener('click', () => { skinEditor.style.display = 'none'; });
 document.getElementById('skinResetButton').addEventListener('click', () => {
   importedSkinData = '';
   try { localStorage.removeItem('blockWorldSkin'); } catch (error) {}
   rebuildPlayerModel(); setSkinPreview('');
+  menuNeedsRender = true;
   document.getElementById('skinStatus').textContent = 'Steve clássico restaurado.';
 });
 skinFileInput.addEventListener('change', () => {
@@ -1260,6 +1393,7 @@ skinFileInput.addEventListener('change', () => {
       try { localStorage.setItem('blockWorldSkin', importedSkinData); } catch (error) {}
       rebuildPlayerModel(image); setSkinPreview(importedSkinData);
       document.getElementById('skinStatus').textContent = 'Skin importada! Ela será usada no jogo.';
+      menuNeedsRender = true;
     };
     image.onerror = () => { document.getElementById('skinStatus').textContent = 'Não foi possível abrir essa imagem.'; };
     image.src = reader.result;
@@ -4025,6 +4159,7 @@ function animate() {
     playerModel.position.set(camera.position.x, camera.position.y - 1.62, camera.position.z);
     playerModel.rotation.y = Math.atan2(-playerDirection.x, -playerDirection.z);
     playerModel.visible = thirdPersonView;
+    playerModel.scale.setScalar(1);
     if (thirdPersonView) {
       const firstPersonPosition = camera.position.clone();
       camera.position.addScaledVector(playerDirection, -4);
@@ -4037,6 +4172,17 @@ function animate() {
   } else {
     if (renderer.domElement.style.display === 'none') renderer.domElement.style.display = 'block';
     if (menuNeedsRender) {
+      const menuForward = new THREE.Vector3();
+      menuCamera.getWorldDirection(menuForward);
+      const menuRight = new THREE.Vector3().crossVectors(menuForward, menuCamera.up).normalize();
+      playerModel.position.copy(menuCamera.position)
+        .addScaledVector(menuForward, 8)
+        .addScaledVector(menuRight, 3.2);
+      playerModel.position.y -= 0.65;
+      playerModel.rotation.y = Math.atan2(-menuForward.x, -menuForward.z) + menuPreviewYaw;
+      playerModel.scale.setScalar(1.25);
+      playerModel.visible = menu.style.display !== 'none';
+      if (capeMesh) capeMesh.visible = capeOwned && capeEquipped;
       renderer.render(scene, menuCamera);
       menuNeedsRender = false;
     }
