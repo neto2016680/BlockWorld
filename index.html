@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BlockWorld - Versão 1.32</title>
+<title>BlockWorld - Versão 1.33</title>
 <link rel="icon" type="image/png" sizes="128x128" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAEqElEQVR42u2dS2tTQRzFZ8KtD1rJQolGaclG6MKFotJFN9nqZ9Bv4MfpN3DvMt0WiqsW7KILwU2x+CBUpNgiVTAu2ltjyE3uY2b+r3NWlbbYm/Ob8z8z94Y4B0EQBEEQBEEQBEEQBEEQBEEQBEEQBEH69Ohlb2T5+jPrxj951XHOuZFzzr17feCtvQ7euPH/aXdj6KyB4GG8Mw2Ch/G2QfAw3jYIHsbbBsFrMz+G8dNA0AKBx6q3nQYextsGwWszfvjpx9zf79y7ARAulGHFh9HY3yTqVDGD8bZByGC8bRAyzuZLNH4WCBwhyLDqk4LALg08jLe9dfQw3jYIHsbbBsHDeNsgeBhvGwSfynwYXw+E2BB4rHrbaeBhvG0QfErjqe7UpVCZawtxfaFByLDiZSn0PYYMxtsGIatrOoznCUJVGFpV/rP+anfU3jlz7Z0zvPIMlXvTX+2OoiXAtEKCJKDfHZCWwN2NYSkIpDb8FO2ewvxGAKz0F51zzn3cOkUaEBt/rXfxxQ5BAqz0Fy8hAAjpV/yl+ZQjYDINAAJ/44MCABDkGV9rG1gFhByGkIXF+pwPbX7wBEBRjFjwIinJU8EoijzingwA9AN+xjcGYH3zvD68ffYHIBAbv7Z9fvK7R1ECcxBQFGkKXm4+6QiomwbWimLIgtfU+CgdoCkIWsdCjLhnXQLRD/gbH6wDzAOhTkfQ0A9Czfm17VE085NtA9c3W2b6Acc5z+IcYH2z5W532jN/5s3j72L7gYS4JwWgqbj2A6nGiwOAGwihjH9x2P33j4Lf/3DwOdp1tJxQURbFkAWPWuI/MCJlUZRW8MQBwPUgSfqcF5cAXA6SNBsvYgRQgWDBeFElMOUdR0536lACA/aDeUVRY8Ero0rvKB1/z9nzB7dI//A6IEyOhSJJXfF7X39dfr31/otXlQAx+sH4m1yPn15VHfVqzwGagHA8BoDUgxwTJTBmUbQw51UnQKiiaM14kQAsLi0Vfu/05CQqCNqMV5kAMRJBq/EmAGgCgnbj1ZXAkEXRivlmEqBsGlgyPjoAswpbUXlLDcLAuPkmE6CJ7vfuzv2ZmI9voQNAAAACABAAgNiXQKp2DyneBQAqjAAIAEAsRsBg/4j8ucDU4nzIM/48YLQEmHzQcLB/5Ab7R1hGxMZPml/2gVDnGnxq2LRPpZCWCOPwPrxzRZzx8xZoVACKQJAEgVQAmqz44ABIBkEaACGND74LQD/gO+eTJIDEfsA9AULN+eQASAGBKwApjE8CAHcQuAGQ0vikAHAFgQsAFMaTAMBtxxASgG8/i58pvHndJ232VURyNzC/yByE3AhLR8vUxgffBmLrSL+lE5MAs9JAayJQznl2HYBLUUzRAQ6Pf7M0ni0AKUGICQB349kDkAKEGABIMZ5FCSzbEaaVRY6aNH+5veCW2wusX1/2CRDzDCFUAnBq9eoSgPPWkduWzkQChOwHdROA65bOHABNQagKgCbjVQFQF4SyAGg0XiUAVUGYB4Bm41UDUHbHMAsA6eUOAJQAYRoAVow3BUDRWKi65QQARkCwYLxZAGaBYMl4qMFogCAIgiAIgiAIgiCh+guqTm9bU+7aPAAAAABJRU5ErkJggg==">
 <link rel="shortcut icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAEqElEQVR42u2dS2tTQRzFZ8KtD1rJQolGaclG6MKFotJFN9nqZ9Bv4MfpN3DvMt0WiqsW7KILwU2x+CBUpNgiVTAu2ltjyE3uY2b+r3NWlbbYm/Ob8z8z94Y4B0EQBEEQBEEQBEEQBEEQBEEQBEEQBEH69Ohlb2T5+jPrxj951XHOuZFzzr17feCtvQ7euPH/aXdj6KyB4GG8Mw2Ch/G2QfAw3jYIHsbbBsFrMz+G8dNA0AKBx6q3nQYextsGwWszfvjpx9zf79y7ARAulGHFh9HY3yTqVDGD8bZByGC8bRAyzuZLNH4WCBwhyLDqk4LALg08jLe9dfQw3jYIHsbbBsHDeNsgeBhvGwSfynwYXw+E2BB4rHrbaeBhvG0QfErjqe7UpVCZawtxfaFByLDiZSn0PYYMxtsGIatrOoznCUJVGFpV/rP+anfU3jlz7Z0zvPIMlXvTX+2OoiXAtEKCJKDfHZCWwN2NYSkIpDb8FO2ewvxGAKz0F51zzn3cOkUaEBt/rXfxxQ5BAqz0Fy8hAAjpV/yl+ZQjYDINAAJ/44MCABDkGV9rG1gFhByGkIXF+pwPbX7wBEBRjFjwIinJU8EoijzingwA9AN+xjcGYH3zvD68ffYHIBAbv7Z9fvK7R1ECcxBQFGkKXm4+6QiomwbWimLIgtfU+CgdoCkIWsdCjLhnXQLRD/gbH6wDzAOhTkfQ0A9Czfm17VE085NtA9c3W2b6Acc5z+IcYH2z5W532jN/5s3j72L7gYS4JwWgqbj2A6nGiwOAGwihjH9x2P33j4Lf/3DwOdp1tJxQURbFkAWPWuI/MCJlUZRW8MQBwPUgSfqcF5cAXA6SNBsvYgRQgWDBeFElMOUdR0536lACA/aDeUVRY8Ero0rvKB1/z9nzB7dI//A6IEyOhSJJXfF7X39dfr31/otXlQAx+sH4m1yPn15VHfVqzwGagHA8BoDUgxwTJTBmUbQw51UnQKiiaM14kQAsLi0Vfu/05CQqCNqMV5kAMRJBq/EmAGgCgnbj1ZXAkEXRivlmEqBsGlgyPjoAswpbUXlLDcLAuPkmE6CJ7vfuzv2ZmI9voQNAAAACABAAgNiXQKp2DyneBQAqjAAIAEAsRsBg/4j8ucDU4nzIM/48YLQEmHzQcLB/5Ab7R1hGxMZPml/2gVDnGnxq2LRPpZCWCOPwPrxzRZzx8xZoVACKQJAEgVQAmqz44ABIBkEaACGND74LQD/gO+eTJIDEfsA9AULN+eQASAGBKwApjE8CAHcQuAGQ0vikAHAFgQsAFMaTAMBtxxASgG8/i58pvHndJ232VURyNzC/yByE3AhLR8vUxgffBmLrSL+lE5MAs9JAayJQznl2HYBLUUzRAQ6Pf7M0ni0AKUGICQB349kDkAKEGABIMZ5FCSzbEaaVRY6aNH+5veCW2wusX1/2CRDzDCFUAnBq9eoSgPPWkduWzkQChOwHdROA65bOHABNQagKgCbjVQFQF4SyAGg0XiUAVUGYB4Bm41UDUHbHMAsA6eUOAJQAYRoAVow3BUDRWKi65QQARkCwYLxZAGaBYMl4qMFogCAIgiAIgiAIgiCh+guqTm9bU+7aPAAAAABJRU5ErkJggg==">
 
@@ -49,6 +49,27 @@ canvas { display: block; position: fixed; inset: 0; z-index: 0; }
   z-index: 5;
 }
 
+#characterMenuButton {
+  position:fixed; right:5.5%; top:50%; transform:translateY(-50%);
+  z-index:8; width:150px; min-height:210px; border:3px solid #333;
+  border-radius:8px; background:#263b50dd; color:white; cursor:pointer;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:10px; font-weight:bold; font-size:15px; text-shadow:1px 2px #222;
+}
+#characterMenuButton:hover { background:#3d5d78; }
+#menuSteve { width:74px; height:124px; position:relative; image-rendering:pixelated; }
+#menuSteve .steveHead { position:absolute; width:40px; height:40px; left:17px; top:0; background:#c58b62; border:3px solid #333; box-shadow:inset 0 10px #4b3024; }
+#menuSteve .steveBody { position:absolute; width:40px; height:42px; left:17px; top:40px; background:#168ac0; border:3px solid #333; }
+#menuSteve .steveArm { position:absolute; width:14px; height:42px; top:40px; background:#c58b62; border:2px solid #333; }
+#menuSteve .steveArm.left { left:1px; } #menuSteve .steveArm.right { right:1px; }
+#menuSteve .steveLeg { position:absolute; width:18px; height:42px; top:82px; background:#344c91; border:2px solid #333; }
+#menuSteve .steveLeg.left { left:17px; } #menuSteve .steveLeg.right { right:1px; }
+#skinEditor { display:none; position:fixed; inset:0; z-index:30; background:#000b; align-items:center; justify-content:center; color:white; }
+#skinEditorPanel { width:min(440px,92vw); padding:22px; border:3px solid #222; border-radius:8px; background:#34495e; display:flex; flex-direction:column; gap:12px; text-align:center; }
+#skinPreview { width:112px; height:180px; object-fit:contain; image-rendering:pixelated; align-self:center; background:#24313b; border:2px solid #111; }
+#skinEditor button, #skinEditor input { padding:10px; font-weight:bold; }
+#skinStatus { min-height:20px; font-size:13px; }
+@media(max-width:650px) { #characterMenuButton { right:8px; width:105px; min-height:160px; font-size:12px; } #menuSteve { transform:scale(.75); margin:-12px 0; } }
 #menu h1 {
   font-family: "Arial Black", Impact, sans-serif;
   font-size: clamp(54px, 8vw, 82px);
@@ -810,7 +831,22 @@ window.setTimeout(function checkBlockWorldReady() {
   <h1>BlockWorld</h1>
   <button id="start">JOGAR</button>
   <button id="homeOptionsButton" aria-label="Opções">⚙ OPÇÕES</button>
-  <div id="homeVersion">1.32</div>
+  <div id="homeVersion">1.33</div>
+</div>
+<button id="characterMenuButton" aria-label="Personalizar personagem">
+  <div id="menuSteve"><div class="steveHead"></div><div class="steveArm left"></div><div class="steveArm right"></div><div class="steveBody"></div><div class="steveLeg left"></div><div class="steveLeg right"></div></div>
+  PERSONALIZAR<br>PERSONAGEM
+</button>
+<div id="skinEditor" role="dialog" aria-modal="true" aria-label="Personalização do personagem">
+  <div id="skinEditorPanel">
+    <h2>PERSONALIZAR PERSONAGEM</h2>
+    <p>Seu personagem começa com o Steve clássico. Importe uma skin PNG para trocar a aparência.</p>
+    <img id="skinPreview" alt="Prévia da skin do personagem">
+    <input id="skinFileInput" type="file" accept="image/png">
+    <div id="skinStatus">Skin padrão: Steve</div>
+    <button id="skinResetButton" type="button">USAR STEVE PADRÃO</button>
+    <button id="skinCloseButton" type="button">VOLTAR</button>
+  </div>
 </div>
 
 <div id="mobileWarning" role="dialog" aria-modal="true" aria-labelledby="mobileWarningTitle">
@@ -1126,10 +1162,111 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1));
 document.body.appendChild(renderer.domElement);
 applyGraphicsQuality();
 
+
 const controls = new PointerLockControls(
   camera,
   document.body
 );
+
+// Personagem em blocos e câmera em terceira pessoa.
+let thirdPersonView = false;
+let importedSkinData = '';
+const playerModel = new THREE.Group();
+const playerParts = [];
+function makeSkinMaterial(color, image, crop) {
+  let map = null;
+  if (image) {
+    const canvas = document.createElement('canvas');
+    canvas.width = 64; canvas.height = 64;
+    const ctx = canvas.getContext('2d');
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(image, crop[0], crop[1], crop[2], crop[3], 0, 0, 64, 64);
+    map = new THREE.CanvasTexture(canvas);
+    map.magFilter = THREE.NearestFilter;
+    map.minFilter = THREE.NearestFilter;
+  }
+  return new THREE.MeshLambertMaterial({ color: map ? 0xffffff : color, map });
+}
+function addPlayerPart(size, position, color, image, crop) {
+  const mesh = new THREE.Mesh(new THREE.BoxGeometry(...size), makeSkinMaterial(color, image, crop));
+  mesh.position.set(...position);
+  playerModel.add(mesh);
+  playerParts.push({ mesh, color, crop });
+}
+function rebuildPlayerModel(image = null) {
+  while (playerModel.children.length) {
+    const old = playerModel.children.pop();
+    if (old.geometry) old.geometry.dispose();
+    if (old.material) {
+      if (old.material.map) old.material.map.dispose();
+      old.material.dispose();
+    }
+  }
+  // Recortes aproximados da skin clássica de 64x64.
+  addPlayerPart([0.5,0.5,0.5],[0,1.5,0],0xc58b62,image,[8,8,8,8]); // cabeça
+  addPlayerPart([0.5,0.75,0.25],[0,0.875,0],0x168ac0,image,[20,20,8,12]); // tronco
+  addPlayerPart([0.25,0.75,0.25],[-0.375,0.875,0],0xc58b62,image,[44,20,4,12]);
+  addPlayerPart([0.25,0.75,0.25],[0.375,0.875,0],0xc58b62,image,[44,20,4,12]);
+  addPlayerPart([0.25,0.75,0.25],[-0.13,0.375,0],0x344c91,image,[4,20,4,12]);
+  addPlayerPart([0.25,0.75,0.25],[0.13,0.375,0],0x344c91,image,[4,20,4,12]);
+}
+scene.add(playerModel);
+playerModel.visible = false;
+rebuildPlayerModel();
+const skinPreview = document.getElementById('skinPreview');
+const skinEditor = document.getElementById('skinEditor');
+const skinFileInput = document.getElementById('skinFileInput');
+function setSkinPreview(data) {
+  if (data) {
+    skinPreview.src = data;
+    document.getElementById('menuSteve').style.backgroundImage = 'url("' + data + '")';
+    document.getElementById('menuSteve').style.backgroundSize = 'cover';
+  } else {
+    skinPreview.removeAttribute('src');
+    document.getElementById('menuSteve').style.backgroundImage = '';
+    document.getElementById('menuSteve').style.backgroundSize = '';
+  }
+}
+try { importedSkinData = localStorage.getItem('blockWorldSkin') || ''; } catch (error) {}
+if (importedSkinData) {
+  const savedImage = new Image();
+  savedImage.onload = () => { rebuildPlayerModel(savedImage); setSkinPreview(importedSkinData); };
+  savedImage.src = importedSkinData;
+} else {
+  skinPreview.alt = 'Steve clássico';
+}
+document.getElementById('characterMenuButton').addEventListener('click', () => { skinEditor.style.display = 'flex'; });
+document.getElementById('skinCloseButton').addEventListener('click', () => { skinEditor.style.display = 'none'; });
+document.getElementById('skinResetButton').addEventListener('click', () => {
+  importedSkinData = '';
+  try { localStorage.removeItem('blockWorldSkin'); } catch (error) {}
+  rebuildPlayerModel(); setSkinPreview('');
+  document.getElementById('skinStatus').textContent = 'Steve clássico restaurado.';
+});
+skinFileInput.addEventListener('change', () => {
+  const file = skinFileInput.files && skinFileInput.files[0];
+  if (!file) return;
+  if (file.type !== 'image/png') { document.getElementById('skinStatus').textContent = 'Escolha uma imagem PNG.'; return; }
+  if (file.size > 2 * 1024 * 1024) { document.getElementById('skinStatus').textContent = 'A skin precisa ter menos de 2 MB.'; return; }
+  const reader = new FileReader();
+  reader.onload = () => {
+    const image = new Image();
+    image.onload = () => {
+      if (image.width !== 64 || (image.height !== 64 && image.height !== 32)) {
+        document.getElementById('skinStatus').textContent = 'Use uma skin clássica de 64×64 pixels.';
+        return;
+      }
+      importedSkinData = reader.result;
+      try { localStorage.setItem('blockWorldSkin', importedSkinData); } catch (error) {}
+      rebuildPlayerModel(image); setSkinPreview(importedSkinData);
+      document.getElementById('skinStatus').textContent = 'Skin importada! Ela será usada no jogo.';
+    };
+    image.onerror = () => { document.getElementById('skinStatus').textContent = 'Não foi possível abrir essa imagem.'; };
+    image.src = reader.result;
+  };
+  reader.readAsDataURL(file);
+});
+
 
 // =================================
 // ILUMINAÇÃO
@@ -2961,6 +3098,12 @@ window.addEventListener('keydown', (event) => {
 document.addEventListener('keydown', (event) => {
 
   if (chatOpen) { event.preventDefault(); return; }
+  if (event.code === 'F4' && !event.repeat && gameStarted && !inventoryOpen && !playerDead) {
+    thirdPersonView = !thirdPersonView;
+    event.preventDefault();
+    event.stopPropagation();
+    return;
+  }
   const isQKey = event.code === 'KeyQ' || (event.key && event.key.toLowerCase() === 'q');
   if (isQKey) {
     keys['KeyQ'] = true;
@@ -3875,7 +4018,22 @@ function animate() {
     updateBlockOutline();
     updateMining();
     updateDroppedItems(delta);
-    renderer.render(scene, camera);
+    const playerDirection = new THREE.Vector3();
+    camera.getWorldDirection(playerDirection);
+    playerDirection.y = 0;
+    if (playerDirection.lengthSq() > 0) playerDirection.normalize();
+    playerModel.position.set(camera.position.x, camera.position.y - 1.62, camera.position.z);
+    playerModel.rotation.y = Math.atan2(-playerDirection.x, -playerDirection.z);
+    playerModel.visible = thirdPersonView;
+    if (thirdPersonView) {
+      const firstPersonPosition = camera.position.clone();
+      camera.position.addScaledVector(playerDirection, -4);
+      camera.position.y += 1.25;
+      renderer.render(scene, camera);
+      camera.position.copy(firstPersonPosition);
+    } else {
+      renderer.render(scene, camera);
+    }
   } else {
     if (renderer.domElement.style.display === 'none') renderer.domElement.style.display = 'block';
     if (menuNeedsRender) {
