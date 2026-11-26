@@ -3191,7 +3191,10 @@ function updateDroppedItems(delta) {
     }
     item.mesh.rotation.y += delta * 1.8;
     // Mantém o item apoiado no chão; a animação anterior acumulava deslocamento vertical.
-    if (gameMode === 'survival' && item.age > 0.65 && item.mesh.position.distanceTo(camera.position) < 1.35 && addItemToSurvivalInventory(item.type)) {
+    const playerFeetY = camera.position.y - getEyeHeight();
+    const horizontalDistance = Math.hypot(item.mesh.position.x - camera.position.x, item.mesh.position.z - camera.position.z);
+    const verticalDistance = Math.abs(item.mesh.position.y - (playerFeetY + 0.25));
+    if (gameMode === 'survival' && item.age > 0.65 && horizontalDistance < 1.6 && verticalDistance < 1.35 && addItemToSurvivalInventory(item.type)) {
       scene.remove(item.mesh);
       playGameSound('pickup');
       droppedItems.splice(i, 1);
