@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BlockWorld - Versão 4.60</title>
+<title>BlockWorld - Versão 4.70</title>
 <link rel="icon" type="image/png" sizes="128x128" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAEqElEQVR42u2dS2tTQRzFZ8KtD1rJQolGaclG6MKFotJFN9nqZ9Bv4MfpN3DvMt0WiqsW7KILwU2x+CBUpNgiVTAu2ltjyE3uY2b+r3NWlbbYm/Ob8z8z94Y4B0EQBEEQBEEQBEEQBEEQBEEQBEEQBEH69Ohlb2T5+jPrxj951XHOuZFzzr17feCtvQ7euPH/aXdj6KyB4GG8Mw2Ch/G2QfAw3jYIHsbbBsFrMz+G8dNA0AKBx6q3nQYextsGwWszfvjpx9zf79y7ARAulGHFh9HY3yTqVDGD8bZByGC8bRAyzuZLNH4WCBwhyLDqk4LALg08jLe9dfQw3jYIHsbbBsHDeNsgeBhvGwSfynwYXw+E2BB4rHrbaeBhvG0QfErjqe7UpVCZawtxfaFByLDiZSn0PYYMxtsGIatrOoznCUJVGFpV/rP+anfU3jlz7Z0zvPIMlXvTX+2OoiXAtEKCJKDfHZCWwN2NYSkIpDb8FO2ewvxGAKz0F51zzn3cOkUaEBt/rXfxxQ5BAqz0Fy8hAAjpV/yl+ZQjYDINAAJ/44MCABDkGV9rG1gFhByGkIXF+pwPbX7wBEBRjFjwIinJU8EoijzingwA9AN+xjcGYH3zvD68ffYHIBAbv7Z9fvK7R1ECcxBQFGkKXm4+6QiomwbWimLIgtfU+CgdoCkIWsdCjLhnXQLRD/gbH6wDzAOhTkfQ0A9Czfm17VE085NtA9c3W2b6Acc5z+IcYH2z5W532jN/5s3j72L7gYS4JwWgqbj2A6nGiwOAGwihjH9x2P33j4Lf/3DwOdp1tJxQURbFkAWPWuI/MCJlUZRW8MQBwPUgSfqcF5cAXA6SNBsvYgRQgWDBeFElMOUdR0536lACA/aDeUVRY8Ero0rvKB1/z9nzB7dI//A6IEyOhSJJXfF7X39dfr31/otXlQAx+sH4m1yPn15VHfVqzwGagHA8BoDUgxwTJTBmUbQw51UnQKiiaM14kQAsLi0Vfu/05CQqCNqMV5kAMRJBq/EmAGgCgnbj1ZXAkEXRivlmEqBsGlgyPjoAswpbUXlLDcLAuPkmE6CJ7vfuzv2ZmI9voQNAAAACABAAgNiXQKp2DyneBQAqjAAIAEAsRsBg/4j8ucDU4nzIM/48YLQEmHzQcLB/5Ab7R1hGxMZPml/2gVDnGnxq2LRPpZCWCOPwPrxzRZzx8xZoVACKQJAEgVQAmqz44ABIBkEaACGND74LQD/gO+eTJIDEfsA9AULN+eQASAGBKwApjE8CAHcQuAGQ0vikAHAFgQsAFMaTAMBtxxASgG8/i58pvHndJ232VURyNzC/yByE3AhLR8vUxgffBmLrSL+lE5MAs9JAayJQznl2HYBLUUzRAQ6Pf7M0ni0AKUGICQB349kDkAKEGABIMZ5FCSzbEaaVRY6aNH+5veCW2wusX1/2CRDzDCFUAnBq9eoSgPPWkduWzkQChOwHdROA65bOHABNQagKgCbjVQFQF4SyAGg0XiUAVUGYB4Bm41UDUHbHMAsA6eUOAJQAYRoAVow3BUDRWKi65QQARkCwYLxZAGaBYMl4qMFogCAIgiAIgiAIgiCh+guqTm9bU+7aPAAAAABJRU5ErkJggg==">
 <link rel="shortcut icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAEqElEQVR42u2dS2tTQRzFZ8KtD1rJQolGaclG6MKFotJFN9nqZ9Bv4MfpN3DvMt0WiqsW7KILwU2x+CBUpNgiVTAu2ltjyE3uY2b+r3NWlbbYm/Ob8z8z94Y4B0EQBEEQBEEQBEEQBEEQBEEQBEEQBEH69Ohlb2T5+jPrxj951XHOuZFzzr17feCtvQ7euPH/aXdj6KyB4GG8Mw2Ch/G2QfAw3jYIHsbbBsFrMz+G8dNA0AKBx6q3nQYextsGwWszfvjpx9zf79y7ARAulGHFh9HY3yTqVDGD8bZByGC8bRAyzuZLNH4WCBwhyLDqk4LALg08jLe9dfQw3jYIHsbbBsHDeNsgeBhvGwSfynwYXw+E2BB4rHrbaeBhvG0QfErjqe7UpVCZawtxfaFByLDiZSn0PYYMxtsGIatrOoznCUJVGFpV/rP+anfU3jlz7Z0zvPIMlXvTX+2OoiXAtEKCJKDfHZCWwN2NYSkIpDb8FO2ewvxGAKz0F51zzn3cOkUaEBt/rXfxxQ5BAqz0Fy8hAAjpV/yl+ZQjYDINAAJ/44MCABDkGV9rG1gFhByGkIXF+pwPbX7wBEBRjFjwIinJU8EoijzingwA9AN+xjcGYH3zvD68ffYHIBAbv7Z9fvK7R1ECcxBQFGkKXm4+6QiomwbWimLIgtfU+CgdoCkIWsdCjLhnXQLRD/gbH6wDzAOhTkfQ0A9Czfm17VE085NtA9c3W2b6Acc5z+IcYH2z5W532jN/5s3j72L7gYS4JwWgqbj2A6nGiwOAGwihjH9x2P33j4Lf/3DwOdp1tJxQURbFkAWPWuI/MCJlUZRW8MQBwPUgSfqcF5cAXA6SNBsvYgRQgWDBeFElMOUdR0536lACA/aDeUVRY8Ero0rvKB1/z9nzB7dI//A6IEyOhSJJXfF7X39dfr31/otXlQAx+sH4m1yPn15VHfVqzwGagHA8BoDUgxwTJTBmUbQw51UnQKiiaM14kQAsLi0Vfu/05CQqCNqMV5kAMRJBq/EmAGgCgnbj1ZXAkEXRivlmEqBsGlgyPjoAswpbUXlLDcLAuPkmE6CJ7vfuzv2ZmI9voQNAAAACABAAgNiXQKp2DyneBQAqjAAIAEAsRsBg/4j8ucDU4nzIM/48YLQEmHzQcLB/5Ab7R1hGxMZPml/2gVDnGnxq2LRPpZCWCOPwPrxzRZzx8xZoVACKQJAEgVQAmqz44ABIBkEaACGND74LQD/gO+eTJIDEfsA9AULN+eQASAGBKwApjE8CAHcQuAGQ0vikAHAFgQsAFMaTAMBtxxASgG8/i58pvHndJ232VURyNzC/yByE3AhLR8vUxgffBmLrSL+lE5MAs9JAayJQznl2HYBLUUzRAQ6Pf7M0ni0AKUGICQB349kDkAKEGABIMZ5FCSzbEaaVRY6aNH+5veCW2wusX1/2CRDzDCFUAnBq9eoSgPPWkduWzkQChOwHdROA65bOHABNQagKgCbjVQFQF4SyAGg0XiUAVUGYB4Bm41UDUHbHMAsA6eUOAJQAYRoAVow3BUDRWKi65QQARkCwYLxZAGaBYMl4qMFogCAIgiAIgiAIgiCh+guqTm9bU+7aPAAAAABJRU5ErkJggg==">
 
@@ -690,7 +690,7 @@ canvas { display: block; }
   <h1>BlockWorld</h1>
   <button id="start">JOGAR</button>
   <button id="homeOptionsButton" aria-label="Opções">⚙ OPÇÕES</button>
-  <div id="homeVersion">4.60</div>
+  <div id="homeVersion">4.70</div>
 </div>
 
 <div id="mobileWarning" role="dialog" aria-modal="true" aria-labelledby="mobileWarningTitle">
@@ -2378,12 +2378,16 @@ function damageFromFall(distance) {
   const damage = Math.ceil((distance - 3) / 2);
   health = Math.max(0, health - damage);
   updateHealthDisplay();
-  if (health <= 0) showDeathScreen();
+  if (health <= 0) showDeathScreen('fall');
 }
 
-function showDeathScreen() {
+function showDeathScreen(cause = 'void') {
   if (playerDead || gameMode !== 'survival') return;
   playerDead = true;
+  const deathDescription = document.querySelector('#deathScreen p');
+  if (deathDescription) deathDescription.textContent = gameLanguage === 'en'
+    ? (cause === 'fall' ? 'You fell from too high. Your adventure can still continue!' : 'You fell into the void. Your adventure can still continue!')
+    : (cause === 'fall' ? 'Você caiu de uma altura muito alta. Sua aventura ainda pode continuar!' : 'Você caiu no vazio. Sua aventura ainda pode continuar!');
   velocityY = 0;
   sprintToggled = false;
   debugCoordinates.style.display = 'none';
@@ -3078,7 +3082,7 @@ function updatePlayer(delta) {
   }
 
   // Abaixo do limite do mundo, o vazio elimina apenas no modo Sobrevivência.
-  if (gameMode === 'survival' && camera.position.y < -12) showDeathScreen();
+  if (gameMode === 'survival' && camera.position.y < -12) showDeathScreen('void');
 }
 
 // =================================
@@ -3172,7 +3176,7 @@ function addItemToSurvivalInventory(type) {
 }
 
 function updateDroppedItems(delta) {
-  if (!gameStarted || gameMode !== 'survival') return;
+  if (!gameStarted) return;
   for (let i = droppedItems.length - 1; i >= 0; i--) {
     const item = droppedItems[i];
     item.age += delta;
@@ -3187,7 +3191,7 @@ function updateDroppedItems(delta) {
     }
     item.mesh.rotation.y += delta * 1.8;
     // Mantém o item apoiado no chão; a animação anterior acumulava deslocamento vertical.
-    if (item.mesh.position.distanceTo(camera.position) < 1.35 && addItemToSurvivalInventory(item.type)) {
+    if (gameMode === 'survival' && item.mesh.position.distanceTo(camera.position) < 1.35 && addItemToSurvivalInventory(item.type)) {
       scene.remove(item.mesh);
       playGameSound('pickup');
       droppedItems.splice(i, 1);
