@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BlockWorld - Versão 1.38</title>
+<title>BlockWorld - Versão 1.39</title>
 <link rel="icon" type="image/png" sizes="128x128" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAEqElEQVR42u2dS2tTQRzFZ8KtD1rJQolGaclG6MKFotJFN9nqZ9Bv4MfpN3DvMt0WiqsW7KILwU2x+CBUpNgiVTAu2ltjyE3uY2b+r3NWlbbYm/Ob8z8z94Y4B0EQBEEQBEEQBEEQBEEQBEEQBEEQBEH69Ohlb2T5+jPrxj951XHOuZFzzr17feCtvQ7euPH/aXdj6KyB4GG8Mw2Ch/G2QfAw3jYIHsbbBsFrMz+G8dNA0AKBx6q3nQYextsGwWszfvjpx9zf79y7ARAulGHFh9HY3yTqVDGD8bZByGC8bRAyzuZLNH4WCBwhyLDqk4LALg08jLe9dfQw3jYIHsbbBsHDeNsgeBhvGwSfynwYXw+E2BB4rHrbaeBhvG0QfErjqe7UpVCZawtxfaFByLDiZSn0PYYMxtsGIatrOoznCUJVGFpV/rP+anfU3jlz7Z0zvPIMlXvTX+2OoiXAtEKCJKDfHZCWwN2NYSkIpDb8FO2ewvxGAKz0F51zzn3cOkUaEBt/rXfxxQ5BAqz0Fy8hAAjpV/yl+ZQjYDINAAJ/44MCABDkGV9rG1gFhByGkIXF+pwPbX7wBEBRjFjwIinJU8EoijzingwA9AN+xjcGYH3zvD68ffYHIBAbv7Z9fvK7R1ECcxBQFGkKXm4+6QiomwbWimLIgtfU+CgdoCkIWsdCjLhnXQLRD/gbH6wDzAOhTkfQ0A9Czfm17VE085NtA9c3W2b6Acc5z+IcYH2z5W532jN/5s3j72L7gYS4JwWgqbj2A6nGiwOAGwihjH9x2P33j4Lf/3DwOdp1tJxQURbFkAWPWuI/MCJlUZRW8MQBwPUgSfqcF5cAXA6SNBsvYgRQgWDBeFElMOUdR0536lACA/aDeUVRY8Ero0rvKB1/z9nzB7dI//A6IEyOhSJJXfF7X39dfr31/otXlQAx+sH4m1yPn15VHfVqzwGagHA8BoDUgxwTJTBmUbQw51UnQKiiaM14kQAsLi0Vfu/05CQqCNqMV5kAMRJBq/EmAGgCgnbj1ZXAkEXRivlmEqBsGlgyPjoAswpbUXlLDcLAuPkmE6CJ7vfuzv2ZmI9voQNAAAACABAAgNiXQKp2DyneBQAqjAAIAEAsRsBg/4j8ucDU4nzIM/48YLQEmHzQcLB/5Ab7R1hGxMZPml/2gVDnGnxq2LRPpZCWCOPwPrxzRZzx8xZoVACKQJAEgVQAmqz44ABIBkEaACGND74LQD/gO+eTJIDEfsA9AULN+eQASAGBKwApjE8CAHcQuAGQ0vikAHAFgQsAFMaTAMBtxxASgG8/i58pvHndJ232VURyNzC/yByE3AhLR8vUxgffBmLrSL+lE5MAs9JAayJQznl2HYBLUUzRAQ6Pf7M0ni0AKUGICQB349kDkAKEGABIMZ5FCSzbEaaVRY6aNH+5veCW2wusX1/2CRDzDCFUAnBq9eoSgPPWkduWzkQChOwHdROA65bOHABNQagKgCbjVQFQF4SyAGg0XiUAVUGYB4Bm41UDUHbHMAsA6eUOAJQAYRoAVow3BUDRWKi65QQARkCwYLxZAGaBYMl4qMFogCAIgiAIgiAIgiCh+guqTm9bU+7aPAAAAABJRU5ErkJggg==">
 <link rel="shortcut icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAEqElEQVR42u2dS2tTQRzFZ8KtD1rJQolGaclG6MKFotJFN9nqZ9Bv4MfpN3DvMt0WiqsW7KILwU2x+CBUpNgiVTAu2ltjyE3uY2b+r3NWlbbYm/Ob8z8z94Y4B0EQBEEQBEEQBEEQBEEQBEEQBEEQBEH69Ohlb2T5+jPrxj951XHOuZFzzr17feCtvQ7euPH/aXdj6KyB4GG8Mw2Ch/G2QfAw3jYIHsbbBsFrMz+G8dNA0AKBx6q3nQYextsGwWszfvjpx9zf79y7ARAulGHFh9HY3yTqVDGD8bZByGC8bRAyzuZLNH4WCBwhyLDqk4LALg08jLe9dfQw3jYIHsbbBsHDeNsgeBhvGwSfynwYXw+E2BB4rHrbaeBhvG0QfErjqe7UpVCZawtxfaFByLDiZSn0PYYMxtsGIatrOoznCUJVGFpV/rP+anfU3jlz7Z0zvPIMlXvTX+2OoiXAtEKCJKDfHZCWwN2NYSkIpDb8FO2ewvxGAKz0F51zzn3cOkUaEBt/rXfxxQ5BAqz0Fy8hAAjpV/yl+ZQjYDINAAJ/44MCABDkGV9rG1gFhByGkIXF+pwPbX7wBEBRjFjwIinJU8EoijzingwA9AN+xjcGYH3zvD68ffYHIBAbv7Z9fvK7R1ECcxBQFGkKXm4+6QiomwbWimLIgtfU+CgdoCkIWsdCjLhnXQLRD/gbH6wDzAOhTkfQ0A9Czfm17VE085NtA9c3W2b6Acc5z+IcYH2z5W532jN/5s3j72L7gYS4JwWgqbj2A6nGiwOAGwihjH9x2P33j4Lf/3DwOdp1tJxQURbFkAWPWuI/MCJlUZRW8MQBwPUgSfqcF5cAXA6SNBsvYgRQgWDBeFElMOUdR0536lACA/aDeUVRY8Ero0rvKB1/z9nzB7dI//A6IEyOhSJJXfF7X39dfr31/otXlQAx+sH4m1yPn15VHfVqzwGagHA8BoDUgxwTJTBmUbQw51UnQKiiaM14kQAsLi0Vfu/05CQqCNqMV5kAMRJBq/EmAGgCgnbj1ZXAkEXRivlmEqBsGlgyPjoAswpbUXlLDcLAuPkmE6CJ7vfuzv2ZmI9voQNAAAACABAAgNiXQKp2DyneBQAqjAAIAEAsRsBg/4j8ucDU4nzIM/48YLQEmHzQcLB/5Ab7R1hGxMZPml/2gVDnGnxq2LRPpZCWCOPwPrxzRZzx8xZoVACKQJAEgVQAmqz44ABIBkEaACGND74LQD/gO+eTJIDEfsA9AULN+eQASAGBKwApjE8CAHcQuAGQ0vikAHAFgQsAFMaTAMBtxxASgG8/i58pvHndJ232VURyNzC/yByE3AhLR8vUxgffBmLrSL+lE5MAs9JAayJQznl2HYBLUUzRAQ6Pf7M0ni0AKUGICQB349kDkAKEGABIMZ5FCSzbEaaVRY6aNH+5veCW2wusX1/2CRDzDCFUAnBq9eoSgPPWkduWzkQChOwHdROA65bOHABNQagKgCbjVQFQF4SyAGg0XiUAVUGYB4Bm41UDUHbHMAsA6eUOAJQAYRoAVow3BUDRWKi65QQARkCwYLxZAGaBYMl4qMFogCAIgiAIgiAIgiCh+guqTm9bU+7aPAAAAABJRU5ErkJggg==">
 
@@ -876,7 +876,7 @@ window.setTimeout(function checkBlockWorldReady() {
   <h1>BlockWorld</h1>
   <button id="start">JOGAR</button>
   <button id="homeOptionsButton" aria-label="Opções">⚙ OPÇÕES</button>
-  <div id="homeVersion">1.38</div>
+  <div id="homeVersion">1.39</div>
 </div>
 <div id="characterPreviewPanel">
   <div id="characterDragArea" title="Clique e arraste para girar o personagem"><span>↔ ARRASTE PARA GIRAR</span></div>
@@ -2446,8 +2446,11 @@ function updateMining() {
 
   const heldItem = inventorySlots[selectedBlock];
   const hasWoodenPickaxe = heldItem && heldItem.type === 'wooden_pickaxe';
+  const hasStonePickaxe = heldItem && heldItem.type === 'stone_pickaxe';
   const baseDuration = miningTimes[hit.block.type] || 500;
-  const duration = hit.block.type === 'stone' && hasWoodenPickaxe ? 650 : baseDuration;
+  const duration = hit.block.type === 'stone'
+    ? (hasStonePickaxe ? 350 : hasWoodenPickaxe ? 650 : baseDuration)
+    : baseDuration;
   const progress = Math.min((performance.now() - miningStartTime) / duration, 1);
   const newStage = Math.min(5, Math.ceil(progress * 5));
 
@@ -2490,6 +2493,7 @@ const inventoryCatalog = [
   { type:'crafting_table', label:'Bancada de trabalho' },
   { type:'stick', label:'Graveto' },
   { type:'wooden_pickaxe', label:'Picareta de madeira' },
+  { type:'stone_pickaxe', label:'Picareta de pedra' },
   { type:'flower_red', label:'Flor vermelha' },
   { type:'flower_yellow', label:'Flor amarela' },
   { type:'glass', label:'Vidro' }
@@ -2500,6 +2504,14 @@ function createBlockIcon(type, label) {
   const icon = document.createElement('div');
   icon.className = 'blockIcon';
   icon.setAttribute('aria-label', label);
+  if (type === 'stone_pickaxe') {
+    const handle = document.createElement('span');
+    handle.style.cssText = 'position:absolute;left:13px;top:13px;width:5px;height:27px;background:linear-gradient(90deg,#70451f,#c18a4b,#70451f);border:1px solid #4b2d16;transform:rotate(-35deg);';
+    const head = document.createElement('span');
+    head.style.cssText = 'position:absolute;left:5px;top:5px;width:26px;height:8px;background:linear-gradient(#c7c7c7,#777,#aaa);border:2px solid #454545;transform:rotate(-8deg);clip-path:polygon(0 0,100% 0,88% 100%,12% 100%);';
+    icon.append(handle, head);
+    return icon;
+  }
   if (type === 'wooden_pickaxe') {
     const handle = document.createElement('span');
     handle.style.cssText = 'position:absolute;left:13px;top:13px;width:5px;height:27px;background:linear-gradient(90deg,#70451f,#c18a4b,#70451f);border:1px solid #4b2d16;transform:rotate(-35deg);';
@@ -2679,7 +2691,7 @@ function renderInventory() {
     blockPickerOpen ? 'PEGAR BLOCOS' : workbenchOpen ? 'BANCADA DE TRABALHO' : 'INVENTÁRIO';
   document.querySelector('#craftingArea h3').textContent = 'FABRICAÇÃO ' + (workbenchOpen ? '3×3' : '2×2');
   document.getElementById('craftRecipeHint').innerHTML = workbenchOpen
-    ? '1 tronco = 4 tábuas<br>4 tábuas = 1 bancada de trabalho<br>2 gravetos na vertical = 4 gravetos<br>3 tábuas em cima + 2 gravetos no centro = picareta de madeira'
+    ? '1 tronco = 4 tábuas<br>4 tábuas = 1 bancada de trabalho<br>2 gravetos na vertical = 4 gravetos<br>3 tábuas em cima + 2 gravetos no centro = picareta de madeira<br>3 pedras em cima + 2 gravetos no centro = picareta de pedra'
     : '1 tronco = 4 tábuas<br>4 tábuas = 1 bancada de trabalho';
   document.getElementById('inventoryCancel').textContent = 'VOLTAR AO JOGO';
   inventoryChoices.innerHTML = '';
@@ -2722,6 +2734,13 @@ function getCraftingRecipe(grid = craftGrid) {
       grid[4]?.type === 'stick' && grid[7]?.type === 'stick' &&
       [0,1,2,4,7].every(index => grid[index].count >= 1)) {
     return { type:'wooden_pickaxe', label:'Picareta de madeira', count:1 };
+  }
+  // Picareta de pedra: mesma receita da de madeira, substituindo tábuas por pedra.
+  if (grid.length === 9 && occupied.length === 5 &&
+      grid[0]?.type === 'stone' && grid[1]?.type === 'stone' && grid[2]?.type === 'stone' &&
+      grid[4]?.type === 'stick' && grid[7]?.type === 'stick' &&
+      [0,1,2,4,7].every(index => grid[index].count >= 1)) {
+    return { type:'stone_pickaxe', label:'Picareta de pedra', count:1 };
   }
   // Receita da bancada 3x3: dois gravetos empilhados verticalmente.
   if (grid.length === 9 && occupied.length === 2 &&
@@ -3205,6 +3224,7 @@ function getBlockFromCommand(name) {
     flower_red:['flower_red','red_flower','poppy','flor vermelha'],
     flower_yellow:['flower_yellow','yellow_flower','dandelion','flor amarela'],
     wooden_pickaxe:['wooden_pickaxe','wood_pick','picareta de madeira','picareta madeira'],
+    stone_pickaxe:['stone_pickaxe','stone_pick','picareta de pedra','picareta pedra'],
     glass:['glass','vidro']
   };
   for (const item of inventoryCatalog) {
