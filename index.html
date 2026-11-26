@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BlockWorld - Versão 1.35</title>
+<title>BlockWorld - Versão 1.36</title>
 <link rel="icon" type="image/png" sizes="128x128" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAEqElEQVR42u2dS2tTQRzFZ8KtD1rJQolGaclG6MKFotJFN9nqZ9Bv4MfpN3DvMt0WiqsW7KILwU2x+CBUpNgiVTAu2ltjyE3uY2b+r3NWlbbYm/Ob8z8z94Y4B0EQBEEQBEEQBEEQBEEQBEEQBEEQBEH69Ohlb2T5+jPrxj951XHOuZFzzr17feCtvQ7euPH/aXdj6KyB4GG8Mw2Ch/G2QfAw3jYIHsbbBsFrMz+G8dNA0AKBx6q3nQYextsGwWszfvjpx9zf79y7ARAulGHFh9HY3yTqVDGD8bZByGC8bRAyzuZLNH4WCBwhyLDqk4LALg08jLe9dfQw3jYIHsbbBsHDeNsgeBhvGwSfynwYXw+E2BB4rHrbaeBhvG0QfErjqe7UpVCZawtxfaFByLDiZSn0PYYMxtsGIatrOoznCUJVGFpV/rP+anfU3jlz7Z0zvPIMlXvTX+2OoiXAtEKCJKDfHZCWwN2NYSkIpDb8FO2ewvxGAKz0F51zzn3cOkUaEBt/rXfxxQ5BAqz0Fy8hAAjpV/yl+ZQjYDINAAJ/44MCABDkGV9rG1gFhByGkIXF+pwPbX7wBEBRjFjwIinJU8EoijzingwA9AN+xjcGYH3zvD68ffYHIBAbv7Z9fvK7R1ECcxBQFGkKXm4+6QiomwbWimLIgtfU+CgdoCkIWsdCjLhnXQLRD/gbH6wDzAOhTkfQ0A9Czfm17VE085NtA9c3W2b6Acc5z+IcYH2z5W532jN/5s3j72L7gYS4JwWgqbj2A6nGiwOAGwihjH9x2P33j4Lf/3DwOdp1tJxQURbFkAWPWuI/MCJlUZRW8MQBwPUgSfqcF5cAXA6SNBsvYgRQgWDBeFElMOUdR0536lACA/aDeUVRY8Ero0rvKB1/z9nzB7dI//A6IEyOhSJJXfF7X39dfr31/otXlQAx+sH4m1yPn15VHfVqzwGagHA8BoDUgxwTJTBmUbQw51UnQKiiaM14kQAsLi0Vfu/05CQqCNqMV5kAMRJBq/EmAGgCgnbj1ZXAkEXRivlmEqBsGlgyPjoAswpbUXlLDcLAuPkmE6CJ7vfuzv2ZmI9voQNAAAACABAAgNiXQKp2DyneBQAqjAAIAEAsRsBg/4j8ucDU4nzIM/48YLQEmHzQcLB/5Ab7R1hGxMZPml/2gVDnGnxq2LRPpZCWCOPwPrxzRZzx8xZoVACKQJAEgVQAmqz44ABIBkEaACGND74LQD/gO+eTJIDEfsA9AULN+eQASAGBKwApjE8CAHcQuAGQ0vikAHAFgQsAFMaTAMBtxxASgG8/i58pvHndJ232VURyNzC/yByE3AhLR8vUxgffBmLrSL+lE5MAs9JAayJQznl2HYBLUUzRAQ6Pf7M0ni0AKUGICQB349kDkAKEGABIMZ5FCSzbEaaVRY6aNH+5veCW2wusX1/2CRDzDCFUAnBq9eoSgPPWkduWzkQChOwHdROA65bOHABNQagKgCbjVQFQF4SyAGg0XiUAVUGYB4Bm41UDUHbHMAsA6eUOAJQAYRoAVow3BUDRWKi65QQARkCwYLxZAGaBYMl4qMFogCAIgiAIgiAIgiCh+guqTm9bU+7aPAAAAABJRU5ErkJggg==">
 <link rel="shortcut icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAEqElEQVR42u2dS2tTQRzFZ8KtD1rJQolGaclG6MKFotJFN9nqZ9Bv4MfpN3DvMt0WiqsW7KILwU2x+CBUpNgiVTAu2ltjyE3uY2b+r3NWlbbYm/Ob8z8z94Y4B0EQBEEQBEEQBEEQBEEQBEEQBEEQBEH69Ohlb2T5+jPrxj951XHOuZFzzr17feCtvQ7euPH/aXdj6KyB4GG8Mw2Ch/G2QfAw3jYIHsbbBsFrMz+G8dNA0AKBx6q3nQYextsGwWszfvjpx9zf79y7ARAulGHFh9HY3yTqVDGD8bZByGC8bRAyzuZLNH4WCBwhyLDqk4LALg08jLe9dfQw3jYIHsbbBsHDeNsgeBhvGwSfynwYXw+E2BB4rHrbaeBhvG0QfErjqe7UpVCZawtxfaFByLDiZSn0PYYMxtsGIatrOoznCUJVGFpV/rP+anfU3jlz7Z0zvPIMlXvTX+2OoiXAtEKCJKDfHZCWwN2NYSkIpDb8FO2ewvxGAKz0F51zzn3cOkUaEBt/rXfxxQ5BAqz0Fy8hAAjpV/yl+ZQjYDINAAJ/44MCABDkGV9rG1gFhByGkIXF+pwPbX7wBEBRjFjwIinJU8EoijzingwA9AN+xjcGYH3zvD68ffYHIBAbv7Z9fvK7R1ECcxBQFGkKXm4+6QiomwbWimLIgtfU+CgdoCkIWsdCjLhnXQLRD/gbH6wDzAOhTkfQ0A9Czfm17VE085NtA9c3W2b6Acc5z+IcYH2z5W532jN/5s3j72L7gYS4JwWgqbj2A6nGiwOAGwihjH9x2P33j4Lf/3DwOdp1tJxQURbFkAWPWuI/MCJlUZRW8MQBwPUgSfqcF5cAXA6SNBsvYgRQgWDBeFElMOUdR0536lACA/aDeUVRY8Ero0rvKB1/z9nzB7dI//A6IEyOhSJJXfF7X39dfr31/otXlQAx+sH4m1yPn15VHfVqzwGagHA8BoDUgxwTJTBmUbQw51UnQKiiaM14kQAsLi0Vfu/05CQqCNqMV5kAMRJBq/EmAGgCgnbj1ZXAkEXRivlmEqBsGlgyPjoAswpbUXlLDcLAuPkmE6CJ7vfuzv2ZmI9voQNAAAACABAAgNiXQKp2DyneBQAqjAAIAEAsRsBg/4j8ucDU4nzIM/48YLQEmHzQcLB/5Ab7R1hGxMZPml/2gVDnGnxq2LRPpZCWCOPwPrxzRZzx8xZoVACKQJAEgVQAmqz44ABIBkEaACGND74LQD/gO+eTJIDEfsA9AULN+eQASAGBKwApjE8CAHcQuAGQ0vikAHAFgQsAFMaTAMBtxxASgG8/i58pvHndJ232VURyNzC/yByE3AhLR8vUxgffBmLrSL+lE5MAs9JAayJQznl2HYBLUUzRAQ6Pf7M0ni0AKUGICQB349kDkAKEGABIMZ5FCSzbEaaVRY6aNH+5veCW2wusX1/2CRDzDCFUAnBq9eoSgPPWkduWzkQChOwHdROA65bOHABNQagKgCbjVQFQF4SyAGg0XiUAVUGYB4Bm41UDUHbHMAsA6eUOAJQAYRoAVow3BUDRWKi65QQARkCwYLxZAGaBYMl4qMFogCAIgiAIgiAIgiCh+guqTm9bU+7aPAAAAABJRU5ErkJggg==">
 
@@ -876,7 +876,7 @@ window.setTimeout(function checkBlockWorldReady() {
   <h1>BlockWorld</h1>
   <button id="start">JOGAR</button>
   <button id="homeOptionsButton" aria-label="Opções">⚙ OPÇÕES</button>
-  <div id="homeVersion">1.35</div>
+  <div id="homeVersion">1.36</div>
 </div>
 <div id="characterPreviewPanel">
   <div id="characterDragArea" title="Clique e arraste para girar o personagem"><span>↔ ARRASTE PARA GIRAR</span></div>
@@ -897,12 +897,12 @@ window.setTimeout(function checkBlockWorldReady() {
 
 <div id="capesMenu" role="dialog" aria-modal="true" aria-label="Capas">
   <div id="capesPanel">
-    <h2>CAPAS</h2>
-    <div id="commemorativeCapePreview"><div></div></div>
-    <h3>1 SEMANA DE DESENVOLVIMENTO</h3>
-    <p>Uma capa comemorativa para celebrar a primeira semana de desenvolvimento do BlockWorld!</p>
-    <div id="capeStatus">Recompensa especial disponível.</div>
-    <button id="claimCapeButton" type="button">RESGATAR CAPA</button>
+    <h2>ESCOLHER CAPA</h2>
+    <p>Selecione a capa que deseja usar no personagem.</p>
+    <button class="capeSelectButton" data-cape="commemorative" type="button">🏅 CAPA COMEMORATIVA</button>
+    <button class="capeSelectButton" data-cape="code" type="button">✨ CAPA DE CÓDIGO — LENDÁRIA</button>
+    <button class="capeSelectButton" data-cape="none" type="button">🚫 NÃO USAR CAPA</button>
+    <div id="capeStatus">Escolha uma opção.</div>
     <button id="closeCapesButton" type="button">VOLTAR</button>
   </div>
 </div>
@@ -973,6 +973,11 @@ window.setTimeout(function checkBlockWorldReady() {
     <button class="optionToggle" id="soundToggle">LIGADO</button>
   </div>
   <div class="optionRow"><span id="languageLabel">Idioma</span><button class="optionToggle" id="languageToggle">Português (Brasil)</button></div>
+  <h2 style="margin:10px 0 2px">CÓDIGOS</h2>
+  <p style="margin:0 0 6px">Resgate códigos especiais do BlockWorld.</p>
+  <input id="capeCodeInput" type="text" maxlength="40" placeholder="Digite um código..." autocomplete="off" style="width:min(300px,85vw);padding:12px;text-align:center;text-transform:uppercase">
+  <button class="pauseButton" id="redeemCapeCodeButton">RESGATAR CÓDIGO</button>
+  <div id="capeCodeStatus" role="status" style="min-height:22px;text-align:center"></div>
   <button class="pauseButton" id="backOptionsButton">VOLTAR</button>
 </div>
 
@@ -1231,6 +1236,8 @@ let thirdPersonView = false;
 let importedSkinData = '';
 let capeOwned = false;
 let capeEquipped = false;
+let codeCapeOwned = false;
+let selectedCape = 'none';
 let capeMesh = null;
 let menuPreviewYaw = 0;
 let menuDragActive = false;
@@ -1239,7 +1246,14 @@ let playerAnimationTime = 0;
 let playerArmPivots = [];
 let playerLegPivots = [];
 let playerLimbSwing = 0;
-try { capeOwned = localStorage.getItem('blockWorldWeekCape') === 'owned'; capeEquipped = capeOwned && localStorage.getItem('blockWorldWeekCapeEquipped') !== 'false'; } catch (error) {}
+try {
+  capeOwned = localStorage.getItem('blockWorldWeekCape') === 'owned';
+  codeCapeOwned = localStorage.getItem('blockWorldCodeCape') === 'owned';
+  selectedCape = localStorage.getItem('blockWorldSelectedCape') || 'none';
+  if (selectedCape === 'commemorative' && !capeOwned) selectedCape = 'none';
+  if (selectedCape === 'code' && !codeCapeOwned) selectedCape = 'none';
+  capeEquipped = selectedCape !== 'none';
+} catch (error) {}
 const playerModel = new THREE.Group();
 const playerParts = [];
 function makeSkinMaterial(color, image, crop) {
@@ -1319,14 +1333,22 @@ function rebuildPlayerModel(image = null) {
     playerLegPivots.push(pivot);
   });
 
-  // Capa atrás do corpo, no lado -Z.
+  // Capas pixeladas: comemorativa ou lendária desbloqueada por código.
   const capeCanvas = document.createElement('canvas');
   capeCanvas.width = 16; capeCanvas.height = 32;
   const capeCtx = capeCanvas.getContext('2d');
-  capeCtx.fillStyle = '#a61925'; capeCtx.fillRect(0,0,16,32);
-  capeCtx.fillStyle = '#e5b84b'; capeCtx.fillRect(0,0,16,4);
-  capeCtx.fillStyle = '#f2d27a'; capeCtx.fillRect(6,8,4,16);
-  capeCtx.fillRect(3,14,10,4);
+  if (selectedCape === 'code') {
+    capeCtx.fillStyle = '#28145f'; capeCtx.fillRect(0,0,16,32);
+    capeCtx.fillStyle = '#9b5cff'; capeCtx.fillRect(0,0,16,4);
+    capeCtx.fillStyle = '#f4dc72'; capeCtx.fillRect(6,5,4,22);
+    capeCtx.fillRect(2,13,12,4);
+    capeCtx.fillStyle = '#d9c2ff'; capeCtx.fillRect(4,2,2,2); capeCtx.fillRect(10,2,2,2);
+  } else {
+    capeCtx.fillStyle = '#a61925'; capeCtx.fillRect(0,0,16,32);
+    capeCtx.fillStyle = '#e5b84b'; capeCtx.fillRect(0,0,16,4);
+    capeCtx.fillStyle = '#f2d27a'; capeCtx.fillRect(6,8,4,16);
+    capeCtx.fillRect(3,14,10,4);
+  }
   const capeTexture = new THREE.CanvasTexture(capeCanvas);
   capeTexture.magFilter = THREE.NearestFilter;
   capeTexture.minFilter = THREE.NearestFilter;
@@ -1336,7 +1358,7 @@ function rebuildPlayerModel(image = null) {
   );
   capeMesh.position.set(0,0.79,-0.17);
   capeMesh.rotation.x = -0.08;
-  capeMesh.visible = capeOwned && capeEquipped;
+  capeMesh.visible = selectedCape !== 'none' && ((selectedCape === 'commemorative' && capeOwned) || (selectedCape === 'code' && codeCapeOwned));
   playerModel.add(capeMesh);
 }
 function animatePlayerLimbs(delta, moving, menuIdle = false) {
@@ -1403,29 +1425,49 @@ document.getElementById('closeCapesButton').addEventListener('click', () => {
 });
 function updateCapeMenu() {
   const status = document.getElementById('capeStatus');
-  const button = document.getElementById('claimCapeButton');
-  if (capeOwned && capeEquipped) {
-    status.textContent = 'Capa resgatada e equipada!';
-    button.textContent = 'CAPA EQUIPADA';
-  } else if (capeOwned) {
-    status.textContent = 'Você já resgatou esta capa comemorativa.';
-    button.textContent = 'EQUIPAR CAPA';
-  } else {
-    status.textContent = 'Recompensa especial disponível.';
-    button.textContent = 'RESGATAR CAPA';
-  }
+  document.querySelectorAll('.capeSelectButton').forEach(button => {
+    const type = button.dataset.cape;
+    const unlocked = type === 'none' || (type === 'commemorative' && capeOwned) || (type === 'code' && codeCapeOwned);
+    button.disabled = !unlocked;
+    button.style.opacity = unlocked ? '1' : '.48';
+    button.style.border = selectedCape === type ? '3px solid #f4d35e' : '2px solid #222';
+    if (type === 'commemorative') button.textContent = capeOwned ? '🏅 CAPA COMEMORATIVA' : '🔒 CAPA COMEMORATIVA — BLOQUEADA';
+    if (type === 'code') button.textContent = codeCapeOwned ? '✨ CAPA DE CÓDIGO — LENDÁRIA' : '🔒 CAPA DE CÓDIGO — LENDÁRIA';
+    if (type === 'none') button.textContent = '🚫 NÃO USAR CAPA';
+  });
+  status.textContent = selectedCape === 'commemorative' ? 'Capa comemorativa selecionada.' :
+    selectedCape === 'code' ? 'Capa lendária selecionada!' : 'Nenhuma capa equipada.';
 }
-document.getElementById('claimCapeButton').addEventListener('click', () => {
-  if (!capeOwned) capeOwned = true;
-  capeEquipped = !capeEquipped || !capeOwned ? true : capeEquipped;
-  if (!capeEquipped) capeEquipped = true;
-  try {
-    localStorage.setItem('blockWorldWeekCape', 'owned');
-    localStorage.setItem('blockWorldWeekCapeEquipped', 'true');
-  } catch (error) {}
-  if (capeMesh) capeMesh.visible = true;
+document.querySelectorAll('.capeSelectButton').forEach(button => {
+  button.addEventListener('click', () => {
+    const type = button.dataset.cape;
+    if (type === 'commemorative' && !capeOwned) return;
+    if (type === 'code' && !codeCapeOwned) return;
+    selectedCape = type;
+    capeEquipped = type !== 'none';
+    try { localStorage.setItem('blockWorldSelectedCape', selectedCape); } catch (error) {}
+    rebuildPlayerModel(importedSkinImage || null);
+    updateCapeMenu();
+    menuNeedsRender = true;
+  });
+});
+document.getElementById('redeemCapeCodeButton').addEventListener('click', () => {
+  const input = document.getElementById('capeCodeInput');
+  const status = document.getElementById('capeCodeStatus');
+  const code = (input.value || '').trim().toUpperCase();
+  if (code === '1SEMANADESENVOLVIMENTOCHATGPT') {
+    if (codeCapeOwned) status.textContent = 'Esse código já foi resgatado neste navegador.';
+    else {
+      codeCapeOwned = true;
+      try { localStorage.setItem('blockWorldCodeCape', 'owned'); } catch (error) {}
+      status.textContent = 'Código válido! Capa lendária desbloqueada. Vá em CAPAS para equipá-la!';
+      input.value = '';
+    }
+  } else status.textContent = 'Código inválido. Confira se digitou corretamente.';
   updateCapeMenu();
-  menuNeedsRender = true;
+});
+document.getElementById('capeCodeInput').addEventListener('keydown', event => {
+  if (event.key === 'Enter') document.getElementById('redeemCapeCodeButton').click();
 });
 document.getElementById('skinCloseButton').addEventListener('click', () => { skinEditor.style.display = 'none'; });
 document.getElementById('skinResetButton').addEventListener('click', () => {
@@ -4246,11 +4288,11 @@ function animate() {
         .addScaledVector(menuForward, 8)
         .addScaledVector(menuRight, 3.55)
         .addScaledVector(menuUp, -0.45);
-      playerModel.rotation.y = Math.atan2(-menuForward.x, -menuForward.z) + menuPreviewYaw;
+      playerModel.rotation.y = Math.atan2(-menuForward.x, -menuForward.z) + Math.PI + menuPreviewYaw;
       playerModel.scale.setScalar(1.28);
       playerModel.visible = menu.style.display !== 'none';
       animatePlayerLimbs(delta, false, true);
-      if (capeMesh) capeMesh.visible = capeOwned && capeEquipped;
+      if (capeMesh) capeMesh.visible = selectedCape !== 'none' && ((selectedCape === 'commemorative' && capeOwned) || (selectedCape === 'code' && codeCapeOwned));
       renderer.render(scene, menuCamera);
       menuNeedsRender = false;
     }
