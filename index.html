@@ -1428,7 +1428,7 @@ function updateCapeMenu() {
   const status = document.getElementById('capeStatus');
   document.querySelectorAll('.capeSelectButton').forEach(button => {
     const type = button.dataset.cape;
-    const unlocked = type === 'none' || (type === 'commemorative' && capeOwned) || (type === 'code' && codeCapeOwned);
+    const unlocked = type === 'none' || type === 'commemorative' || (type === 'code' && codeCapeOwned);
     button.disabled = !unlocked;
     button.style.opacity = unlocked ? '1' : '.48';
     button.style.border = selectedCape === type ? '3px solid #f4d35e' : '2px solid #222';
@@ -1442,7 +1442,10 @@ function updateCapeMenu() {
 document.querySelectorAll('.capeSelectButton').forEach(button => {
   button.addEventListener('click', () => {
     const type = button.dataset.cape;
-    if (type === 'commemorative' && !capeOwned) return;
+    if (type === 'commemorative' && !capeOwned) {
+      capeOwned = true;
+      try { localStorage.setItem('blockWorldWeekCape', 'owned'); } catch (error) {}
+    }
     if (type === 'code' && !codeCapeOwned) return;
     selectedCape = type;
     capeEquipped = type !== 'none';
