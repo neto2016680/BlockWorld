@@ -894,7 +894,6 @@ window.setTimeout(function checkBlockWorldReady() {
     <button id="skinCloseButton" type="button">VOLTAR</button>
   </div>
 </div>
-</div>
 
 <div id="capesMenu" role="dialog" aria-modal="true" aria-label="Capas">
   <div id="capesPanel">
@@ -1302,18 +1301,16 @@ const skinFileInput = document.getElementById('skinFileInput');
 function setSkinPreview(data) {
   if (data) {
     skinPreview.src = data;
-    document.getElementById('menuSteve').style.backgroundImage = 'url("' + data + '")';
-    document.getElementById('menuSteve').style.backgroundSize = 'cover';
+    menuNeedsRender = true;
   } else {
     skinPreview.removeAttribute('src');
-    document.getElementById('menuSteve').style.backgroundImage = '';
-    document.getElementById('menuSteve').style.backgroundSize = '';
+    menuNeedsRender = true;
   }
 }
 try { importedSkinData = localStorage.getItem('blockWorldSkin') || ''; } catch (error) {}
 if (importedSkinData) {
   const savedImage = new Image();
-  savedImage.onload = () => { rebuildPlayerModel(savedImage); setSkinPreview(importedSkinData); };
+  savedImage.onload = () => { rebuildPlayerModel(savedImage); setSkinPreview(importedSkinData); menuNeedsRender = true; };
   savedImage.src = importedSkinData;
 } else {
   skinPreview.alt = 'Steve clássico';
