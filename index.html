@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BlockWorld - Versão 1.41</title>
+<title>BlockWorld - Versão 1.42</title>
 <link rel="icon" type="image/png" sizes="128x128" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAEqElEQVR42u2dS2tTQRzFZ8KtD1rJQolGaclG6MKFotJFN9nqZ9Bv4MfpN3DvMt0WiqsW7KILwU2x+CBUpNgiVTAu2ltjyE3uY2b+r3NWlbbYm/Ob8z8z94Y4B0EQBEEQBEEQBEEQBEEQBEEQBEEQBEH69Ohlb2T5+jPrxj951XHOuZFzzr17feCtvQ7euPH/aXdj6KyB4GG8Mw2Ch/G2QfAw3jYIHsbbBsFrMz+G8dNA0AKBx6q3nQYextsGwWszfvjpx9zf79y7ARAulGHFh9HY3yTqVDGD8bZByGC8bRAyzuZLNH4WCBwhyLDqk4LALg08jLe9dfQw3jYIHsbbBsHDeNsgeBhvGwSfynwYXw+E2BB4rHrbaeBhvG0QfErjqe7UpVCZawtxfaFByLDiZSn0PYYMxtsGIatrOoznCUJVGFpV/rP+anfU3jlz7Z0zvPIMlXvTX+2OoiXAtEKCJKDfHZCWwN2NYSkIpDb8FO2ewvxGAKz0F51zzn3cOkUaEBt/rXfxxQ5BAqz0Fy8hAAjpV/yl+ZQjYDINAAJ/44MCABDkGV9rG1gFhByGkIXF+pwPbX7wBEBRjFjwIinJU8EoijzingwA9AN+xjcGYH3zvD68ffYHIBAbv7Z9fvK7R1ECcxBQFGkKXm4+6QiomwbWimLIgtfU+CgdoCkIWsdCjLhnXQLRD/gbH6wDzAOhTkfQ0A9Czfm17VE085NtA9c3W2b6Acc5z+IcYH2z5W532jN/5s3j72L7gYS4JwWgqbj2A6nGiwOAGwihjH9x2P33j4Lf/3DwOdp1tJxQURbFkAWPWuI/MCJlUZRW8MQBwPUgSfqcF5cAXA6SNBsvYgRQgWDBeFElMOUdR0536lACA/aDeUVRY8Ero0rvKB1/z9nzB7dI//A6IEyOhSJJXfF7X39dfr31/otXlQAx+sH4m1yPn15VHfVqzwGagHA8BoDUgxwTJTBmUbQw51UnQKiiaM14kQAsLi0Vfu/05CQqCNqMV5kAMRJBq/EmAGgCgnbj1ZXAkEXRivlmEqBsGlgyPjoAswpbUXlLDcLAuPkmE6CJ7vfuzv2ZmI9voQNAAAACABAAgNiXQKp2DyneBQAqjAAIAEAsRsBg/4j8ucDU4nzIM/48YLQEmHzQcLB/5Ab7R1hGxMZPml/2gVDnGnxq2LRPpZCWCOPwPrxzRZzx8xZoVACKQJAEgVQAmqz44ABIBkEaACGND74LQD/gO+eTJIDEfsA9AULN+eQASAGBKwApjE8CAHcQuAGQ0vikAHAFgQsAFMaTAMBtxxASgG8/i58pvHndJ232VURyNzC/yByE3AhLR8vUxgffBmLrSL+lE5MAs9JAayJQznl2HYBLUUzRAQ6Pf7M0ni0AKUGICQB349kDkAKEGABIMZ5FCSzbEaaVRY6aNH+5veCW2wusX1/2CRDzDCFUAnBq9eoSgPPWkduWzkQChOwHdROA65bOHABNQagKgCbjVQFQF4SyAGg0XiUAVUGYB4Bm41UDUHbHMAsA6eUOAJQAYRoAVow3BUDRWKi65QQARkCwYLxZAGaBYMl4qMFogCAIgiAIgiAIgiCh+guqTm9bU+7aPAAAAABJRU5ErkJggg==">
 <link rel="shortcut icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAEqElEQVR42u2dS2tTQRzFZ8KtD1rJQolGaclG6MKFotJFN9nqZ9Bv4MfpN3DvMt0WiqsW7KILwU2x+CBUpNgiVTAu2ltjyE3uY2b+r3NWlbbYm/Ob8z8z94Y4B0EQBEEQBEEQBEEQBEEQBEEQBEEQBEH69Ohlb2T5+jPrxj951XHOuZFzzr17feCtvQ7euPH/aXdj6KyB4GG8Mw2Ch/G2QfAw3jYIHsbbBsFrMz+G8dNA0AKBx6q3nQYextsGwWszfvjpx9zf79y7ARAulGHFh9HY3yTqVDGD8bZByGC8bRAyzuZLNH4WCBwhyLDqk4LALg08jLe9dfQw3jYIHsbbBsHDeNsgeBhvGwSfynwYXw+E2BB4rHrbaeBhvG0QfErjqe7UpVCZawtxfaFByLDiZSn0PYYMxtsGIatrOoznCUJVGFpV/rP+anfU3jlz7Z0zvPIMlXvTX+2OoiXAtEKCJKDfHZCWwN2NYSkIpDb8FO2ewvxGAKz0F51zzn3cOkUaEBt/rXfxxQ5BAqz0Fy8hAAjpV/yl+ZQjYDINAAJ/44MCABDkGV9rG1gFhByGkIXF+pwPbX7wBEBRjFjwIinJU8EoijzingwA9AN+xjcGYH3zvD68ffYHIBAbv7Z9fvK7R1ECcxBQFGkKXm4+6QiomwbWimLIgtfU+CgdoCkIWsdCjLhnXQLRD/gbH6wDzAOhTkfQ0A9Czfm17VE085NtA9c3W2b6Acc5z+IcYH2z5W532jN/5s3j72L7gYS4JwWgqbj2A6nGiwOAGwihjH9x2P33j4Lf/3DwOdp1tJxQURbFkAWPWuI/MCJlUZRW8MQBwPUgSfqcF5cAXA6SNBsvYgRQgWDBeFElMOUdR0536lACA/aDeUVRY8Ero0rvKB1/z9nzB7dI//A6IEyOhSJJXfF7X39dfr31/otXlQAx+sH4m1yPn15VHfVqzwGagHA8BoDUgxwTJTBmUbQw51UnQKiiaM14kQAsLi0Vfu/05CQqCNqMV5kAMRJBq/EmAGgCgnbj1ZXAkEXRivlmEqBsGlgyPjoAswpbUXlLDcLAuPkmE6CJ7vfuzv2ZmI9voQNAAAACABAAgNiXQKp2DyneBQAqjAAIAEAsRsBg/4j8ucDU4nzIM/48YLQEmHzQcLB/5Ab7R1hGxMZPml/2gVDnGnxq2LRPpZCWCOPwPrxzRZzx8xZoVACKQJAEgVQAmqz44ABIBkEaACGND74LQD/gO+eTJIDEfsA9AULN+eQASAGBKwApjE8CAHcQuAGQ0vikAHAFgQsAFMaTAMBtxxASgG8/i58pvHndJ232VURyNzC/yByE3AhLR8vUxgffBmLrSL+lE5MAs9JAayJQznl2HYBLUUzRAQ6Pf7M0ni0AKUGICQB349kDkAKEGABIMZ5FCSzbEaaVRY6aNH+5veCW2wusX1/2CRDzDCFUAnBq9eoSgPPWkduWzkQChOwHdROA65bOHABNQagKgCbjVQFQF4SyAGg0XiUAVUGYB4Bm41UDUHbHMAsA6eUOAJQAYRoAVow3BUDRWKi65QQARkCwYLxZAGaBYMl4qMFogCAIgiAIgiAIgiCh+guqTm9bU+7aPAAAAABJRU5ErkJggg==">
 
@@ -876,7 +876,7 @@ window.setTimeout(function checkBlockWorldReady() {
   <h1>BlockWorld</h1>
   <button id="start">JOGAR</button>
   <button id="homeOptionsButton" aria-label="Opções">⚙ OPÇÕES</button>
-  <div id="homeVersion">1.41</div>
+  <div id="homeVersion">1.42</div>
 </div>
 <div id="characterPreviewPanel">
   <div id="characterDragArea" title="Clique e arraste para girar o personagem"><span>↔ ARRASTE PARA GIRAR</span></div>
@@ -1677,6 +1677,17 @@ const pixelTextures = {
   flower_yellow: makePixelTexture('#438b32', ['#438b32', '#438b32', '#ffdc32', '#fff18a'], 111, 75)
 };
 
+// Minério de carvão: manchas escuras pixeladas sobre a pedra.
+const coalOreCanvas = document.createElement('canvas');
+coalOreCanvas.width = 16; coalOreCanvas.height = 16;
+const coalOreCtx = coalOreCanvas.getContext('2d');
+coalOreCtx.imageSmoothingEnabled = false;
+coalOreCtx.drawImage(pixelTextures.stone.image, 0, 0, 16, 16);
+[[2,2],[3,2],[4,3],[5,3],[6,4],[10,1],[11,2],[12,2],[11,3],[8,9],[9,9],[10,10],[11,11],[3,12],[4,11],[5,12],[6,13]].forEach(([x,y],i)=>{coalOreCtx.fillStyle=i%3===0?'#171717':i%3===1?'#292929':'#3b3b3b';coalOreCtx.fillRect(x,y,1,1);});
+const coalOreTexture = new THREE.CanvasTexture(coalOreCanvas);
+coalOreTexture.magFilter = THREE.NearestFilter; coalOreTexture.minFilter = THREE.NearestFilter; coalOreTexture.generateMipmaps = false; coalOreTexture.colorSpace = THREE.SRGBColorSpace;
+
+
 // Textura lateral da grama.
 // Vidro translúcido com bordas claras em pixel art.
 const glassCanvas = document.createElement('canvas');
@@ -1815,6 +1826,7 @@ const materials = {
   flower_red: new THREE.MeshLambertMaterial({ map: pixelTextures.flower_red }),
   flower_yellow: new THREE.MeshLambertMaterial({ map: pixelTextures.flower_yellow }),
   furnace: new THREE.MeshLambertMaterial({ map: pixelTextures.stone }),
+  coal_ore: new THREE.MeshLambertMaterial({ map: coalOreTexture }),
   glass: new THREE.MeshLambertMaterial({ map: glassTexture, transparent: true, opacity: 0.58, depthWrite: false })
 };
 
@@ -1971,7 +1983,8 @@ const blockIcons = {
   crafting_tableTop: textureToDataURL(craftingTableTopTexture),
   flower_red: textureToDataURL(pixelTextures.flower_red),
   flower_yellow: textureToDataURL(pixelTextures.flower_yellow),
-  glass: textureToDataURL(glassTexture)
+  glass: textureToDataURL(glassTexture),
+  coal_ore: textureToDataURL(coalOreTexture)
 };
 
 // 16 cores clássicas de lã.
@@ -2072,6 +2085,7 @@ const blockTypes = [
   'grass',
   'dirt',
   'stone',
+  'coal_ore',
   'wood',
   'leaves',
   'bedrock',
@@ -2129,7 +2143,7 @@ function removeBlock(block) {
   const key = blockKey(p.x, p.y, p.z);
   if (!blocks.has(key)) return;
   blocks.delete(key);
-  if (gameMode === 'survival' && block.type !== 'bedrock') spawnDroppedItem(block.type, p);
+  if (gameMode === 'survival' && block.type !== 'bedrock') spawnDroppedItem(block.type === 'coal_ore' ? 'coal' : block.type, p);
   rebuildInstances();
   scheduleWorldSave();
 }
@@ -2143,7 +2157,7 @@ const flatBlockColors = {
   wood:0x9a6a3e, leaves:0x397b2c, bedrock:0x333333,
   wool:0xdedede, planks:0xb98a52, flower_red:0xd94343,
   flower_yellow:0xf0d43a,
-  glass:0x9bddeb, crafting_table:0x9b6737, furnace:0x555555
+  glass:0x9bddeb, crafting_table:0x9b6737, furnace:0x555555, coal_ore:0x555555
 };
 const flatBlockMaterials = new Map();
 function getFlatBlockMaterial(type) {
@@ -2284,6 +2298,9 @@ function randomWorldHeight(x, z, seed) {
   return THREE.MathUtils.clamp(Math.round(a * 1.25 + b * 1.05 + c * 0.8 + d * 0.45), -2, 3);
 }
 
+function coalOreChance(x,y,z,seed) { const value=Math.abs(Math.sin((x*127.1+y*311.7+z*74.7+seed*0.013)*0.017)*43758.5453); return value-Math.floor(value); }
+function addCoalOreToExistingWorld(seed) { for (const block of blocks.values()) { if (block.type !== 'stone') continue; const p=block.position; if (coalOreChance(p.x,p.y,p.z,seed)<0.055) block.type='coal_ore'; } }
+
 function generateRandomTerrain(seed, chunksPerSide = 2) {
   blocks.clear();
   const halfSize = chunksPerSide * 8;
@@ -2291,9 +2308,9 @@ function generateRandomTerrain(seed, chunksPerSide = 2) {
     for (let z = -halfSize; z < halfSize; z++) {
       const height = randomWorldHeight(x, z, seed);
       addBlock(x, height - 5, z, 'bedrock', false);
-      addBlock(x, height - 4, z, 'stone', false);
-      addBlock(x, height - 3, z, 'stone', false);
-      addBlock(x, height - 2, z, 'stone', false);
+      addBlock(x, height - 4, z, coalOreChance(x,height-4,z,seed)<0.055?'coal_ore':'stone', false);
+      addBlock(x, height - 3, z, coalOreChance(x,height-3,z,seed)<0.055?'coal_ore':'stone', false);
+      addBlock(x, height - 2, z, coalOreChance(x,height-2,z,seed)<0.055?'coal_ore':'stone', false);
       addBlock(x, height - 1, z, 'dirt', false);
       addBlock(x, height, z, 'grass', false);
     }
@@ -2408,7 +2425,7 @@ let miningActive = false;
 let miningTargetKey = null;
 let miningStartTime = 0;
 let miningStage = 0;
-const miningTimes = { grass: 1000, dirt: 900, stone: 3000, wood: 1800, leaves: 600, bedrock: 1200 };
+const miningTimes = { grass: 1000, dirt: 900, stone: 3000, coal_ore: 3000, wood: 1800, leaves: 600, bedrock: 1200 };
 
 function cancelMining() {
   miningActive = false;
@@ -2451,7 +2468,7 @@ function updateMining() {
   const hasWoodenPickaxe = heldItem && heldItem.type === 'wooden_pickaxe';
   const hasStonePickaxe = heldItem && heldItem.type === 'stone_pickaxe';
   const baseDuration = miningTimes[hit.block.type] || 500;
-  const duration = hit.block.type === 'stone'
+  const duration = (hit.block.type === 'stone' || hit.block.type === 'coal_ore')
     ? (hasStonePickaxe ? 650 : hasWoodenPickaxe ? 1000 : baseDuration)
     : baseDuration;
   const progress = Math.min((performance.now() - miningStartTime) / duration, 1);
@@ -2495,7 +2512,8 @@ const inventoryCatalog = [
   { type:'planks', label:'Tábuas' },
   { type:'crafting_table', label:'Bancada de trabalho' },
   { type:'furnace', label:'Fornalha' },
-  { type:'charcoal', label:'Carvão' },
+  { type:'charcoal', label:'Carvão vegetal' },
+  { type:'coal', label:'Carvão mineral' },
   { type:'stick', label:'Graveto' },
   { type:'wooden_pickaxe', label:'Picareta de madeira' },
   { type:'stone_pickaxe', label:'Picareta de pedra' },
@@ -2509,7 +2527,7 @@ function createBlockIcon(type, label) {
   const icon = document.createElement('div');
   icon.className = 'blockIcon';
   icon.setAttribute('aria-label', label);
-  if (type === 'charcoal') { const coal=document.createElement('span'); coal.style.cssText='width:25px;height:28px;background:linear-gradient(135deg,#171717,#555,#222);clip-path:polygon(20% 0,80% 8%,100% 55%,72% 100%,12% 86%,0 28%)'; icon.appendChild(coal); return icon; }
+  if (type === 'charcoal' || type === 'coal') { const coal=document.createElement('span'); coal.style.cssText='width:25px;height:28px;background:linear-gradient(135deg,#171717,#555,#222);clip-path:polygon(20% 0,80% 8%,100% 55%,72% 100%,12% 86%,0 28%)'; icon.appendChild(coal); return icon; }
   if (type === 'stone_pickaxe') {
     const handle = document.createElement('span');
     handle.style.cssText = 'position:absolute;left:13px;top:13px;width:5px;height:27px;background:linear-gradient(90deg,#70451f,#c18a4b,#70451f);border:1px solid #4b2d16;transform:rotate(-35deg);';
@@ -2815,7 +2833,7 @@ function openWorkbench() {
 }
 let furnaceInputItem=null,furnaceFuelItem=null,furnaceOutputItem=null;
 function openFurnace(){if(!controls.isLocked||!gameStarted||inventoryOpen)return;inventoryOpen=true;controls.unlock();document.getElementById('furnaceMenu').style.display='flex';renderFurnace();}
-function renderFurnace(){const draw=(id,item)=>{const el=document.getElementById(id);el.innerHTML='';if(item){el.appendChild(createBlockIcon(item.type,item.label));const n=document.createElement('small');n.textContent=item.count;n.style.cssText='position:absolute;right:3px;bottom:1px;color:white';el.appendChild(n);}else el.textContent='?';};draw('furnaceInput',furnaceInputItem);draw('furnaceFuel',furnaceFuelItem);draw('furnaceOutput',furnaceOutputItem);const list=document.getElementById('furnaceItems');list.innerHTML='';inventorySlots.forEach((item,index)=>{if(!item||item.count<=0)return;const b=document.createElement('button');b.className='furnaceItem';b.textContent=item.label+' ×'+(item.count===Infinity?'∞':item.count);b.onclick=()=>{if(!furnaceInputItem&&item.type==='wood')furnaceInputItem={type:item.type,label:item.label,count:1};else if(!furnaceFuelItem&&['planks','stick','wood','charcoal'].includes(item.type))furnaceFuelItem={type:item.type,label:item.label,count:1};else return;if(gameMode!=='creative'&&item.count!==Infinity){item.count--;if(item.count<=0)inventorySlots[index]=null;updateHotbar();}renderFurnace();};list.appendChild(b);});document.getElementById('furnaceStatus').textContent='Madeira na entrada vira carvão. Combustível: tábuas, gravetos, madeira ou carvão.';}
+function renderFurnace(){const draw=(id,item)=>{const el=document.getElementById(id);el.innerHTML='';if(item){el.appendChild(createBlockIcon(item.type,item.label));const n=document.createElement('small');n.textContent=item.count;n.style.cssText='position:absolute;right:3px;bottom:1px;color:white';el.appendChild(n);}else el.textContent='?';};draw('furnaceInput',furnaceInputItem);draw('furnaceFuel',furnaceFuelItem);draw('furnaceOutput',furnaceOutputItem);const list=document.getElementById('furnaceItems');list.innerHTML='';inventorySlots.forEach((item,index)=>{if(!item||item.count<=0)return;const b=document.createElement('button');b.className='furnaceItem';b.textContent=item.label+' ×'+(item.count===Infinity?'∞':item.count);b.onclick=()=>{if(!furnaceInputItem&&item.type==='wood')furnaceInputItem={type:item.type,label:item.label,count:1};else if(!furnaceFuelItem&&['planks','stick','wood','charcoal','coal'].includes(item.type))furnaceFuelItem={type:item.type,label:item.label,count:1};else return;if(gameMode!=='creative'&&item.count!==Infinity){item.count--;if(item.count<=0)inventorySlots[index]=null;updateHotbar();}renderFurnace();};list.appendChild(b);});document.getElementById('furnaceStatus').textContent='Madeira na entrada vira carvão. Combustível: tábuas, gravetos, madeira ou carvão.';}
 document.getElementById('furnaceSmelt').onclick=()=>{if(!furnaceInputItem||!furnaceFuelItem||furnaceOutputItem)return;furnaceOutputItem={type:'charcoal',label:'Carvão',count:1};furnaceInputItem=null;furnaceFuelItem=null;renderFurnace();document.getElementById('furnaceStatus').textContent='Fundição concluída! Clique no resultado para pegar o carvão.';};
 document.getElementById('furnaceOutput').onclick=()=>{if(!furnaceOutputItem||!addCraftedItem('charcoal',1))return;furnaceOutputItem=null;updateHotbar();scheduleWorldSave();renderFurnace();};
 document.getElementById('furnaceClose').onclick=()=>{document.getElementById('furnaceMenu').style.display='none';inventoryOpen=false;controls.lock();};
@@ -3951,6 +3969,9 @@ async function loadSavedWorld(id, mode) {
     activeWorldName = world.name || 'Mundo sem nome';
     activeWorldSeed = world.seed || 0;
     activeWorldChunks = world.chunks || 4;
+    addCoalOreToExistingWorld(activeWorldSeed);
+    rebuildInstances();
+    scheduleWorldSave();
     savedWorldsMenu.style.display = 'none';
     startWorld(mode, world, true);
   } catch (error) {
