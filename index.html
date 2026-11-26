@@ -1234,6 +1234,7 @@ const controls = new PointerLockControls(
 // Personagem em blocos e câmera em terceira pessoa.
 let thirdPersonView = false;
 let importedSkinData = '';
+let importedSkinImage = null;
 let capeOwned = false;
 let capeEquipped = false;
 let codeCapeOwned = false;
@@ -1394,7 +1395,7 @@ function setSkinPreview(data) {
 try { importedSkinData = localStorage.getItem('blockWorldSkin') || ''; } catch (error) {}
 if (importedSkinData) {
   const savedImage = new Image();
-  savedImage.onload = () => { rebuildPlayerModel(savedImage); setSkinPreview(importedSkinData); menuNeedsRender = true; };
+  savedImage.onload = () => { importedSkinImage = savedImage; rebuildPlayerModel(savedImage); setSkinPreview(importedSkinData); menuNeedsRender = true; };
   savedImage.src = importedSkinData;
 } else {
   skinPreview.alt = 'Steve clássico';
@@ -1472,6 +1473,7 @@ document.getElementById('capeCodeInput').addEventListener('keydown', event => {
 document.getElementById('skinCloseButton').addEventListener('click', () => { skinEditor.style.display = 'none'; });
 document.getElementById('skinResetButton').addEventListener('click', () => {
   importedSkinData = '';
+  importedSkinImage = null;
   try { localStorage.removeItem('blockWorldSkin'); } catch (error) {}
   rebuildPlayerModel(); setSkinPreview('');
   menuNeedsRender = true;
@@ -1491,6 +1493,7 @@ skinFileInput.addEventListener('change', () => {
         return;
       }
       importedSkinData = reader.result;
+      importedSkinImage = image;
       try { localStorage.setItem('blockWorldSkin', importedSkinData); } catch (error) {}
       rebuildPlayerModel(image); setSkinPreview(importedSkinData);
       document.getElementById('skinStatus').textContent = 'Skin importada! Ela será usada no jogo.';
