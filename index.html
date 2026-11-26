@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BlockWorld - Versão 1.34</title>
+<title>BlockWorld - Versão 1.35</title>
 <link rel="icon" type="image/png" sizes="128x128" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAEqElEQVR42u2dS2tTQRzFZ8KtD1rJQolGaclG6MKFotJFN9nqZ9Bv4MfpN3DvMt0WiqsW7KILwU2x+CBUpNgiVTAu2ltjyE3uY2b+r3NWlbbYm/Ob8z8z94Y4B0EQBEEQBEEQBEEQBEEQBEEQBEEQBEH69Ohlb2T5+jPrxj951XHOuZFzzr17feCtvQ7euPH/aXdj6KyB4GG8Mw2Ch/G2QfAw3jYIHsbbBsFrMz+G8dNA0AKBx6q3nQYextsGwWszfvjpx9zf79y7ARAulGHFh9HY3yTqVDGD8bZByGC8bRAyzuZLNH4WCBwhyLDqk4LALg08jLe9dfQw3jYIHsbbBsHDeNsgeBhvGwSfynwYXw+E2BB4rHrbaeBhvG0QfErjqe7UpVCZawtxfaFByLDiZSn0PYYMxtsGIatrOoznCUJVGFpV/rP+anfU3jlz7Z0zvPIMlXvTX+2OoiXAtEKCJKDfHZCWwN2NYSkIpDb8FO2ewvxGAKz0F51zzn3cOkUaEBt/rXfxxQ5BAqz0Fy8hAAjpV/yl+ZQjYDINAAJ/44MCABDkGV9rG1gFhByGkIXF+pwPbX7wBEBRjFjwIinJU8EoijzingwA9AN+xjcGYH3zvD68ffYHIBAbv7Z9fvK7R1ECcxBQFGkKXm4+6QiomwbWimLIgtfU+CgdoCkIWsdCjLhnXQLRD/gbH6wDzAOhTkfQ0A9Czfm17VE085NtA9c3W2b6Acc5z+IcYH2z5W532jN/5s3j72L7gYS4JwWgqbj2A6nGiwOAGwihjH9x2P33j4Lf/3DwOdp1tJxQURbFkAWPWuI/MCJlUZRW8MQBwPUgSfqcF5cAXA6SNBsvYgRQgWDBeFElMOUdR0536lACA/aDeUVRY8Ero0rvKB1/z9nzB7dI//A6IEyOhSJJXfF7X39dfr31/otXlQAx+sH4m1yPn15VHfVqzwGagHA8BoDUgxwTJTBmUbQw51UnQKiiaM14kQAsLi0Vfu/05CQqCNqMV5kAMRJBq/EmAGgCgnbj1ZXAkEXRivlmEqBsGlgyPjoAswpbUXlLDcLAuPkmE6CJ7vfuzv2ZmI9voQNAAAACABAAgNiXQKp2DyneBQAqjAAIAEAsRsBg/4j8ucDU4nzIM/48YLQEmHzQcLB/5Ab7R1hGxMZPml/2gVDnGnxq2LRPpZCWCOPwPrxzRZzx8xZoVACKQJAEgVQAmqz44ABIBkEaACGND74LQD/gO+eTJIDEfsA9AULN+eQASAGBKwApjE8CAHcQuAGQ0vikAHAFgQsAFMaTAMBtxxASgG8/i58pvHndJ232VURyNzC/yByE3AhLR8vUxgffBmLrSL+lE5MAs9JAayJQznl2HYBLUUzRAQ6Pf7M0ni0AKUGICQB349kDkAKEGABIMZ5FCSzbEaaVRY6aNH+5veCW2wusX1/2CRDzDCFUAnBq9eoSgPPWkduWzkQChOwHdROA65bOHABNQagKgCbjVQFQF4SyAGg0XiUAVUGYB4Bm41UDUHbHMAsA6eUOAJQAYRoAVow3BUDRWKi65QQARkCwYLxZAGaBYMl4qMFogCAIgiAIgiAIgiCh+guqTm9bU+7aPAAAAABJRU5ErkJggg==">
 <link rel="shortcut icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAEqElEQVR42u2dS2tTQRzFZ8KtD1rJQolGaclG6MKFotJFN9nqZ9Bv4MfpN3DvMt0WiqsW7KILwU2x+CBUpNgiVTAu2ltjyE3uY2b+r3NWlbbYm/Ob8z8z94Y4B0EQBEEQBEEQBEEQBEEQBEEQBEEQBEH69Ohlb2T5+jPrxj951XHOuZFzzr17feCtvQ7euPH/aXdj6KyB4GG8Mw2Ch/G2QfAw3jYIHsbbBsFrMz+G8dNA0AKBx6q3nQYextsGwWszfvjpx9zf79y7ARAulGHFh9HY3yTqVDGD8bZByGC8bRAyzuZLNH4WCBwhyLDqk4LALg08jLe9dfQw3jYIHsbbBsHDeNsgeBhvGwSfynwYXw+E2BB4rHrbaeBhvG0QfErjqe7UpVCZawtxfaFByLDiZSn0PYYMxtsGIatrOoznCUJVGFpV/rP+anfU3jlz7Z0zvPIMlXvTX+2OoiXAtEKCJKDfHZCWwN2NYSkIpDb8FO2ewvxGAKz0F51zzn3cOkUaEBt/rXfxxQ5BAqz0Fy8hAAjpV/yl+ZQjYDINAAJ/44MCABDkGV9rG1gFhByGkIXF+pwPbX7wBEBRjFjwIinJU8EoijzingwA9AN+xjcGYH3zvD68ffYHIBAbv7Z9fvK7R1ECcxBQFGkKXm4+6QiomwbWimLIgtfU+CgdoCkIWsdCjLhnXQLRD/gbH6wDzAOhTkfQ0A9Czfm17VE085NtA9c3W2b6Acc5z+IcYH2z5W532jN/5s3j72L7gYS4JwWgqbj2A6nGiwOAGwihjH9x2P33j4Lf/3DwOdp1tJxQURbFkAWPWuI/MCJlUZRW8MQBwPUgSfqcF5cAXA6SNBsvYgRQgWDBeFElMOUdR0536lACA/aDeUVRY8Ero0rvKB1/z9nzB7dI//A6IEyOhSJJXfF7X39dfr31/otXlQAx+sH4m1yPn15VHfVqzwGagHA8BoDUgxwTJTBmUbQw51UnQKiiaM14kQAsLi0Vfu/05CQqCNqMV5kAMRJBq/EmAGgCgnbj1ZXAkEXRivlmEqBsGlgyPjoAswpbUXlLDcLAuPkmE6CJ7vfuzv2ZmI9voQNAAAACABAAgNiXQKp2DyneBQAqjAAIAEAsRsBg/4j8ucDU4nzIM/48YLQEmHzQcLB/5Ab7R1hGxMZPml/2gVDnGnxq2LRPpZCWCOPwPrxzRZzx8xZoVACKQJAEgVQAmqz44ABIBkEaACGND74LQD/gO+eTJIDEfsA9AULN+eQASAGBKwApjE8CAHcQuAGQ0vikAHAFgQsAFMaTAMBtxxASgG8/i58pvHndJ232VURyNzC/yByE3AhLR8vUxgffBmLrSL+lE5MAs9JAayJQznl2HYBLUUzRAQ6Pf7M0ni0AKUGICQB349kDkAKEGABIMZ5FCSzbEaaVRY6aNH+5veCW2wusX1/2CRDzDCFUAnBq9eoSgPPWkduWzkQChOwHdROA65bOHABNQagKgCbjVQFQF4SyAGg0XiUAVUGYB4Bm41UDUHbHMAsA6eUOAJQAYRoAVow3BUDRWKi65QQARkCwYLxZAGaBYMl4qMFogCAIgiAIgiAIgiCh+guqTm9bU+7aPAAAAABJRU5ErkJggg==">
 
@@ -72,12 +72,12 @@ canvas { display: block; position: fixed; inset: 0; z-index: 0; }
 @media(max-width:650px) { #characterMenuButton { right:8px; width:105px; min-height:160px; font-size:12px; } #menuSteve { transform:scale(.75); margin:-12px 0; } }
 /* Prévia 3D do personagem no menu principal. */
 #characterPreviewPanel {
-  position:fixed; z-index:9; right:3%; top:50%; transform:translateY(-42%);
-  width:230px; min-height:330px; display:flex; flex-direction:column;
-  align-items:center; justify-content:flex-end; gap:10px; pointer-events:none;
+  position:fixed; z-index:9; right:3%; top:49%; transform:translateY(-42%);
+  width:230px; min-height:340px; display:flex; flex-direction:column;
+  align-items:center; justify-content:flex-end; gap:8px; pointer-events:none;
 }
 #characterDragArea {
-  width:100%; height:245px; cursor:grab; touch-action:none;
+  width:100%; height:255px; cursor:grab; touch-action:none;
   display:flex; align-items:flex-end; justify-content:center;
   color:#fff; font-size:12px; font-weight:bold; text-shadow:1px 2px #111;
   pointer-events:auto; user-select:none;
@@ -111,8 +111,8 @@ canvas { display: block; position: fixed; inset: 0; z-index: 0; }
   background:repeating-linear-gradient(90deg,transparent 0 12px,#d33 12px 16px);
 }
 @media(max-width:650px) {
-  #characterPreviewPanel { right:1%; width:135px; min-height:245px; top:49%; }
-  #characterDragArea { height:175px; font-size:10px; }
+  #characterPreviewPanel { right:1%; width:145px; min-height:255px; top:49%; }
+  #characterDragArea { height:185px; font-size:10px; }
   #characterMenuButton, #capesButton { font-size:11px; padding:8px 4px; }
 }
 #menu h1 {
@@ -876,7 +876,7 @@ window.setTimeout(function checkBlockWorldReady() {
   <h1>BlockWorld</h1>
   <button id="start">JOGAR</button>
   <button id="homeOptionsButton" aria-label="Opções">⚙ OPÇÕES</button>
-  <div id="homeVersion">1.34</div>
+  <div id="homeVersion">1.35</div>
 </div>
 <div id="characterPreviewPanel">
   <div id="characterDragArea" title="Clique e arraste para girar o personagem"><span>↔ ARRASTE PARA GIRAR</span></div>
@@ -1235,6 +1235,10 @@ let capeMesh = null;
 let menuPreviewYaw = 0;
 let menuDragActive = false;
 let menuLastPointerX = 0;
+let playerAnimationTime = 0;
+let playerArmPivots = [];
+let playerLegPivots = [];
+let playerLimbSwing = 0;
 try { capeOwned = localStorage.getItem('blockWorldWeekCape') === 'owned'; capeEquipped = capeOwned && localStorage.getItem('blockWorldWeekCapeEquipped') !== 'false'; } catch (error) {}
 const playerModel = new THREE.Group();
 const playerParts = [];
@@ -1252,28 +1256,70 @@ function makeSkinMaterial(color, image, crop) {
   }
   return new THREE.MeshLambertMaterial({ color: map ? 0xffffff : color, map });
 }
-function addPlayerPart(size, position, color, image, crop) {
+function addPlayerPart(size, position, color, image, crop, parent = playerModel) {
   const mesh = new THREE.Mesh(new THREE.BoxGeometry(...size), makeSkinMaterial(color, image, crop));
   mesh.position.set(...position);
-  playerModel.add(mesh);
+  parent.add(mesh);
   playerParts.push({ mesh, color, crop });
+  return mesh;
 }
 function rebuildPlayerModel(image = null) {
   while (playerModel.children.length) {
-    const old = playerModel.children.pop();
-    if (old.geometry) old.geometry.dispose();
-    if (old.material) {
-      if (old.material.map) old.material.map.dispose();
-      old.material.dispose();
-    }
+    const old = playerModel.children[0];
+    playerModel.remove(old);
+    old.traverse(child => {
+      if (child.geometry) child.geometry.dispose();
+      if (child.material) {
+        const materials = Array.isArray(child.material) ? child.material : [child.material];
+        materials.forEach(material => {
+          if (material.map) material.map.dispose();
+          material.dispose();
+        });
+      }
+    });
   }
-  // Recortes aproximados da skin clássica de 64x64.
-  addPlayerPart([0.5,0.5,0.5],[0,1.5,0],0xc58b62,image,[8,8,8,8]); // cabeça
-  addPlayerPart([0.5,0.75,0.25],[0,0.875,0],0x168ac0,image,[20,20,8,12]); // tronco
-  addPlayerPart([0.25,0.75,0.25],[-0.375,0.875,0],0xc58b62,image,[44,20,4,12]);
-  addPlayerPart([0.25,0.75,0.25],[0.375,0.875,0],0xc58b62,image,[44,20,4,12]);
-  addPlayerPart([0.25,0.75,0.25],[-0.13,0.375,0],0x344c91,image,[4,20,4,12]);
-  addPlayerPart([0.25,0.75,0.25],[0.13,0.375,0],0x344c91,image,[4,20,4,12]);
+  playerParts.length = 0;
+  playerArmPivots = [];
+  playerLegPivots = [];
+
+  // Cabeça, tronco e rosto voltado para a frente (+Z).
+  addPlayerPart([0.5,0.5,0.5],[0,1.5,0],0xc58b62,image,[8,8,8,8]);
+  addPlayerPart([0.5,0.75,0.25],[0,0.875,0],0x168ac0,image,[20,20,8,12]);
+  const faceWhite = new THREE.MeshLambertMaterial({color:0xf4f1e8});
+  const eyeBlue = new THREE.MeshLambertMaterial({color:0x2874b9});
+  const darkBrown = new THREE.MeshLambertMaterial({color:0x493027});
+  const skinNose = new THREE.MeshLambertMaterial({color:0xc58b62});
+  function facePiece(size, pos, material) {
+    const part = new THREE.Mesh(new THREE.BoxGeometry(...size), material);
+    part.position.set(...pos);
+    playerModel.add(part);
+  }
+  facePiece([0.10,0.065,0.018],[-0.115,1.53,0.259],faceWhite);
+  facePiece([0.10,0.065,0.018],[0.115,1.53,0.259],faceWhite);
+  facePiece([0.045,0.055,0.012],[-0.105,1.53,0.273],eyeBlue);
+  facePiece([0.045,0.055,0.012],[0.125,1.53,0.273],eyeBlue);
+  facePiece([0.07,0.10,0.07],[0,1.455,0.285],skinNose);
+  facePiece([0.13,0.025,0.014],[0,1.365,0.261],darkBrown);
+  addPlayerPart([0.51,0.09,0.51],[0,1.755,0],0x493027,image,[8,0,8,2]);
+  addPlayerPart([0.51,0.22,0.045],[0,1.63,0.255],0x493027,image,[8,0,8,3]);
+
+  // Braços e pernas em pivôs articulados.
+  [[-0.375,1.25,0],[0.375,1.25,0]].forEach(pos => {
+    const pivot = new THREE.Group();
+    pivot.position.set(...pos);
+    playerModel.add(pivot);
+    addPlayerPart([0.25,0.75,0.25],[0,-0.375,0],0xc58b62,image,[44,20,4,12],pivot);
+    playerArmPivots.push(pivot);
+  });
+  [-0.13,0.13].forEach(x => {
+    const pivot = new THREE.Group();
+    pivot.position.set(x,0.75,0);
+    playerModel.add(pivot);
+    addPlayerPart([0.25,0.75,0.25],[0,-0.375,0],0x344c91,image,[4,20,4,12],pivot);
+    playerLegPivots.push(pivot);
+  });
+
+  // Capa atrás do corpo, no lado -Z.
   const capeCanvas = document.createElement('canvas');
   capeCanvas.width = 16; capeCanvas.height = 32;
   const capeCtx = capeCanvas.getContext('2d');
@@ -1285,12 +1331,28 @@ function rebuildPlayerModel(image = null) {
   capeTexture.magFilter = THREE.NearestFilter;
   capeTexture.minFilter = THREE.NearestFilter;
   capeMesh = new THREE.Mesh(
-    new THREE.BoxGeometry(0.62,0.92,0.035),
-    new THREE.MeshLambertMaterial({map:capeTexture})
+    new THREE.BoxGeometry(0.58,0.92,0.025),
+    new THREE.MeshLambertMaterial({map:capeTexture, side:THREE.DoubleSide})
   );
-  capeMesh.position.set(0,0.92,-0.19);
-  capeMesh.visible = capeEquipped;
+  capeMesh.position.set(0,0.79,-0.17);
+  capeMesh.rotation.x = -0.08;
+  capeMesh.visible = capeOwned && capeEquipped;
   playerModel.add(capeMesh);
+}
+function animatePlayerLimbs(delta, moving, menuIdle = false) {
+  playerAnimationTime += delta * (moving ? 10 : 2.2);
+  const targetSwing = moving ? Math.sin(playerAnimationTime) * 0.62 : 0;
+  playerLimbSwing += (targetSwing - playerLimbSwing) * Math.min(1, delta * 9);
+  const idle = menuIdle ? Math.sin(playerAnimationTime) * 0.035 : 0;
+  if (playerArmPivots.length === 2) {
+    playerArmPivots[0].rotation.x = playerLimbSwing + idle;
+    playerArmPivots[1].rotation.x = -playerLimbSwing - idle;
+  }
+  if (playerLegPivots.length === 2) {
+    playerLegPivots[0].rotation.x = -playerLimbSwing;
+    playerLegPivots[1].rotation.x = playerLimbSwing;
+  }
+  if (capeMesh && capeEquipped) capeMesh.rotation.x = -0.08 + Math.sin(playerAnimationTime * 0.7) * (moving ? 0.08 : 0.025);
 }
 scene.add(playerModel);
 playerModel.visible = false;
@@ -3961,6 +4023,7 @@ document.getElementById('backModeMenuButton').addEventListener('click', () => {
 // Inicia um jogo rápido ou restaura o estado de um mundo salvo.
 function startWorld(mode, restoreData = null, lockAlreadyRequested = false) {
   gameStarted = true;
+  scene.add(playerModel);
   gameMode = mode;
   craftGrid.fill(null);
   workbenchCraftGrid.fill(null);
@@ -4111,6 +4174,8 @@ document.getElementById('exitGameButton').addEventListener('click', () => {
   worldChoiceMenu.style.display = 'none';
   savedWorldsMenu.style.display = 'none';
   menu.style.display = 'flex';
+  scene.add(playerModel);
+  menuNeedsRender = true;
   isFlying = false;
   velocityY = 0;
   cancelMining();
@@ -4157,6 +4222,9 @@ function animate() {
     playerModel.rotation.y = Math.atan2(-playerDirection.x, -playerDirection.z);
     playerModel.visible = thirdPersonView;
     playerModel.scale.setScalar(1);
+    const playerIsMoving = controls.isLocked && !playerDead &&
+      (keys['KeyW'] || keys['KeyA'] || keys['KeyS'] || keys['KeyD']);
+    animatePlayerLimbs(delta, playerIsMoving, false);
     if (thirdPersonView) {
       const firstPersonPosition = camera.position.clone();
       camera.position.addScaledVector(playerDirection, -4);
@@ -4172,13 +4240,16 @@ function animate() {
       const menuForward = new THREE.Vector3();
       menuCamera.getWorldDirection(menuForward);
       const menuRight = new THREE.Vector3().crossVectors(menuForward, menuCamera.up).normalize();
+      menuCamera.updateMatrixWorld();
+      const menuUp = new THREE.Vector3(0,1,0).applyQuaternion(menuCamera.quaternion).normalize();
       playerModel.position.copy(menuCamera.position)
         .addScaledVector(menuForward, 8)
-        .addScaledVector(menuRight, 3.2);
-      playerModel.position.y -= 0.65;
+        .addScaledVector(menuRight, 3.55)
+        .addScaledVector(menuUp, -0.45);
       playerModel.rotation.y = Math.atan2(-menuForward.x, -menuForward.z) + menuPreviewYaw;
-      playerModel.scale.setScalar(1.25);
+      playerModel.scale.setScalar(1.28);
       playerModel.visible = menu.style.display !== 'none';
+      animatePlayerLimbs(delta, false, true);
       if (capeMesh) capeMesh.visible = capeOwned && capeEquipped;
       renderer.render(scene, menuCamera);
       menuNeedsRender = false;
