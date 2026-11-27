@@ -2844,7 +2844,7 @@ function getCraftingRecipe(grid = craftGrid) {
     return { type:'planks', label:'Tábuas', count:4 };
   if (occupied.length === 4 && occupied.every(item => item.type === 'planks' && item.count >= 1))
     return { type:'crafting_table', label:'Bancada de trabalho', count:1 };
-  if (grid.length === 9 && occupied.length === 6 && [0,1,2].every(i => grid[i] && grid[i].type.startsWith('wool') && grid[i].count >= 1) && [6,7,8].every(i => grid[i]?.type === 'planks' && grid[i].count >= 1))
+  if (grid.length === 9 && occupied.length === 6 && [3,4,5].every(i => grid[i] && grid[i].type.startsWith('wool') && grid[i].count >= 1) && [6,7,8].every(i => grid[i]?.type === 'planks' && grid[i].count >= 1))
     return { type:'bed', label:'Cama', count:1 };
   // Picareta de madeira: três tábuas na fileira superior e dois gravetos no centro.
   if (grid.length === 9 && occupied.length === 5 &&
