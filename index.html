@@ -1186,7 +1186,7 @@ const menuCamera = new THREE.PerspectiveCamera(
   0.1,
   140
 );
-menuCamera.position.set(18, 12, 23);
+menuCamera.position.set(18, 8, 23);
 menuCamera.lookAt(0, 1.2, 0);
 let menuNeedsRender = true;
 
@@ -4635,6 +4635,14 @@ function animate() {
     }
   } else {
     if (renderer.domElement.style.display === 'none') renderer.domElement.style.display = 'block';
+    // O menu permanece iluminado durante o ciclo, sem escurecer quando anoitece no mundo.
+    scene.background.copy(skyDay);
+    scene.fog.color.copy(fogDay);
+    sunlight.intensity = 1.5;
+    sunlight.color.set(0xffffff);
+    ambientLight.intensity = 0.65;
+    sun.visible = true;
+    moon.visible = false;
     if (menuNeedsRender) {
       const menuForward = new THREE.Vector3();
       menuCamera.getWorldDirection(menuForward);
@@ -4643,7 +4651,7 @@ function animate() {
       const menuUp = new THREE.Vector3(0,1,0).applyQuaternion(menuCamera.quaternion).normalize();
       playerModel.position.copy(menuCamera.position)
         .addScaledVector(menuForward, 8)
-        .addScaledVector(menuRight, 4.5)
+        .addScaledVector(menuRight, 7.0)
         .addScaledVector(menuUp, -0.45);
       playerModel.rotation.y = Math.atan2(-menuForward.x, -menuForward.z) + Math.PI + menuPreviewYaw;
       playerModel.scale.setScalar(1.28);
