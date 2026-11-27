@@ -901,6 +901,7 @@ window.setTimeout(function checkBlockWorldReady() {
     <p>Selecione a capa que deseja usar no personagem.</p>
     <button class="capeSelectButton" data-cape="commemorative" type="button">🏅 CAPA COMEMORATIVA</button>
     <button class="capeSelectButton" data-cape="code" type="button">✨ CAPA DE CÓDIGO — LENDÁRIA</button>
+    <button class="capeSelectButton" data-cape="admin" type="button">👑 CAPA ADMIN — EXCLUSIVA</button>
     <button class="capeSelectButton" data-cape="none" type="button">🚫 NÃO USAR CAPA</button>
     <div id="capeStatus">Escolha uma opção.</div>
     <button id="closeCapesButton" type="button">VOLTAR</button>
@@ -1240,6 +1241,7 @@ let importedSkinImage = null;
 let capeOwned = false;
 let capeEquipped = false;
 let codeCapeOwned = false;
+let adminCapeOwned = false;
 let selectedCape = 'none';
 let capeMesh = null;
 let menuPreviewYaw = 0;
@@ -1252,9 +1254,11 @@ let playerLimbSwing = 0;
 try {
   capeOwned = localStorage.getItem('blockWorldWeekCape') === 'owned';
   codeCapeOwned = localStorage.getItem('blockWorldCodeCape') === 'owned';
+  adminCapeOwned = localStorage.getItem('blockWorldAdminCape') === 'owned';
   selectedCape = localStorage.getItem('blockWorldSelectedCape') || 'none';
   if (selectedCape === 'commemorative' && !capeOwned) selectedCape = 'none';
   if (selectedCape === 'code' && !codeCapeOwned) selectedCape = 'none';
+  if (selectedCape === 'admin' && !adminCapeOwned) selectedCape = 'none';
   capeEquipped = selectedCape !== 'none';
 } catch (error) {}
 const playerModel = new THREE.Group();
@@ -1338,9 +1342,20 @@ function rebuildPlayerModel(image = null) {
 
   // Capas pixeladas: comemorativa ou lendária desbloqueada por código.
   const capeCanvas = document.createElement('canvas');
-  capeCanvas.width = 16; capeCanvas.height = 32;
+  capeCanvas.width = selectedCape === 'admin' ? 32 : 16;
+  capeCanvas.height = selectedCape === 'admin' ? 48 : 32;
   const capeCtx = capeCanvas.getContext('2d');
-  if (selectedCape === 'code') {
+  if (selectedCape === 'admin') {
+    capeCtx.fillStyle = '#10131f'; capeCtx.fillRect(0,0,32,48);
+    capeCtx.fillStyle = '#d8ad35'; capeCtx.fillRect(0,0,32,4); capeCtx.fillRect(0,44,32,4);
+    capeCtx.fillRect(0,0,3,48); capeCtx.fillRect(29,0,3,48);
+    capeCtx.fillStyle = '#8b1728'; capeCtx.fillRect(4,5,24,5);
+    capeCtx.fillStyle = '#f5d76e';
+    const glyphs = { A:['01110','10001','10001','11111','10001','10001','10001'], D:['11110','10001','10001','10001','10001','10001','11110'], M:['10001','11011','10101','10101','10001','10001','10001'] };
+    const word = 'ADM';
+    for (let c=0;c<word.length;c++) for (let y=0;y<7;y++) for (let x=0;x<5;x++) if (glyphs[word[c]][y][x] === '1') capeCtx.fillRect(4+c*9+x,18+y*2,2,2);
+    capeCtx.fillStyle = '#fff0b0'; capeCtx.fillRect(14,37,4,3);
+  } else if (selectedCape === 'code') {
     capeCtx.fillStyle = '#28145f'; capeCtx.fillRect(0,0,16,32);
     capeCtx.fillStyle = '#9b5cff'; capeCtx.fillRect(0,0,16,4);
     capeCtx.fillStyle = '#f4dc72'; capeCtx.fillRect(6,5,4,22);
