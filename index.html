@@ -1376,7 +1376,7 @@ function rebuildPlayerModel(image = null) {
   );
   capeMesh.position.set(0,0.79,-0.17);
   capeMesh.rotation.x = -0.08;
-  capeMesh.visible = selectedCape !== 'none' && ((selectedCape === 'commemorative' && capeOwned) || (selectedCape === 'code' && codeCapeOwned));
+  capeMesh.visible = selectedCape !== 'none' && ((selectedCape === 'commemorative' && capeOwned) || (selectedCape === 'code' && codeCapeOwned) || (selectedCape === 'admin' && adminCapeOwned));
   playerModel.add(capeMesh);
 }
 function animatePlayerLimbs(delta, moving, menuIdle = false) {
@@ -1445,16 +1445,18 @@ function updateCapeMenu() {
   const status = document.getElementById('capeStatus');
   document.querySelectorAll('.capeSelectButton').forEach(button => {
     const type = button.dataset.cape;
-    const unlocked = type === 'none' || type === 'commemorative' || (type === 'code' && codeCapeOwned);
+    const unlocked = type === 'none' || type === 'commemorative' || (type === 'code' && codeCapeOwned) || (type === 'admin' && adminCapeOwned);
     button.disabled = !unlocked;
     button.style.opacity = unlocked ? '1' : '.48';
     button.style.border = selectedCape === type ? '3px solid #f4d35e' : '2px solid #222';
     if (type === 'commemorative') button.textContent = capeOwned ? '🏅 CAPA COMEMORATIVA' : '🔒 CAPA COMEMORATIVA — BLOQUEADA';
     if (type === 'code') button.textContent = codeCapeOwned ? '✨ CAPA DE CÓDIGO — LENDÁRIA' : '🔒 CAPA DE CÓDIGO — LENDÁRIA';
+    if (type === 'admin') button.textContent = adminCapeOwned ? '👑 CAPA ADMIN — EXCLUSIVA' : '🔒 CAPA ADMIN — EXCLUSIVA';
     if (type === 'none') button.textContent = '🚫 NÃO USAR CAPA';
   });
   status.textContent = selectedCape === 'commemorative' ? 'Capa comemorativa selecionada.' :
-    selectedCape === 'code' ? 'Capa lendária selecionada!' : 'Nenhuma capa equipada.';
+    selectedCape === 'code' ? 'Capa lendária selecionada!' :
+    selectedCape === 'admin' ? '👑 Capa ADMIN equipada. Acesso exclusivo!' : 'Nenhuma capa equipada.';
 }
 document.querySelectorAll('.capeSelectButton').forEach(button => {
   button.addEventListener('click', () => {
@@ -1464,6 +1466,7 @@ document.querySelectorAll('.capeSelectButton').forEach(button => {
       try { localStorage.setItem('blockWorldWeekCape', 'owned'); } catch (error) {}
     }
     if (type === 'code' && !codeCapeOwned) return;
+    if (type === 'admin' && !adminCapeOwned) return;
     selectedCape = type;
     capeEquipped = type !== 'none';
     try { localStorage.setItem('blockWorldSelectedCape', selectedCape); } catch (error) {}
@@ -1476,7 +1479,15 @@ document.getElementById('redeemCapeCodeButton').addEventListener('click', () => 
   const input = document.getElementById('capeCodeInput');
   const status = document.getElementById('capeCodeStatus');
   const code = (input.value || '').trim().toUpperCase();
-  if (code === '1SEMANADESENVOLVIMENTOCHATGPT') {
+  if (code === 'BW-ADM-9X7Q-K4M2-V8R6-P3TZ') {
+    if (adminCapeOwned) status.textContent = 'Esse código ADMIN já foi resgatado neste navegador.';
+    else {
+      adminCapeOwned = true;
+      try { localStorage.setItem('blockWorldAdminCape', 'owned'); } catch (error) {}
+      status.textContent = '👑 Código ADMIN válido! Capa exclusiva desbloqueada. Vá em CAPAS para equipá-la!';
+      input.value = '';
+    }
+  } else if (code === '1SEMANADESENVOLVIMENTOCHATGPT') {
     if (codeCapeOwned) status.textContent = 'Esse código já foi resgatado neste navegador.';
     else {
       codeCapeOwned = true;
@@ -4672,7 +4683,7 @@ function animate() {
       playerModel.scale.setScalar(1.28);
       playerModel.visible = menu.style.display !== 'none';
       animatePlayerLimbs(delta, false, true);
-      if (capeMesh) capeMesh.visible = selectedCape !== 'none' && ((selectedCape === 'commemorative' && capeOwned) || (selectedCape === 'code' && codeCapeOwned));
+      if (capeMesh) capeMesh.visible = selectedCape !== 'none' && ((selectedCape === 'commemorative' && capeOwned) || (selectedCape === 'code' && codeCapeOwned) || (selectedCape === 'admin' && adminCapeOwned));
       renderer.render(scene, menuCamera);
       menuNeedsRender = false;
     }
