@@ -4632,7 +4632,7 @@ function animate() {
       const menuUp = new THREE.Vector3(0,1,0).applyQuaternion(menuCamera.quaternion).normalize();
       playerModel.position.copy(menuCamera.position)
         .addScaledVector(menuForward, 8)
-        .addScaledVector(menuRight, 3.55)
+        .addScaledVector(menuRight, 7.0)
         .addScaledVector(menuUp, -0.45);
       playerModel.rotation.y = Math.atan2(-menuForward.x, -menuForward.z) + Math.PI + menuPreviewYaw;
       playerModel.scale.setScalar(1.28);
