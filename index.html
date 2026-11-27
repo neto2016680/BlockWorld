@@ -4607,18 +4607,27 @@ function animate() {
     playerDirection.y = 0;
     if (playerDirection.lengthSq() > 0) playerDirection.normalize();
     playerModel.position.set(camera.position.x, camera.position.y - 1.62, camera.position.z);
-    playerModel.rotation.y = Math.atan2(-playerDirection.x, -playerDirection.z);
+    playerModel.rotation.y = Math.atan2(playerDirection.x, playerDirection.z);
     playerModel.visible = thirdPersonView;
     playerModel.scale.setScalar(1);
     const playerIsMoving = controls.isLocked && !playerDead &&
       (keys['KeyW'] || keys['KeyA'] || keys['KeyS'] || keys['KeyD']);
     animatePlayerLimbs(delta, playerIsMoving, false);
     if (thirdPersonView) {
+      // Câmera acompanha o jogador por trás e olha diretamente para suas costas.
       const firstPersonPosition = camera.position.clone();
-      camera.position.addScaledVector(playerDirection, -4);
-      camera.position.y += 1.25;
+      const firstPersonQuaternion = camera.quaternion.clone();
+      const thirdPersonTarget = new THREE.Vector3(
+        camera.position.x,
+        camera.position.y - 0.72,
+        camera.position.z
+      );
+      camera.position.addScaledVector(playerDirection, -4.2);
+      camera.position.y += 1.05;
+      camera.lookAt(thirdPersonTarget);
       renderer.render(scene, camera);
       camera.position.copy(firstPersonPosition);
+      camera.quaternion.copy(firstPersonQuaternion);
     } else {
       renderer.render(scene, camera);
     }
@@ -4632,7 +4641,7 @@ function animate() {
       const menuUp = new THREE.Vector3(0,1,0).applyQuaternion(menuCamera.quaternion).normalize();
       playerModel.position.copy(menuCamera.position)
         .addScaledVector(menuForward, 8)
-        .addScaledVector(menuRight, 7.0)
+        .addScaledVector(menuRight, 9.2)
         .addScaledVector(menuUp, -0.45);
       playerModel.rotation.y = Math.atan2(-menuForward.x, -menuForward.z) + Math.PI + menuPreviewYaw;
       playerModel.scale.setScalar(1.28);
