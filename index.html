@@ -4402,6 +4402,7 @@ document.getElementById('backModeMenuButton').addEventListener('click', () => {
 // Inicia um jogo rápido ou restaura o estado de um mundo salvo.
 function startWorld(mode, restoreData = null, lockAlreadyRequested = false) {
   gameStarted = true;
+  document.getElementById('characterPreviewPanel').style.display = 'none';
   scene.add(playerModel);
   gameMode = mode;
   craftGrid.fill(null);
@@ -4546,6 +4547,7 @@ document.getElementById('backOptionsButton').addEventListener('click', () => {
 });
 
 document.getElementById('exitGameButton').addEventListener('click', () => {
+  document.getElementById('characterPreviewPanel').style.display = 'flex';
   clearTimeout(saveDebounceTimer);
   saveActiveWorld();
   gameStarted = false;
@@ -4641,7 +4643,7 @@ function animate() {
       const menuUp = new THREE.Vector3(0,1,0).applyQuaternion(menuCamera.quaternion).normalize();
       playerModel.position.copy(menuCamera.position)
         .addScaledVector(menuForward, 8)
-        .addScaledVector(menuRight, 9.2)
+        .addScaledVector(menuRight, 4.5)
         .addScaledVector(menuUp, -0.45);
       playerModel.rotation.y = Math.atan2(-menuForward.x, -menuForward.z) + Math.PI + menuPreviewYaw;
       playerModel.scale.setScalar(1.28);
