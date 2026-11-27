@@ -3818,7 +3818,7 @@ function worldStoreRequest(mode, action, value) {
 function serializeWorld() {
   return {
     id: activeSavedWorldId, name: activeWorldName, seed: activeWorldSeed, chunks: activeWorldChunks,
-    cows: cowAnimals.filter(cow=>cow.alive).map(cow => ({ x:cow.group.position.x, z:cow.group.position.z, alive:true })),
+    cows: cowAnimals.map(cow => ({ x:cow.group.position.x, z:cow.group.position.z, alive:cow.alive })),
     blocks: Array.from(blocks.values(), block => [block.position.x, block.position.y, block.position.z, block.type]),
     droppedItems: droppedItems.map(item => ({ type:item.type, x:item.mesh.position.x, y:item.mesh.position.y, z:item.mesh.position.z })),
     mode: gameMode,
@@ -3873,8 +3873,7 @@ function spawnWorldCows() {
 function restoreCows(saved) {
   clearCows();if(!activeSavedWorldId||activeWorldChunks<=1)return;
   if(!Array.isArray(saved)){spawnWorldCows();return;}
-  for(const c of saved){if(cowAnimals.length>=4)break;if(c&&Number.isFinite(c.x)&&Number.isFinite(c.z))createCow(c.x,c.z);}
-  while(cowAnimals.length<4){const x=Math.floor(Math.random()*12)-6,z=Math.floor(Math.random()*12)-6;if(blocks.get(blockKey(x,getSurfaceHeight(x,z),z))?.type==='grass')createCow(x,z);else break;}
+  for(const c of saved){if(cowAnimals.length>=4)break;if(c&&c.alive!==false&&Number.isFinite(c.x)&&Number.isFinite(c.z))createCow(c.x,c.z);}
 }
 function updateCows(delta) {
   if(!gameStarted||!controls.isLocked)return;
