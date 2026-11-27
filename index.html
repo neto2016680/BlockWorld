@@ -3900,10 +3900,13 @@ function clearSheep() { for (const a of sheepAnimals) scene.remove(a.group); she
 function createSheep(x,z) {
   const group=new THREE.Group(), wool=new THREE.MeshLambertMaterial({color:0xf0eee6}), face=new THREE.MeshLambertMaterial({color:0xd8b6a5}), dark=new THREE.MeshLambertMaterial({color:0x302a28});
   const part=(w,h,d,mat,px,py,pz)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(px,py,pz);group.add(m);return m;};
-  part(1.12,.78,.72,wool,0,1.02,0);part(.48,.52,.48,face,.60,1.18,0);part(.12,.10,.08,dark,.69,1.30,.245);part(.12,.10,.08,dark,.69,1.30,-.245);
+  part(1.12,.78,.72,wool,0,1.02,0);
+  const head=new THREE.Group();head.position.set(.60,1.18,0);group.add(head);
+  const headPart=(w,h,d,mat,px,py,pz)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(px,py,pz);head.add(m);return m;};
+  headPart(.48,.52,.48,face,0,0,0);headPart(.12,.10,.08,dark,.09,.12,.245);headPart(.12,.10,.08,dark,.09,.12,-.245);
   const legs=[];for(const lx of [-.36,.36])for(const lz of [-.22,.22])legs.push(part(.18,.52,.18,face,lx,.34,lz));
   group.position.set(x,getSurfaceHeight(Math.round(x),Math.round(z))+.52,z);group.rotation.y=Math.random()*Math.PI*2;scene.add(group);
-  const a={group,legs,alive:true,targetX:x,targetZ:z,think:0,phase:Math.random()*6.28};sheepAnimals.push(a);return a;
+  const a={group,legs,head,alive:true,targetX:x,targetZ:z,think:0,phase:Math.random()*6.28};sheepAnimals.push(a);return a;
 }
 function spawnWorldSheep() {
   clearSheep();if(!activeSavedWorldId||activeWorldChunks<=1)return;const half=activeWorldChunks===4?16:24;let attempts=0;
@@ -3913,7 +3916,7 @@ function restoreSheep(saved) {clearSheep();if(!activeSavedWorldId||activeWorldCh
 function updateSheep(delta) {
   if(!gameStarted||!controls.isLocked)return;for(const a of sheepAnimals){if(!a.alive)continue;a.think-=delta;let dx=a.targetX-a.group.position.x,dz=a.targetZ-a.group.position.z,dist=Math.hypot(dx,dz);
     if(a.think<=0||dist<.35){a.think=2+Math.random()*4;const angle=Math.random()*Math.PI*2,step=2+Math.random()*4;a.targetX=Math.max(-28,Math.min(28,a.group.position.x+Math.cos(angle)*step));a.targetZ=Math.max(-28,Math.min(28,a.group.position.z+Math.sin(angle)*step));dx=a.targetX-a.group.position.x;dz=a.targetZ-a.group.position.z;dist=Math.hypot(dx,dz);}
-    if(dist>.05){a.group.position.x+=dx/dist*Math.min(dist,.65*delta);a.group.position.z+=dz/dist*Math.min(dist,.65*delta);a.group.rotation.y=Math.atan2(dx,dz);a.phase+=delta*7;a.legs[0].rotation.x=Math.sin(a.phase)*.4;a.legs[1].rotation.x=-Math.sin(a.phase)*.4;a.legs[2].rotation.x=-Math.sin(a.phase)*.4;a.legs[3].rotation.x=Math.sin(a.phase)*.4;}
+    if(dist>.05){a.group.position.x+=dx/dist*Math.min(dist,.65*delta);a.group.position.z+=dz/dist*Math.min(dist,.65*delta);a.group.rotation.y=Math.atan2(dx,dz);a.phase+=delta*7;a.legs[0].rotation.x=Math.sin(a.phase)*.4;a.legs[1].rotation.x=-Math.sin(a.phase)*.4;a.legs[2].rotation.x=-Math.sin(a.phase)*.4;a.legs[3].rotation.x=Math.sin(a.phase)*.4;a.head.rotation.x=Math.sin(a.phase*.55)*.10;}
     a.group.position.y=getSurfaceHeight(Math.round(a.group.position.x),Math.round(a.group.position.z))+.52;
   }
 }
@@ -3929,17 +3932,19 @@ function createCow(x,z) {
   const pink=new THREE.MeshLambertMaterial({color:0x9b6258});
   const part=(w,h,d,mat,px,py,pz)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(px,py,pz);group.add(m);return m;};
   part(1.05,.72,.62,white,0,.93,0);
-  part(.52,.55,.52,white,.57,1.18,0);
-  part(.43,.25,.54,pink,.78,.98,0);
-  part(.18,.12,.08,dark,.69,1.27,.28); part(.18,.12,.08,dark,.69,1.27,-.28);
-  part(.15,.18,.15,white,.48,1.52,.19); part(.15,.18,.15,white,.48,1.52,-.19);
+  const head=new THREE.Group();head.position.set(.57,1.18,0);group.add(head);
+  const headPart=(w,h,d,mat,px,py,pz)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(px,py,pz);head.add(m);return m;};
+  headPart(.52,.55,.52,white,0,0,0);
+  headPart(.43,.25,.54,pink,.21,-.20,0);
+  headPart(.18,.12,.08,dark,.12,.09,.28); headPart(.18,.12,.08,dark,.12,.09,-.28);
+  headPart(.15,.18,.15,white,-.09,.34,.19); headPart(.15,.18,.15,white,-.09,.34,-.19);
   part(.30,.28,.12,dark,-.22,1.08,.32); part(.28,.25,.12,dark,.22,.82,-.32); part(.22,.32,.12,dark,-.48,1.10,-.32);
   const legs=[];
   for(const lx of [-.34,.34]) for(const lz of [-.20,.20]) {legs.push(part(.19,.58,.19,white,lx,.34,lz));part(.20,.12,.20,dark,lx,.08,lz);}
   const tail=part(.10,.58,.10,white,-.62,.95,0);tail.rotation.z=-.45;
   group.position.set(x,getSurfaceHeight(Math.round(x),Math.round(z))+.52,z);
   group.rotation.y=Math.random()*Math.PI*2;scene.add(group);
-  const cow={group,legs,alive:true,targetX:x,targetZ:z,think:0,phase:Math.random()*6.28};cowAnimals.push(cow);return cow;
+  const cow={group,legs,head,alive:true,targetX:x,targetZ:z,think:0,phase:Math.random()*6.28};cowAnimals.push(cow);return cow;
 }
 function spawnWorldCows() {
   clearCows();
@@ -3963,7 +3968,7 @@ function updateCows(delta) {
   for(const c of cowAnimals){if(!c.alive)continue;c.think-=delta;
     let dx=c.targetX-c.group.position.x,dz=c.targetZ-c.group.position.z,dist=Math.hypot(dx,dz);
     if(c.think<=0||dist<.35){c.think=2+Math.random()*4;const a=Math.random()*Math.PI*2,step=2+Math.random()*4;c.targetX=Math.max(-28,Math.min(28,c.group.position.x+Math.cos(a)*step));c.targetZ=Math.max(-28,Math.min(28,c.group.position.z+Math.sin(a)*step));dx=c.targetX-c.group.position.x;dz=c.targetZ-c.group.position.z;dist=Math.hypot(dx,dz);}
-    if(dist>.05){c.group.position.x+=dx/dist*Math.min(dist,.75*delta);c.group.position.z+=dz/dist*Math.min(dist,.75*delta);c.group.rotation.y=Math.atan2(dx,dz);c.phase+=delta*7;c.legs[0].rotation.x=Math.sin(c.phase)*.45;c.legs[1].rotation.x=-Math.sin(c.phase)*.45;c.legs[2].rotation.x=-Math.sin(c.phase)*.45;c.legs[3].rotation.x=Math.sin(c.phase)*.45;}
+    if(dist>.05){c.group.position.x+=dx/dist*Math.min(dist,.75*delta);c.group.position.z+=dz/dist*Math.min(dist,.75*delta);c.group.rotation.y=Math.atan2(dx,dz);c.phase+=delta*7;c.legs[0].rotation.x=Math.sin(c.phase)*.45;c.legs[1].rotation.x=-Math.sin(c.phase)*.45;c.legs[2].rotation.x=-Math.sin(c.phase)*.45;c.legs[3].rotation.x=Math.sin(c.phase)*.45;c.head.rotation.x=Math.sin(c.phase*.55)*.10;}
     c.group.position.y=getSurfaceHeight(Math.round(c.group.position.x),Math.round(c.group.position.z))+.52;
   }
 }
