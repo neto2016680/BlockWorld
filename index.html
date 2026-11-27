@@ -1522,9 +1522,8 @@ const sunlight = new THREE.DirectionalLight(
 sunlight.position.set(10, 20, 10);
 scene.add(sunlight);
 
-scene.add(
-  new THREE.AmbientLight(0xffffff, 0.65)
-);
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.65);
+scene.add(ambientLight);
 
 // =================================
 // SOL E NUVENS QUADRADINHAS
@@ -1535,8 +1534,75 @@ const sun = new THREE.Mesh(
   new THREE.MeshBasicMaterial({ color: 0xffef9a })
 );
 
-sun.position.set(-18, 17, -42);
+sun.position.set(-45, 0, -42);
 scene.add(sun);
+
+// Lua cúbica, visível durante a metade noturna do ciclo.
+const moon = new THREE.Mesh(
+  new THREE.BoxGeometry(2.7, 2.7, 0.35),
+  new THREE.MeshBasicMaterial({ color: 0xe6efff })
+);
+moon.position.set(45, -30, -42);
+moon.visible = false;
+scene.add(moon);
+
+// Um ciclo completo dura 20 minutos: 10 de dia e 10 de noite.
+// O tempo começa no nascer do sol e continua mesmo com o menu aberto.
+const DAY_DURATION = 10 * 60;
+const NIGHT_DURATION = 10 * 60;
+const FULL_DAY_CYCLE = DAY_DURATION + NIGHT_DURATION;
+let dayCycleSeconds = 0;
+
+const skyDay = new THREE.Color(0x87ceeb);
+const skySunset = new THREE.Color(0xe58b58);
+const skyNight = new THREE.Color(0x080f28);
+const fogDay = new THREE.Color(0x87ceeb);
+const fogSunset = new THREE.Color(0xc87958);
+const fogNight = new THREE.Color(0x080f28);
+
+function updateDayNight(delta) {
+  dayCycleSeconds = (dayCycleSeconds + delta) % FULL_DAY_CYCLE;
+  const isDay = dayCycleSeconds < DAY_DURATION;
+  const progress = isDay
+    ? dayCycleSeconds / DAY_DURATION
+    : (dayCycleSeconds - DAY_DURATION) / NIGHT_DURATION;
+  const arc = Math.sin(progress * Math.PI);
+  const horizontal = Math.cos(progress * Math.PI);
+
+  // O sol nasce no leste (x negativo) e se põe no oeste (x positivo).
+  // A lua percorre o caminho inverso durante a noite.
+  if (isDay) {
+    sun.position.set(-45 * horizontal, Math.max(0.2, arc * 34), -42);
+    sun.visible = true;
+    moon.visible = false;
+    sunlight.position.copy(sun.position);
+  } else {
+    moon.position.set(45 * horizontal, Math.max(0.2, arc * 34), -42);
+    moon.visible = true;
+    sun.visible = false;
+    sunlight.position.copy(moon.position);
+  }
+
+  const daylight = isDay ? Math.sin(progress * Math.PI) : 0;
+  const twilight = isDay
+    ? Math.max(0, 1 - Math.abs(progress - 0.5) * 4)
+    : Math.max(0, 1 - Math.min(progress, 1 - progress) * 8);
+
+  const skyColor = new THREE.Color();
+  if (isDay) {
+    skyColor.copy(skyNight).lerp(skyDay, 0.18 + daylight * 0.82);
+    if (twilight > 0) skyColor.lerp(skySunset, twilight * 0.38);
+  } else {
+    skyColor.copy(skyNight);
+    if (twilight > 0) skyColor.lerp(skySunset, twilight * 0.35);
+  }
+  scene.background.copy(skyColor);
+  scene.fog.color.copy(skyColor);
+  sunlight.intensity = isDay ? 0.12 + daylight * 1.38 : 0.08;
+  ambientLight.intensity = isDay ? 0.16 + daylight * 0.49 : 0.12;
+  sunlight.color.set(isDay ? 0xffffff : 0x9aaddd);
+  sun.material.color.set(isDay ? 0xffef9a : 0xffef9a);
+}
 
 const cloudMaterial = new THREE.MeshBasicMaterial({
   color: 0xffffff
@@ -4356,6 +4422,8 @@ function animate() {
     clock.getDelta(),
     0.05
   );
+
+  updateDayNight(delta);
 
   // Durante a partida usa a câmera do jogador; no menu renderiza uma vista 3D estática do mundo.
   if (gameStarted) {
