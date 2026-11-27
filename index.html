@@ -1561,6 +1561,8 @@ const fogDay = new THREE.Color(0x87ceeb);
 const fogSunset = new THREE.Color(0xc87958);
 const fogNight = new THREE.Color(0x080f28);
 
+let bedMessageTimer=null;
+function showBedMessage(message) {let el=document.getElementById('bedMessage');if(!el){el=document.createElement('div');el.id='bedMessage';el.style.cssText='position:fixed;left:50%;top:18%;transform:translateX(-50%);padding:10px 18px;background:rgba(0,0,0,.72);color:white;font:bold 18px Arial;border-radius:8px;z-index:1000;pointer-events:none';document.body.appendChild(el);}el.textContent=message;el.style.display='block';if(bedMessageTimer)clearTimeout(bedMessageTimer);bedMessageTimer=setTimeout(()=>el.style.display='none',2200);}
 function updateDayNight(delta) {
   dayCycleSeconds = (dayCycleSeconds + delta) % FULL_DAY_CYCLE;
   const isDay = dayCycleSeconds < DAY_DURATION;
@@ -1903,6 +1905,7 @@ const materials = {
   flower_red: new THREE.MeshLambertMaterial({ map: pixelTextures.flower_red }),
   flower_yellow: new THREE.MeshLambertMaterial({ map: pixelTextures.flower_yellow }),
   furnace: new THREE.MeshLambertMaterial({ map: pixelTextures.stone }),
+  bed: new THREE.MeshLambertMaterial({ color: 0x9f2525 }),
   coal_ore: new THREE.MeshLambertMaterial({ map: coalOreTexture }),
   iron_ore: new THREE.MeshLambertMaterial({ map: ironOreTexture }),
   glass: new THREE.MeshLambertMaterial({ map: glassTexture, transparent: true, opacity: 0.58, depthWrite: false })
@@ -2157,6 +2160,7 @@ const blocks = new Map();
 const instancedMeshes = [];
 const droppedItems = [];
 const cowAnimals = [];
+const sheepAnimals = [];
 const dropGeometry = new THREE.BoxGeometry(0.28, 0.28, 0.28);
 
 const dummy = new THREE.Object3D();
@@ -2176,7 +2180,8 @@ const blockTypes = [
   'furnace',
   'flower_red',
   'flower_yellow',
-  'glass'
+  'glass',
+  'bed'
 ];
 
 // Registra as variantes de lã depois que a lista de blocos foi criada.
@@ -2238,7 +2243,7 @@ const flatBlockColors = {
   wood:0x9a6a3e, leaves:0x397b2c, bedrock:0x333333,
   wool:0xdedede, planks:0xb98a52, flower_red:0xd94343,
   flower_yellow:0xf0d43a,
-  glass:0x9bddeb, crafting_table:0x9b6737, furnace:0x555555, coal_ore:0x555555, iron_ore:0x9b765e
+  glass:0x9bddeb, crafting_table:0x9b6737, furnace:0x555555, coal_ore:0x555555, iron_ore:0x9b765e, bed:0x9f2525
 };
 const flatBlockMaterials = new Map();
 function getFlatBlockMaterial(type) {
@@ -2597,6 +2602,8 @@ const inventoryCatalog = [
   { type:'coal', label:'Carvão mineral' },
   { type:'raw_iron', label:'Ferro bruto' },
   { type:'raw_beef', label:'Carne crua' },
+  { type:'raw_mutton', label:'Carneiro cru' },
+  { type:'bed', label:'Cama' },
   { type:'steak', label:'Bife assado' },
   { type:'leather', label:'Couro' },
   { type:'stick', label:'Graveto' },
@@ -2837,6 +2844,8 @@ function getCraftingRecipe(grid = craftGrid) {
     return { type:'planks', label:'Tábuas', count:4 };
   if (occupied.length === 4 && occupied.every(item => item.type === 'planks' && item.count >= 1))
     return { type:'crafting_table', label:'Bancada de trabalho', count:1 };
+  if (grid.length === 9 && occupied.length === 6 && [0,1,2].every(i => grid[i] && grid[i].type.startsWith('wool') && grid[i].count >= 1) && [6,7,8].every(i => grid[i]?.type === 'planks' && grid[i].count >= 1))
+    return { type:'bed', label:'Cama', count:1 };
   // Picareta de madeira: três tábuas na fileira superior e dois gravetos no centro.
   if (grid.length === 9 && occupied.length === 5 &&
       grid[0]?.type === 'planks' && grid[1]?.type === 'planks' && grid[2]?.type === 'planks' &&
@@ -3658,6 +3667,7 @@ document.addEventListener('mousedown', (event) => {
     return;
   }
   if(event.button===0&&hitCow()){cancelMining();return;}
+  if(event.button===0&&hitSheep()){cancelMining();return;}
   const hit = getTargetBlock();
   if (!hit) return;
   const block = hit.block;
@@ -3677,6 +3687,7 @@ document.addEventListener('mousedown', (event) => {
       return;
     }
     if (block.type === 'furnace') { openFurnace(); return; }
+    if (block.type === 'bed') { if(dayCycleSeconds>=DAY_DURATION){dayCycleSeconds=0;playGameSound('eat');scheduleWorldSave();showBedMessage('Você dormiu. Bom dia!');}else showBedMessage('Só é possível dormir durante a noite.');return; }
     const selectedItem = inventorySlots[selectedBlock];
     if (!selectedItem || (gameMode === 'survival' && selectedItem.count <= 0)) return;
 
@@ -3689,7 +3700,7 @@ document.addEventListener('mousedown', (event) => {
 
     if (blocks.has(blockKey(x, y, z))) return;
     if (playerOverlapsBlock(x, y, z)) return;
-    addBlock(x, y, z, selectedItem.type);
+    addBlock(x, y, z, selectedItem.type === 'bed' ? 'bed' : selectedItem.type);
     playGameSound('place');
     if (gameMode === 'survival') {
       selectedItem.count--;
@@ -3863,6 +3874,7 @@ function serializeWorld() {
   return {
     id: activeSavedWorldId, name: activeWorldName, seed: activeWorldSeed, chunks: activeWorldChunks,
     cows: cowAnimals.map(cow => ({ x:cow.group.position.x, z:cow.group.position.z, alive:cow.alive })),
+    sheep: sheepAnimals.map(a => ({ x:a.group.position.x, z:a.group.position.z, alive:a.alive })),
     blocks: Array.from(blocks.values(), block => [block.position.x, block.position.y, block.position.z, block.type]),
     droppedItems: droppedItems.map(item => ({ type:item.type, x:item.mesh.position.x, y:item.mesh.position.y, z:item.mesh.position.z })),
     hunger, hungerDistance,
@@ -3883,6 +3895,32 @@ function clearDroppedItems() {
 function clearCows() {
   for (const cow of cowAnimals) scene.remove(cow.group);
   cowAnimals.length = 0;
+}
+function clearSheep() { for (const a of sheepAnimals) scene.remove(a.group); sheepAnimals.length=0; }
+function createSheep(x,z) {
+  const group=new THREE.Group(), wool=new THREE.MeshLambertMaterial({color:0xf0eee6}), face=new THREE.MeshLambertMaterial({color:0xd8b6a5}), dark=new THREE.MeshLambertMaterial({color:0x302a28});
+  const part=(w,h,d,mat,px,py,pz)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(px,py,pz);group.add(m);return m;};
+  part(1.12,.78,.72,wool,0,1.02,0);part(.48,.52,.48,face,.60,1.18,0);part(.12,.10,.08,dark,.69,1.30,.245);part(.12,.10,.08,dark,.69,1.30,-.245);
+  const legs=[];for(const lx of [-.36,.36])for(const lz of [-.22,.22])legs.push(part(.18,.52,.18,face,lx,.34,lz));
+  group.position.set(x,getSurfaceHeight(Math.round(x),Math.round(z))+.52,z);group.rotation.y=Math.random()*Math.PI*2;scene.add(group);
+  const a={group,legs,alive:true,targetX:x,targetZ:z,think:0,phase:Math.random()*6.28};sheepAnimals.push(a);return a;
+}
+function spawnWorldSheep() {
+  clearSheep();if(!activeSavedWorldId||activeWorldChunks<=1)return;const half=activeWorldChunks===4?16:24;let attempts=0;
+  while(sheepAnimals.length<4&&attempts++<300){const x=Math.floor((Math.random()*2-1)*(half-3)),z=Math.floor((Math.random()*2-1)*(half-3));if(Math.hypot(x,z-8)<6)continue;if(blocks.get(blockKey(x,getSurfaceHeight(x,z),z))?.type!=='grass')continue;if(sheepAnimals.some(a=>Math.hypot(a.group.position.x-x,a.group.position.z-z)<4))continue;createSheep(x,z);}
+}
+function restoreSheep(saved) {clearSheep();if(!activeSavedWorldId||activeWorldChunks<=1)return;if(!Array.isArray(saved)){spawnWorldSheep();return;}for(const a of saved){if(sheepAnimals.length>=4)break;if(a&&a.alive!==false&&Number.isFinite(a.x)&&Number.isFinite(a.z))createSheep(a.x,a.z);}}
+function updateSheep(delta) {
+  if(!gameStarted||!controls.isLocked)return;for(const a of sheepAnimals){if(!a.alive)continue;a.think-=delta;let dx=a.targetX-a.group.position.x,dz=a.targetZ-a.group.position.z,dist=Math.hypot(dx,dz);
+    if(a.think<=0||dist<.35){a.think=2+Math.random()*4;const angle=Math.random()*Math.PI*2,step=2+Math.random()*4;a.targetX=Math.max(-28,Math.min(28,a.group.position.x+Math.cos(angle)*step));a.targetZ=Math.max(-28,Math.min(28,a.group.position.z+Math.sin(angle)*step));dx=a.targetX-a.group.position.x;dz=a.targetZ-a.group.position.z;dist=Math.hypot(dx,dz);}
+    if(dist>.05){a.group.position.x+=dx/dist*Math.min(dist,.65*delta);a.group.position.z+=dz/dist*Math.min(dist,.65*delta);a.group.rotation.y=Math.atan2(dx,dz);a.phase+=delta*7;a.legs[0].rotation.x=Math.sin(a.phase)*.4;a.legs[1].rotation.x=-Math.sin(a.phase)*.4;a.legs[2].rotation.x=-Math.sin(a.phase)*.4;a.legs[3].rotation.x=Math.sin(a.phase)*.4;}
+    a.group.position.y=getSurfaceHeight(Math.round(a.group.position.x),Math.round(a.group.position.z))+.52;
+  }
+}
+function hitSheep() {
+  raycaster.setFromCamera(new THREE.Vector2(0,0),camera);const hits=raycaster.intersectObjects(sheepAnimals.filter(a=>a.alive).flatMap(a=>a.group.children),false);if(!hits.length||hits[0].distance>5)return false;
+  const a=sheepAnimals.find(a=>a.alive&&a.group===hits[0].object.parent);if(!a)return false;a.alive=false;scene.remove(a.group);
+  if(gameMode==='survival'){const p=a.group.position.clone();spawnDroppedItem('raw_mutton',p);spawnDroppedItem('raw_mutton',p);spawnDroppedItem('wool_white',p);}playGameSound('break');scheduleWorldSave();return true;
 }
 function createCow(x,z) {
   const group=new THREE.Group();
@@ -4162,6 +4200,7 @@ async function loadSavedWorld(id, mode) {
     activeWorldSeed = world.seed || 0;
     activeWorldChunks = world.chunks || 4;
     restoreCows(world.cows);
+    restoreSheep(world.sheep);
     addOresToExistingWorld(activeWorldSeed);
     rebuildInstances();
     scheduleWorldSave();
@@ -4543,6 +4582,7 @@ function animate() {
 
   updateDayNight(delta);
   updateCows(delta);
+  updateSheep(delta);
 
   // Durante a partida usa a câmera do jogador; no menu renderiza uma vista 3D estática do mundo.
   if (gameStarted) {
