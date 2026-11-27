@@ -3060,6 +3060,7 @@ function updateHungerDisplay() {
   el.textContent="🍗 ".repeat(hunger).trim()+(hunger<10?" ♧".repeat(10-hunger):"");
   el.setAttribute("aria-label","Fome: "+hunger+" de 10 pontos");
 }
+let steakEatTimer = null;
 function consumeSelectedSteak() {
   const item=inventorySlots[selectedBlock];
   if(gameMode!=='survival'||!item||item.type!=='steak'||item.count<=0||hunger>=10)return false;
@@ -3647,7 +3648,15 @@ function playerOverlapsBlock(x, y, z) {
 
 document.addEventListener('mousedown', (event) => {
   if (!controls.isLocked) return;
-  if(event.button===2&&consumeSelectedSteak())return;
+  const heldItem = inventorySlots[selectedBlock];
+  if (event.button === 2 && gameMode === 'survival' && heldItem && heldItem.type === 'steak' && heldItem.count > 0) {
+    if (steakEatTimer !== null) clearTimeout(steakEatTimer);
+    if (hunger < 10) steakEatTimer = setTimeout(() => {
+      steakEatTimer = null;
+      consumeSelectedSteak();
+    }, 2000);
+    return;
+  }
   if(event.button===0&&hitCow()){cancelMining();return;}
   const hit = getTargetBlock();
   if (!hit) return;
@@ -3692,6 +3701,10 @@ document.addEventListener('mousedown', (event) => {
 
 document.addEventListener('mouseup', (event) => {
   if (event.button === 0) cancelMining();
+  if (event.button === 2 && steakEatTimer !== null) {
+    clearTimeout(steakEatTimer);
+    steakEatTimer = null;
+  }
 });
 
 document.addEventListener('contextmenu', (event) => {
