@@ -370,18 +370,18 @@ canvas { display: block; position: fixed; inset: 0; z-index: 0; }
   gap: 4px;
 }
 
-#healthIcons {
+#healthIcons, #hungerIcons {
   position: absolute;
   bottom: 94px;
-  left: calc(50% - 315px);
   display: none;
   gap: 3px;
-  font-size: 27px;
+  font-size: 25px;
   line-height: 1;
-  color: #ff3434;
   text-shadow: 2px 2px 2px #222;
   white-space: nowrap;
 }
+#healthIcons { left: calc(50% - 315px); color: #ff3434; }
+#hungerIcons { left: calc(50% + 15px); color: #d99a35; }
 
 .slot {
   width: 65px;
@@ -1050,6 +1050,7 @@ window.setTimeout(function checkBlockWorldReady() {
   <div id="hotbar"></div>
   <div id="selectedBlockName"></div>
   <div id="healthIcons" aria-label="Vida: 10 corações">♥ ♥ ♥ ♥ ♥ ♥ ♥ ♥ ♥ ♥</div>
+  <div id="hungerIcons" aria-label="Fome: 10 pontos">🍗 🍗 🍗 🍗 🍗 🍗 🍗 🍗 🍗 🍗</div>
   <div id="fps">FPS: 0</div>
   <div id="debugCoordinates" aria-live="off">XYZ</div>
 </div>
@@ -3039,6 +3040,8 @@ const EYE_HEIGHT = 1.62;
 const CROUCH_OFFSET = 0.30;
 let isCrouching = false;
 let health = 10;
+let hunger = 10;
+let hungerDistance = 0;
 let healthRegenTimer = 0;
 let fallStartY = null;
 
@@ -3049,6 +3052,24 @@ function getEyeHeight() {
 function updateHealthDisplay() {
   healthIcons.textContent = "♥ ".repeat(health).trim() + (health < 10 ? " ♡".repeat(10 - health) : "");
   healthIcons.setAttribute("aria-label", "Vida: " + health + " de 10 corações");
+  updateHungerDisplay();
+}
+function updateHungerDisplay() {
+  const el=document.getElementById('hungerIcons');
+  if(!el)return;
+  el.textContent="🍗 ".repeat(hunger).trim()+(hunger<10?" ♧".repeat(10-hunger):"");
+  el.setAttribute("aria-label","Fome: "+hunger+" de 10 pontos");
+}
+function consumeSelectedSteak() {
+  const item=inventorySlots[selectedBlock];
+  if(gameMode!=='survival'||!item||item.type!=='steak'||item.count<=0||hunger>=10)return false;
+  hunger=Math.min(10,hunger+4);
+  item.count--;
+  if(item.count<=0)inventorySlots[selectedBlock]=null;
+  hungerDistance=0;
+  updateHungerDisplay();updateHotbar();scheduleWorldSave();
+  playGameSound('eat');
+  return true;
 }
 
 function damageFromFall(distance) {
@@ -3081,6 +3102,8 @@ function showDeathScreen(cause = 'void') {
 function respawnPlayer() {
   playerDead = false;
   health = 10;
+  hunger = 10;
+  hungerDistance = 0;
   healthRegenTimer = 0;
   fallStartY = null;
   velocityY = 0;
@@ -3624,6 +3647,7 @@ function playerOverlapsBlock(x, y, z) {
 
 document.addEventListener('mousedown', (event) => {
   if (!controls.isLocked) return;
+  if(event.button===2&&consumeSelectedSteak())return;
   if(event.button===0&&hitCow()){cancelMining();return;}
   const hit = getTargetBlock();
   if (!hit) return;
@@ -3712,6 +3736,8 @@ function updatePlayer(delta) {
   }
 
   if (!controls.isLocked || playerDead) return;
+  const movementStartX=camera.position.x;
+  const movementStartZ=camera.position.z;
 
   let forward = 0;
   let sideways = 0;
@@ -3754,6 +3780,11 @@ function updatePlayer(delta) {
       rightVector.z * sideways * speed;
 
     moveHorizontal(dx, dz);
+    if(gameMode==='survival') {
+      const moved=Math.hypot(camera.position.x-movementStartX,camera.position.z-movementStartZ);
+      hungerDistance+=moved*(sprinting?1.25:1);
+      while(hungerDistance>=50&&hunger>0){hunger--;hungerDistance-=50;updateHungerDisplay();scheduleWorldSave();}
+    }
   }
 
   if (gameMode === 'creative' && isFlying) {
@@ -3821,6 +3852,7 @@ function serializeWorld() {
     cows: cowAnimals.map(cow => ({ x:cow.group.position.x, z:cow.group.position.z, alive:cow.alive })),
     blocks: Array.from(blocks.values(), block => [block.position.x, block.position.y, block.position.z, block.type]),
     droppedItems: droppedItems.map(item => ({ type:item.type, x:item.mesh.position.x, y:item.mesh.position.y, z:item.mesh.position.z })),
+    hunger, hungerDistance,
     mode: gameMode,
     player: { x: camera.position.x, y: camera.position.y, z: camera.position.z },
     inventory: inventorySlots.map(item => item ? {
@@ -4330,6 +4362,8 @@ function startWorld(mode, restoreData = null, lockAlreadyRequested = false) {
           : Array(9).fill(null));
     selectedBlock = sameSavedMode ? Math.max(0, Math.min(8, restoreData.selectedBlock || 0)) : 0;
     health = sameSavedMode ? Math.max(0, Math.min(10, restoreData.health ?? 10)) : 10;
+    hunger = sameSavedMode ? Math.max(0, Math.min(10, restoreData.hunger ?? 10)) : 10;
+    hungerDistance = sameSavedMode ? Math.max(0, Number(restoreData.hungerDistance)||0) : 0;
     if (restoreData.player) camera.position.set(restoreData.player.x, restoreData.player.y, restoreData.player.z);
     else camera.position.set(0, getSurfaceHeight(0, 8) + 2.12, 8);
   } else {
@@ -4338,6 +4372,8 @@ function startWorld(mode, restoreData = null, lockAlreadyRequested = false) {
       : Array(9).fill(null);
     selectedBlock = 0;
     health = 10;
+    hunger = 10;
+    hungerDistance = 0;
     camera.position.set(0, 2.12, 8);
   }
   isFlying = false;
@@ -4353,6 +4389,7 @@ function startWorld(mode, restoreData = null, lockAlreadyRequested = false) {
   updateHotbar();
   hotbar.style.display = 'flex';
   healthIcons.style.display = mode === 'survival' ? 'flex' : 'none';
+  document.getElementById('hungerIcons').style.display = mode === 'survival' ? 'flex' : 'none';
   modeMenu.style.display = 'none';
   hud.style.display = 'block';
   scheduleWorldSave();
