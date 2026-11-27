@@ -4164,11 +4164,12 @@ async function createSavedWorld() {
   generateRandomTerrain(seed, chunksPerSide);
   clearDroppedItems();
   clearCows();
+  clearSheep();
   activeSavedWorldId = id;
   activeWorldName = name;
   activeWorldSeed = seed;
   activeWorldChunks = chunks;
-  if(chunks>1) spawnWorldCows();
+  if(chunks>1) { spawnWorldCows(); spawnWorldSheep(); }
   camera.position.set(0, getSurfaceHeight(0, 8) + 2.12, 8);
   try {
     await worldStoreRequest('readwrite', 'put', serializeWorld());
